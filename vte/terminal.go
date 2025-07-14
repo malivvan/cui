@@ -1,30 +1,30 @@
-package cui
+package vte
 
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/views"
-	"github.com/malivvan/cui/vte"
+	"github.com/malivvan/cui"
 	"os/exec"
 	"sync"
 )
 
 type Terminal struct {
-	*Box
+	*cui.Box
 
-	term    *vte.VT
+	term    *VT
 	running bool
 	cmd     *exec.Cmd
-	app     *Application
+	app     *cui.Application
 	w       int
 	h       int
 
 	sync.RWMutex
 }
 
-func NewTerminal(app *Application, cmd *exec.Cmd) *Terminal {
+func NewTerminal(app *cui.Application, cmd *exec.Cmd) *Terminal {
 	t := &Terminal{
-		Box:  NewBox(),
-		term: vte.New(),
+		Box:  cui.NewBox(),
+		term: New(),
 		app:  app,
 		cmd:  cmd,
 	}
@@ -70,22 +70,22 @@ func (t *Terminal) Draw(s tcell.Screen) {
 
 func (t *Terminal) HandleEvent(ev tcell.Event) {
 	switch ev.(type) {
-	case *vte.EventRedraw:
+	case *EventRedraw:
 		go func() {
 			t.app.QueueUpdateDraw(func() {})
 		}()
 	}
 }
 
-func (t *Terminal) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (t *Terminal) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
+	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
 		t.term.HandleEvent(event)
 	})
 }
 
-func (t *Terminal) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-		if action == MouseLeftClick && t.InRect(event.Position()) {
+func (t *Terminal) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
+	return t.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
+		if action == cui.MouseLeftClick && t.InRect(event.Position()) {
 			setFocus(t)
 			return t.term.HandleEvent(event), nil
 		}
