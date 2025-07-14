@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"time"
 
-	"codeberg.org/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/malivvan/cui"
 )
 
 const textView1 = `[green]func[white] [yellow]main[white]() {
-	app := cview.[yellow]NewApplication[white]()
-    textView := cview.[yellow]NewTextView[white]().
+	app := cui.[yellow]NewApplication[white]()
+    textView := cui.[yellow]NewTextView[white]().
         [yellow]SetTextColor[white](tcell.ColorYellow.TrueColor()).
         [yellow]SetScrollable[white](false).
         [yellow]SetChangedFunc[white]([yellow]func[white]() {
@@ -30,9 +30,9 @@ const textView1 = `[green]func[white] [yellow]main[white]() {
 }`
 
 // TextView1 demonstrates the basic text view.
-func TextView1(nextSlide func()) (title string, info string, content cview.Primitive) {
-	textView := cview.NewTextView()
-	textView.SetVerticalAlign(cview.AlignBottom)
+func TextView1(nextSlide func()) (title string, info string, content cui.Primitive) {
+	textView := cui.NewTextView()
+	textView.SetVerticalAlign(cui.AlignBottom)
 	textView.SetTextColor(tcell.ColorYellow.TrueColor())
 	textView.SetDoneFunc(func(key tcell.Key) {
 		nextSlide()
@@ -67,11 +67,11 @@ const textView2 = `[green]package[white] main
     [red]"strconv"[white]
 
     [red]"github.com/gdamore/tcell/v2"[white]
-    [red]"codeberg.org/tslocum/cview"[white]
+    [red]"github.com/malivvan/cui"[white]
 )
 
 [green]func[white] [yellow]main[white]() {
-    ["0"]textView[""] := cview.[yellow]NewTextView[white]()
+    ["0"]textView[""] := cui.[yellow]NewTextView[white]()
     ["1"]textView[""].[yellow]SetDynamicColors[white](true).
         [yellow]SetWrap[white](false).
         [yellow]SetRegions[white](true).
@@ -103,20 +103,20 @@ const textView2 = `[green]package[white] main
             }
         })
     fmt.[yellow]Fprint[white](["7"]textView[""], content)
-    cview.[yellow]NewApplication[white]().
+    cui.[yellow]NewApplication[white]().
         [yellow]SetRoot[white](["8"]textView[""], true).
         [yellow]Run[white]()
 }`
 
 // TextView2 demonstrates the extended text view.
-func TextView2(nextSlide func()) (title string, info string, content cview.Primitive) {
-	codeView := cview.NewTextView()
+func TextView2(nextSlide func()) (title string, info string, content cui.Primitive) {
+	codeView := cui.NewTextView()
 	codeView.SetWrap(false)
 	fmt.Fprint(codeView, textView2)
 	codeView.SetBorder(true)
 	codeView.SetTitle("Buffer content")
 
-	textView := cview.NewTextView()
+	textView := cui.NewTextView()
 	textView.SetDynamicColors(true)
 	textView.SetWrap(false)
 	textView.SetRegions(true)
@@ -154,9 +154,9 @@ func TextView2(nextSlide func()) (title string, info string, content cview.Primi
 	fmt.Fprint(textView, textView2)
 	textView.SetBorder(true)
 	textView.SetTitle("TextView output")
-	textView.SetScrollBarVisibility(cview.ScrollBarAuto)
+	textView.SetScrollBarVisibility(cui.ScrollBarAuto)
 
-	flex := cview.NewFlex()
+	flex := cui.NewFlex()
 	flex.AddItem(textView, 0, 1, true)
 	flex.AddItem(codeView, 0, 1, false)
 

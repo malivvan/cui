@@ -1,7 +1,7 @@
 /*
-A presentation of the cview package, implemented with cview.
+A presentation of the cview package, implemented with cui.
 
-Navigation
+# Navigation
 
 The presentation will advance to the next slide when the primitive demonstrated
 in the current slide is left (usually by hitting Enter or Escape). Additionally,
@@ -20,8 +20,8 @@ import (
 	_ "net/http/pprof"
 	"strconv"
 
-	"codeberg.org/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/malivvan/cui"
 )
 
 const (
@@ -36,10 +36,10 @@ const (
 // Slide is a function which returns the slide's title, any applicable
 // information and its main primitive, its. It receives a "nextSlide" function
 // which can be called to advance the presentation to the next slide.
-type Slide func(nextSlide func()) (title string, info string, content cview.Primitive)
+type Slide func(nextSlide func()) (title string, info string, content cui.Primitive)
 
 // The application.
-var app = cview.NewApplication()
+var app = cui.NewApplication()
 
 // Starting point for the presentation.
 func main() {
@@ -75,7 +75,7 @@ func main() {
 		End,
 	}
 
-	panels := cview.NewTabbedPanels()
+	panels := cui.NewTabbedPanels()
 
 	// Create the pages for all slides.
 	previousSlide := func() {
@@ -96,15 +96,15 @@ func main() {
 
 		title, info, primitive := slide(nextSlide)
 
-		h := cview.NewTextView()
+		h := cui.NewTextView()
 		if info != "" {
 			h.SetDynamicColors(true)
-			h.SetText("  [" + cview.ColorHex(cview.Styles.SecondaryTextColor) + "]Info:[-]  " + info)
+			h.SetText("  [" + cui.ColorHex(cui.Styles.SecondaryTextColor) + "]Info:[-]  " + info)
 		}
 
 		// Create a Flex layout that centers the logo and subtitle.
-		f := cview.NewFlex()
-		f.SetDirection(cview.FlexRow)
+		f := cui.NewFlex()
+		f.SetDirection(cui.FlexRow)
 		f.AddItem(h, 1, 1, false)
 		f.AddItem(primitive, 0, 1, true)
 

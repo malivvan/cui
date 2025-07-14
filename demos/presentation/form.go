@@ -1,17 +1,17 @@
 package main
 
 import (
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 const form = `[green]package[white] main
 
 [green]import[white] (
-    [red]"codeberg.org/tslocum/cview"[white]
+    [red]"github.com/malivvan/cui"[white]
 )
 
 [green]func[white] [yellow]main[white]() {
-    form := cview.[yellow]NewForm[white]().
+    form := cui.[yellow]NewForm[white]().
         [yellow]AddInputField[white]([red]"First name:"[white], [red]""[white], [red]20[white], nil, nil).
         [yellow]AddInputField[white]([red]"Last name:"[white], [red]""[white], [red]20[white], nil, nil).
         [yellow]AddDropDown[white]([red]"Role:"[white], [][green]string[white]{
@@ -23,14 +23,14 @@ const form = `[green]package[white] main
         [yellow]AddPasswordField[white]([red]"Password:"[white], [red]""[white], [red]10[white], [red]'*'[white], nil).
         [yellow]AddButton[white]([red]"Save"[white], [yellow]func[white]() { [blue]/* Save data */[white] }).
         [yellow]AddButton[white]([red]"Cancel"[white], [yellow]func[white]() { [blue]/* Cancel */[white] })
-    cview.[yellow]NewApplication[white]().
+    cui.[yellow]NewApplication[white]().
         [yellow]SetRoot[white](form, true).
         [yellow]Run[white]()
 }`
 
 // Form demonstrates forms.
-func Form(nextSlide func()) (title string, info string, content cview.Primitive) {
-	f := cview.NewForm()
+func Form(nextSlide func()) (title string, info string, content cui.Primitive) {
+	f := cui.NewForm()
 	f.AddInputField("First name:", "", 20, nil, nil)
 	f.AddInputField("Last name:", "", 20, nil, nil)
 	f.AddDropDownSimple("Role:", 0, nil, "Engineer", "Manager", "Administration")

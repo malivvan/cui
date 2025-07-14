@@ -4,9 +4,8 @@ package main
 import (
 	"log"
 
-	"codeberg.org/tslocum/cbind"
-	"codeberg.org/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/malivvan/cui"
 )
 
 func wrap(f func()) func(ev *tcell.EventKey) *tcell.EventKey {
@@ -17,24 +16,24 @@ func wrap(f func()) func(ev *tcell.EventKey) *tcell.EventKey {
 }
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	input1 := cview.NewInputField()
+	input1 := cui.NewInputField()
 	input1.SetLabel("InputField 1")
 
-	input2 := cview.NewInputField()
+	input2 := cui.NewInputField()
 	input2.SetLabel("InputField 2")
 
-	input3 := cview.NewInputField()
+	input3 := cui.NewInputField()
 	input3.SetLabel("InputField 3")
 
-	input4 := cview.NewInputField()
+	input4 := cui.NewInputField()
 	input4.SetLabel("InputField 4")
 
-	grid := cview.NewGrid()
+	grid := cui.NewGrid()
 	grid.SetBorder(true)
 	grid.SetTitle(" Press Tab to advance focus ")
 	grid.AddItem(input1, 0, 0, 1, 1, 0, 0, true)
@@ -42,18 +41,18 @@ func main() {
 	grid.AddItem(input3, 1, 1, 1, 1, 0, 0, false)
 	grid.AddItem(input4, 1, 0, 1, 1, 0, 0, false)
 
-	focusManager := cview.NewFocusManager(app.SetFocus)
+	focusManager := cui.NewFocusManager(app.SetFocus)
 	focusManager.SetWrapAround(true)
 	focusManager.Add(input1, input2, input3, input4)
 
-	inputHandler := cbind.NewConfiguration()
-	for _, key := range cview.Keys.MovePreviousField {
+	inputHandler := cui.NewBindConfig()
+	for _, key := range cui.Keys.MovePreviousField {
 		err := inputHandler.Set(key, wrap(focusManager.FocusPrevious))
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	for _, key := range cview.Keys.MoveNextField {
+	for _, key := range cui.Keys.MoveNextField {
 		err := inputHandler.Set(key, wrap(focusManager.FocusNext))
 		if err != nil {
 			log.Fatal(err)

@@ -4,21 +4,21 @@ package main
 import (
 	"fmt"
 
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 const panelCount = 5
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	panels := cview.NewTabbedPanels()
+	panels := cui.NewTabbedPanels()
 	for panel := 0; panel < panelCount; panel++ {
 		func(panel int) {
-			form := cview.NewForm()
+			form := cui.NewForm()
 			form.SetBorder(true)
 			form.SetTitle(fmt.Sprintf("This is tab %d. Choose another tab.", panel+1))
 			form.AddButton("Next", func() {

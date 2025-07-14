@@ -1,7 +1,6 @@
-package cview
+package cui
 
 import (
-	"codeberg.org/tslocum/cbind"
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -68,7 +67,7 @@ var Keys = Key{
 // HitShortcut returns whether the EventKey provided is present in one or more
 // sets of keybindings.
 func HitShortcut(event *tcell.EventKey, keybindings ...[]string) bool {
-	enc, err := cbind.Encode(event.Modifiers(), event.Key(), event.Rune())
+	enc, err := BindEncode(event.Modifiers(), event.Key(), event.Rune())
 	if err != nil {
 		return false
 	}

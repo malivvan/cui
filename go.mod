@@ -1,11 +1,10 @@
-module codeberg.org/tslocum/cview
+module github.com/malivvan/cui
 
 go 1.23.0
 
 toolchain go1.24.2
 
 require (
-	codeberg.org/tslocum/cbind v0.1.6
 	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/lucasb-eyer/go-colorful v1.2.0
 	github.com/mattn/go-runewidth v0.0.16

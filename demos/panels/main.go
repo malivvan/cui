@@ -4,21 +4,21 @@ package main
 import (
 	"fmt"
 
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 const panelCount = 5
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	panels := cview.NewPanels()
+	panels := cui.NewPanels()
 	for panel := 0; panel < panelCount; panel++ {
 		func(panel int) {
-			modal := cview.NewModal()
+			modal := cui.NewModal()
 			modal.SetText(fmt.Sprintf("This is page %d. Choose where to go next.", panel+1))
 			modal.AddButtons([]string{"Next", "Quit"})
 			modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {

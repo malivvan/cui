@@ -4,27 +4,27 @@ package main
 import (
 	"time"
 
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
-	grid := cview.NewGrid()
+	grid := cui.NewGrid()
 	grid.SetColumns(-1, 6, 4, 30, -1)
 	grid.SetRows(-1, 12, 4, 4, -1)
-	grid.SetBackgroundColor(cview.Styles.PrimitiveBackgroundColor)
+	grid.SetBackgroundColor(cui.Styles.PrimitiveBackgroundColor)
 
-	verticalProgressBar := cview.NewProgressBar()
+	verticalProgressBar := cui.NewProgressBar()
 	verticalProgressBar.SetBorder(true)
 	verticalProgressBar.SetVertical(true)
 
-	horizontalProgressBar := cview.NewProgressBar()
+	horizontalProgressBar := cui.NewProgressBar()
 	horizontalProgressBar.SetBorder(true)
 	horizontalProgressBar.SetMax(150)
 
-	padding := cview.NewTextView()
+	padding := cui.NewTextView()
 	grid.AddItem(padding, 0, 0, 1, 5, 0, 0, false)
 	grid.AddItem(padding, 1, 0, 1, 1, 0, 0, false)
 	grid.AddItem(verticalProgressBar, 1, 1, 2, 1, 0, 0, false)

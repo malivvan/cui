@@ -4,26 +4,26 @@ package main
 import (
 	"fmt"
 
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	list := cview.NewList()
+	list := cui.NewList()
 
 	reset := func() {
 		list.Clear()
 		for i := 0; i < 4; i++ {
-			item := cview.NewListItem(fmt.Sprintf("List item %d", i+1))
+			item := cui.NewListItem(fmt.Sprintf("List item %d", i+1))
 			item.SetSecondaryText("Some explanatory text")
 			item.SetShortcut(rune('a' + i))
 			list.AddItem(item)
 		}
-		quitItem := cview.NewListItem("Quit")
+		quitItem := cui.NewListItem("Quit")
 		quitItem.SetSecondaryText("Press to exit")
 		quitItem.SetShortcut('q')
 		quitItem.SetSelectedFunc(func() {

@@ -2,18 +2,18 @@
 package main
 
 import (
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	newPrimitive := func(text string) cview.Primitive {
-		tv := cview.NewTextView()
-		tv.SetTextAlign(cview.AlignCenter)
+	newPrimitive := func(text string) cui.Primitive {
+		tv := cui.NewTextView()
+		tv.SetTextAlign(cui.AlignCenter)
 		tv.SetText(text)
 		return tv
 	}
@@ -21,7 +21,7 @@ func main() {
 	main := newPrimitive("Main content")
 	sideBar := newPrimitive("Side Bar")
 
-	grid := cview.NewGrid()
+	grid := cui.NewGrid()
 	grid.SetRows(3, 0, 3)
 	grid.SetColumns(30, 0, 30)
 	grid.SetBorders(true)

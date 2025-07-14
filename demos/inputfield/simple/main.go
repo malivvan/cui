@@ -2,21 +2,21 @@
 package main
 
 import (
-	"codeberg.org/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/malivvan/cui"
 )
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	inputField := cview.NewInputField()
+	inputField := cui.NewInputField()
 	inputField.SetLabel("Enter a number: ")
 	inputField.SetPlaceholder("E.g. 1234")
 	inputField.SetFieldWidth(10)
-	inputField.SetAcceptanceFunc(cview.InputFieldInteger)
+	inputField.SetAcceptanceFunc(cui.InputFieldInteger)
 	inputField.SetDoneFunc(func(key tcell.Key) {
 		app.Stop()
 	})

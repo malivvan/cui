@@ -2,29 +2,29 @@
 package main
 
 import (
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
-func demoBox(title string) *cview.Box {
-	b := cview.NewBox()
+func demoBox(title string) *cui.Box {
+	b := cui.NewBox()
 	b.SetBorder(true)
 	b.SetTitle(title)
 	return b
 }
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	subFlex := cview.NewFlex()
-	subFlex.SetDirection(cview.FlexRow)
+	subFlex := cui.NewFlex()
+	subFlex.SetDirection(cui.FlexRow)
 	subFlex.AddItem(demoBox("Top"), 0, 1, false)
 	subFlex.AddItem(demoBox("Middle (3 x height of Top)"), 0, 3, false)
 	subFlex.AddItem(demoBox("Bottom (5 rows)"), 5, 1, false)
 
-	flex := cview.NewFlex()
+	flex := cui.NewFlex()
 	flex.AddItem(demoBox("Left (1/2 x width of Top)"), 0, 1, false)
 	flex.AddItem(subFlex, 0, 2, false)
 	flex.AddItem(demoBox("Right (20 cols)"), 20, 1, false)

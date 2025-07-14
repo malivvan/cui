@@ -1,4 +1,4 @@
-package cview
+package cui
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func ExampleNewApplication() {
 	// Create about layout using Grid.
 	aboutTextView := NewTextView()
 	aboutTextView.SetTextAlign(AlignCenter)
-	aboutTextView.SetText("cview muti-layout application example\n\nhttps://codeberg.org/tslocum/cview")
+	aboutTextView.SetText("cview muti-layout application example\n\nhttps://github.com/malivvan/cui")
 
 	aboutLayout := NewGrid()
 	aboutLayout.AddItem(aboutTextView, 0, 0, 1, 1, 0, 0, false)

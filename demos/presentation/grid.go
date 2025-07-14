@@ -1,18 +1,18 @@
 package main
 
 import (
-	"codeberg.org/tslocum/cview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/malivvan/cui"
 )
 
 // Grid demonstrates the grid layout.
-func Grid(nextSlide func()) (title string, info string, content cview.Primitive) {
+func Grid(nextSlide func()) (title string, info string, content cui.Primitive) {
 	modalShown := false
-	panels := cview.NewPanels()
+	panels := cui.NewPanels()
 
-	newPrimitive := func(text string) cview.Primitive {
-		tv := cview.NewTextView()
-		tv.SetTextAlign(cview.AlignCenter)
+	newPrimitive := func(text string) cui.Primitive {
+		tv := cui.NewTextView()
+		tv.SetTextAlign(cui.AlignCenter)
 		tv.SetText(text)
 		tv.SetDoneFunc(func(key tcell.Key) {
 			if modalShown {
@@ -30,7 +30,7 @@ func Grid(nextSlide func()) (title string, info string, content cview.Primitive)
 	main := newPrimitive("Main content")
 	sideBar := newPrimitive("Side Bar")
 
-	grid := cview.NewGrid()
+	grid := cui.NewGrid()
 	grid.SetRows(3, 0, 3)
 	grid.SetColumns(0, -4, 0)
 	grid.SetBorders(true)
@@ -47,7 +47,7 @@ func Grid(nextSlide func()) (title string, info string, content cview.Primitive)
 	grid.AddItem(main, 1, 1, 1, 1, 0, 100, false)
 	grid.AddItem(sideBar, 1, 2, 1, 1, 0, 100, false)
 
-	modal := cview.NewModal()
+	modal := cui.NewModal()
 	modal.SetText("Resize the window to see how the grid layout adapts")
 	modal.AddButtons([]string{"Ok"})
 	modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {

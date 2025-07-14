@@ -2,16 +2,16 @@
 package main
 
 import (
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	checkbox := cview.NewCheckBox()
+	checkbox := cui.NewCheckBox()
 	checkbox.SetLabel("Hit Enter to check box: ")
 
 	app.SetRoot(checkbox, true)

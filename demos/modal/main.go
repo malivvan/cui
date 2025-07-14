@@ -2,16 +2,16 @@
 package main
 
 import (
-	"codeberg.org/tslocum/cview"
+	"github.com/malivvan/cui"
 )
 
 func main() {
-	app := cview.NewApplication()
+	app := cui.NewApplication()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
 
-	modal := cview.NewModal()
+	modal := cui.NewModal()
 	modal.SetText("Do you want to quit the application?")
 	modal.AddButtons([]string{"Quit", "Cancel"})
 	modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {

@@ -3,4 +3,4 @@ dist/
 tmp/
 vendor/
 *.sh
-cview.test
+cui.test
