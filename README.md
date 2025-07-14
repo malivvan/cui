@@ -87,3 +87,8 @@ This package is based on [github.com/gdamore/tcell](https://github.com/gdamore/t
 
 [CONTRIBUTING.md](https://github.com/malivvan/cui/src/branch/master/CONTRIBUTING.md) describes how to share
 issues, suggestions and patches (pull requests).
+
+## Packages
+- / [codeberg.org/tslocum/cview](https://codeberg.org/tslocum/cview/src/commit/242e7c1f1b61a4b3722a1afb45ca1165aefa9a59)
+- /bind.go [codeberg.org/tslocum/cbind](https://codeberg.org/tslocum/cbind/src/commit/5cd49d3cfccbe4eefaab8a5282826aa95100aa42)
+- /vte/ [git.sr.ht/~rockorager/tcell-term](https://git.sr.ht/~rockorager/tcell-term/refs/v0.10.0)
