@@ -21,7 +21,7 @@ var _ = Describe("Utils", func() {
 			}
 
 			for _, test := range tests {
-				Expect(tvxwidgets.GetColorName(test.color)).To(Equal(test.colorName))
+				Expect(chart.GetColorName(test.color)).To(Equal(test.colorName))
 			}
 		})
 	})
@@ -38,7 +38,7 @@ var _ = Describe("Utils", func() {
 			}
 
 			for _, test := range tests {
-				Expect(tvxwidgets.GetMessageWidth(test.msg)).To(Equal(test.width))
+				Expect(chart.GetMessageWidth(test.msg)).To(Equal(test.width))
 			}
 		})
 	})
@@ -61,7 +61,7 @@ var _ = Describe("Utils", func() {
 			}
 
 			for _, test := range tests {
-				Expect(tvxwidgets.GetMaxFloat64From2dSlice(test.have)).To(Equal(test.wants))
+				Expect(chart.GetMaxFloat64From2dSlice(test.have)).To(Equal(test.wants))
 			}
 		})
 	})
@@ -78,7 +78,7 @@ var _ = Describe("Utils", func() {
 			}
 
 			for _, test := range tests {
-				Expect(tvxwidgets.GetMaxFloat64FromSlice(test.have)).To(Equal(test.wants))
+				Expect(chart.GetMaxFloat64FromSlice(test.have)).To(Equal(test.wants))
 			}
 		})
 	})
@@ -95,7 +95,7 @@ var _ = Describe("Utils", func() {
 			}
 
 			for _, test := range tests {
-				Expect(tvxwidgets.AbsInt(test.have)).To(Equal(test.wants))
+				Expect(chart.AbsInt(test.have)).To(Equal(test.wants))
 			}
 		})
 	})
@@ -113,7 +113,7 @@ var _ = Describe("Utils", func() {
 			screen.Clear()
 
 			// draw and test horizental line
-			tvxwidgets.DrawLine(screen, lineStartX, lineStartY, lineLenght, 0, tcell.StyleDefault)
+			chart.DrawLine(screen, lineStartX, lineStartY, lineLenght, 0, tcell.ColorDefault)
 			screen.Show()
 
 			cellRune, _, _, _ := screen.GetContent(lineStartX, lineStartY)
@@ -121,7 +121,7 @@ var _ = Describe("Utils", func() {
 
 			// draw and test vertical line
 			screen.Clear()
-			tvxwidgets.DrawLine(screen, lineStartX, lineStartY, lineLenght, 1, tcell.StyleDefault)
+			chart.DrawLine(screen, lineStartX, lineStartY, lineLenght, 1, tcell.ColorDefault)
 			screen.Show()
 
 			cellRune, _, _, _ = screen.GetContent(lineStartX, lineStartY)

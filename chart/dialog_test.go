@@ -12,14 +12,15 @@ var _ = Describe("Dialog", Ordered, func() {
 	var (
 		app       *cui.Application
 		headerBox *cui.Box
-		msgDialog *tvxwidgets.MessageDialog
+		msgDialog *chart.MessageDialog
 		screen    tcell.SimulationScreen
 	)
 
 	BeforeAll(func() {
 		app = cui.NewApplication()
-		headerBox = cui.NewBox().SetBorder(true)
-		msgDialog = tvxwidgets.NewMessageDialog(tvxwidgets.InfoDialog)
+		headerBox = cui.NewBox()
+		headerBox.SetBorder(true)
+		msgDialog = chart.NewMessageDialog(chart.InfoDialog)
 		screen = tcell.NewSimulationScreen("UTF-8")
 
 		if err := screen.Init(); err != nil {
@@ -27,10 +28,13 @@ var _ = Describe("Dialog", Ordered, func() {
 		}
 
 		go func() {
-			appLayout := cui.NewFlex().SetDirection(cui.FlexRow)
+			appLayout := cui.NewFlex()
+			appLayout.SetDirection(cui.FlexRow)
 			appLayout.AddItem(headerBox, 0, 1, true)
 			appLayout.AddItem(msgDialog, 0, 1, true)
-			err := app.SetScreen(screen).SetRoot(appLayout, true).Run()
+			app.SetScreen(screen)
+			app.SetRoot(appLayout, true)
+			err := app.Run()
 			if err != nil {
 				panic(err)
 			}
@@ -47,8 +51,8 @@ var _ = Describe("Dialog", Ordered, func() {
 				msgType int
 				bgColor tcell.Color
 			}{
-				{msgType: tvxwidgets.InfoDialog, bgColor: tcell.ColorSteelBlue},
-				{msgType: tvxwidgets.ErrorDailog, bgColor: tcell.ColorOrangeRed},
+				{msgType: chart.InfoDialog, bgColor: tcell.ColorSteelBlue},
+				{msgType: chart.ErrorDailog, bgColor: tcell.ColorOrangeRed},
 			}
 
 			for _, test := range tests {

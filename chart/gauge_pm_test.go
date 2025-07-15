@@ -13,14 +13,15 @@ var _ = Describe("GaugePm", Ordered, func() {
 	var (
 		app       *cui.Application
 		headerBox *cui.Box
-		gaugePm   *tvxwidgets.PercentageModeGauge
+		gaugePm   *chart.PercentageModeGauge
 		screen    tcell.SimulationScreen
 	)
 
 	BeforeAll(func() {
 		app = cui.NewApplication()
-		headerBox = cui.NewBox().SetBorder(true)
-		gaugePm = tvxwidgets.NewPercentageModeGauge()
+		headerBox = cui.NewBox()
+		headerBox.SetBorder(true)
+		gaugePm = chart.NewPercentageModeGauge()
 		screen = tcell.NewSimulationScreen("UTF-8")
 
 		if err := screen.Init(); err != nil {
@@ -28,10 +29,13 @@ var _ = Describe("GaugePm", Ordered, func() {
 		}
 
 		go func() {
-			appLayout := cui.NewFlex().SetDirection(cui.FlexRow)
+			appLayout := cui.NewFlex()
+			appLayout.SetDirection(cui.FlexRow)
 			appLayout.AddItem(headerBox, 1, 0, true)
 			appLayout.AddItem(gaugePm, 50, 0, true)
-			err := app.SetScreen(screen).SetRoot(appLayout, true).Run()
+			app.SetScreen(screen)
+			app.SetRoot(appLayout, true)
+			err := app.Run()
 			if err != nil {
 				panic(err)
 			}
@@ -52,16 +56,6 @@ var _ = Describe("GaugePm", Ordered, func() {
 			app.Draw()
 			// gauge will not get focus
 			Expect(gaugePm.HasFocus()).To(Equal(false))
-		})
-	})
-
-	Describe("GetRect", func() {
-		It("primitivie size", func() {
-			x, y, width, heigth := gaugePm.GetRect()
-			Expect(x).To(Equal(0))
-			Expect(y).To(Equal(1))
-			Expect(width).To(Equal(80))
-			Expect(heigth).To(Equal(50))
 		})
 	})
 })

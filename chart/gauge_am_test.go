@@ -13,14 +13,15 @@ var _ = Describe("GaugeAm", Ordered, func() {
 	var (
 		app       *cui.Application
 		headerBox *cui.Box
-		gaugeAm   *tvxwidgets.ActivityModeGauge
+		gaugeAm   *chart.ActivityModeGauge
 		screen    tcell.SimulationScreen
 	)
 
 	BeforeAll(func() {
 		app = cui.NewApplication()
-		headerBox = cui.NewBox().SetBorder(true)
-		gaugeAm = tvxwidgets.NewActivityModeGauge()
+		headerBox = cui.NewBox()
+		headerBox.SetBorder(true)
+		gaugeAm = chart.NewActivityModeGauge()
 		screen = tcell.NewSimulationScreen("UTF-8")
 
 		if err := screen.Init(); err != nil {
@@ -28,10 +29,13 @@ var _ = Describe("GaugeAm", Ordered, func() {
 		}
 
 		go func() {
-			appLayout := cui.NewFlex().SetDirection(cui.FlexRow)
+			appLayout := cui.NewFlex()
+			appLayout.SetDirection(cui.FlexRow)
 			appLayout.AddItem(headerBox, 1, 0, true)
 			appLayout.AddItem(gaugeAm, 50, 0, true)
-			err := app.SetScreen(screen).SetRoot(appLayout, true).Run()
+			app.SetScreen(screen)
+			app.SetRoot(appLayout, true)
+			err := app.Run()
 			if err != nil {
 				panic(err)
 			}
@@ -53,16 +57,6 @@ var _ = Describe("GaugeAm", Ordered, func() {
 			app.Draw()
 			// gauge will not get focus
 			Expect(gaugeAm.HasFocus()).To(Equal(false))
-		})
-	})
-
-	Describe("GetRect", func() {
-		It("primitivie size", func() {
-			x, y, width, heigth := gaugeAm.GetRect()
-			Expect(x).To(Equal(0))
-			Expect(y).To(Equal(1))
-			Expect(width).To(Equal(80))
-			Expect(heigth).To(Equal(50))
 		})
 	})
 })

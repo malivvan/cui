@@ -3,12 +3,11 @@ package chart
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/malivvan/cui"
-	"github.com/rivo/tview"
 )
 
 // Spinner represents a spinner widget.
 type Spinner struct {
-	*tview.Box
+	*cui.Box
 
 	counter      int
 	currentStyle SpinnerStyle
@@ -31,7 +30,9 @@ func (s *Spinner) InputHandler() func(event *tcell.EventKey, setFocus func(p cui
 }
 
 func (s *Spinner) Focus(delegate func(p cui.Primitive)) {
-
+	// Spinner does not take focus, but we implement this method to satisfy the Focusable interface.
+	// If you want to use the spinner in a focusable context, you can delegate focus to another primitive.
+	delegate(s)
 }
 
 func (s *Spinner) GetFocusable() cui.Focusable {
@@ -69,7 +70,7 @@ const (
 // NewSpinner returns a new spinner widget.
 func NewSpinner() *Spinner {
 	return &Spinner{
-		Box:          tview.NewBox(),
+		Box:          cui.NewBox(),
 		currentStyle: SpinnerDotsCircling,
 		styles: map[SpinnerStyle][]rune{
 			SpinnerDotsCircling:   []rune(`⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏`),
@@ -95,7 +96,7 @@ func NewSpinner() *Spinner {
 func (s *Spinner) Draw(screen tcell.Screen) {
 	s.Box.Draw(screen)
 	x, y, width, _ := s.Box.GetInnerRect()
-	tview.Print(screen, s.getCurrentFrame(), x, y, width, tview.AlignLeft, tcell.ColorDefault)
+	cui.Print(screen, []byte(s.getCurrentFrame()), x, y, width, cui.AlignLeft, tcell.ColorDefault)
 }
 
 // Pulse updates the spinner to the next frame.
