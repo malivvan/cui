@@ -93,3 +93,4 @@ issues, suggestions and patches (pull requests).
 - /bind.go [codeberg.org/tslocum/cbind](https://codeberg.org/tslocum/cbind/src/commit/5cd49d3cfccbe4eefaab8a5282826aa95100aa42)
 - /vte/ [git.sr.ht/~rockorager/tcell-term](https://git.sr.ht/~rockorager/tcell-term/refs/v0.10.0)
 - /femto/ [github.com/wellcomez/femto](https://github.com/wellcomez/femto/tree/8413a0288bcb042fd0de5cbbcb9893c16a01ee69)
+- /chart/ [github.com/navidys/tvxwidgets](https://github.com/navidys/tvxwidgets/commit/96bcc0450684693eebd4f8e3e95fcc40eae2dbaa)

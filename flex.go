@@ -85,6 +85,13 @@ func (f *Flex) SetFullScreen(fullScreen bool) {
 	f.fullScreen = fullScreen
 }
 
+func (f *Flex) Clear() {
+	f.Lock()
+	defer f.Unlock()
+
+	f.items = nil
+}
+
 // AddItem adds a new item to the container. The "fixedSize" argument is a width
 // or height that may not be changed by the layout algorithm. A value of 0 means
 // that its size is flexible and may be changed. The "proportion" argument
