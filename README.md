@@ -1,4 +1,4 @@
-# ![test](https://github.com/malivvan/cui/workflows/test/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/malivvan/cui)](https://goreportcard.com/report/github.com/malivvan/cui) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+# cui [![Go Reference](https://pkg.go.dev/badge/github.com/malivvan/cui)](https://pkg.go.dev/github.com/malivvan/cui) ![test](https://github.com/malivvan/cui/workflows/test/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/malivvan/cui)](https://goreportcard.com/report/github.com/malivvan/cui) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 cui is a terminal ui library based on the tview fork cview. 
 
 ## Packages
