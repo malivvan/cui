@@ -5,12 +5,12 @@ go 1.25.0
 require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/creack/pty v1.1.24
-	github.com/gdamore/tcell/v2 v2.8.1
+	github.com/gdamore/tcell/v2 v2.9.0
 	github.com/lucasb-eyer/go-colorful v1.2.0
 	github.com/mattn/go-runewidth v0.0.16
 	github.com/rivo/uniseg v0.4.7
 	github.com/sergi/go-diff v1.4.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 )
 
 require (
