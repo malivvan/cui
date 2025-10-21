@@ -27,9 +27,6 @@ func main() {
 	w2.SetRect(7, 4, 12, 12)
 
 	w1.SetTitle("List")
-	w1.AddButton('■', cui.AlignRight, func(w *cui.Window, b *cui.WindowButton) {
-		w1.SetFullscreen(true)
-	})
 	w2.SetTitle("Lorem Ipsum")
 
 	wm.Add(w1, w2)
