@@ -2,16 +2,15 @@ package vte
 
 import (
 	"fmt"
-	"github.com/creack/pty"
-	"github.com/gdamore/tcell/v2"
-	"github.com/mattn/go-runewidth"
 	"io"
 	"log"
-	"os"
-	"os/exec"
 	"runtime/debug"
 	"strings"
 	"sync"
+
+	"github.com/gdamore/tcell/v2"
+	"github.com/malivvan/cui/vte/pty"
+	"github.com/mattn/go-runewidth"
 )
 
 type (
@@ -47,11 +46,11 @@ type VT struct {
 	primaryState cursorState
 	altState     cursorState
 
-	cmd          *exec.Cmd
+	opt          *pty.Options
 	dirty        bool
 	eventHandler func(tcell.Event)
 	parser       *Parser
-	pty          *os.File
+	pty          *pty.Pty
 	surface      Surface
 	events       chan tcell.Event
 
@@ -121,11 +120,8 @@ func New() *VT {
 
 // Start starts the terminal with the specified command. Start returns when the
 // command has been successfully started.
-func (vt *VT) Start(cmd *exec.Cmd) error {
-	if cmd == nil {
-		return fmt.Errorf("no command to run")
-	}
-	vt.cmd = cmd
+func (vt *VT) Start(opt pty.Options) error {
+	vt.opt = &opt
 	vt.mu.Lock()
 	w, h := vt.surface.Size()
 	vt.mu.Unlock()
@@ -133,20 +129,15 @@ func (vt *VT) Start(cmd *exec.Cmd) error {
 	if vt.TERM == "" {
 		vt.TERM = "xterm-256color"
 	}
-
-	env := os.Environ()
-	if cmd.Env != nil {
-		env = cmd.Env
-	}
-	cmd.Env = append(env, "TERM="+vt.TERM)
+	opt.Env = append(opt.Env, "TERM="+vt.TERM)
 
 	// Start the command with a pty.
 	var err error
-	winsize := pty.Winsize{
+	vt.opt.Size = &pty.WinSize{
 		Cols: uint16(w),
 		Rows: uint16(h),
 	}
-	vt.pty, err = pty.StartWithAttrs(cmd, &winsize, sysProcAttr)
+	vt.pty, err = pty.OpenWithOptions(vt.opt)
 	if err != nil {
 		return err
 	}
@@ -291,7 +282,7 @@ func (vt *VT) Resize(w int, h int) {
 		vt.activeScreen = vt.altScreen
 	}
 
-	_ = pty.Setsize(vt.pty, &pty.Winsize{
+	vt.pty.SetSize(&pty.WinSize{
 		Cols: uint16(w),
 		Rows: uint16(h),
 	})
@@ -417,10 +408,12 @@ func (vt *VT) scrollDown(n int) {
 func (vt *VT) Close() {
 	vt.mu.Lock()
 	defer vt.mu.Unlock()
-	if vt.cmd != nil && vt.cmd.Process != nil {
-		vt.cmd.Process.Kill()
-		vt.cmd.Wait()
-	}
+	//vt.pty.
+	//if vt.cmd != nil && vt.cmd.Process != nil {
+	//	vt.cmd.Process.Kill()
+	//	vt.cmd.Wait()
+	//}
+	vt.pty.Kill()
 	vt.pty.Close()
 }
 
@@ -481,22 +474,22 @@ func (vt *VT) HandleEvent(e tcell.Event) bool {
 	defer vt.mu.Unlock()
 	switch e := e.(type) {
 	case *tcell.EventKey:
-		vt.pty.WriteString(keyCode(e))
+		vt.pty.Write([]byte(keyCode(e)))
 		return true
 	case *tcell.EventPaste:
 		switch {
 		case vt.mode&paste == 0:
 			return false
 		case e.Start():
-			vt.pty.WriteString(info.PasteStart)
+			vt.pty.Write([]byte(info.PasteStart))
 			return true
 		case e.End():
-			vt.pty.WriteString(info.PasteEnd)
+			vt.pty.Write([]byte(info.PasteEnd))
 			return true
 		}
 	case *tcell.EventMouse:
 		str := vt.handleMouse(e)
-		vt.pty.WriteString(str)
+		vt.pty.Write([]byte(str))
 	}
 	return false
 }

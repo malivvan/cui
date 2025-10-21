@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
+	"runtime"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/views"
 	tcellterm "github.com/malivvan/cui/vte"
+	"github.com/malivvan/cui/vte/pty"
 )
 
 type model struct {
@@ -129,8 +130,17 @@ func main() {
 	m.term.Logger = log.New(f, "", log.Flags())
 	m.s.EnableMouse()
 
-	cmd := exec.Command(os.Getenv("SHELL"))
-	err = m.term.Start(cmd)
+	cmd := os.Getenv("SHELL")
+	if cmd == "" {
+		if runtime.GOOS == "windows" {
+			cmd = "cmd.exe"
+		} else {
+			cmd = "bash"
+		}
+	}
+	err = m.term.Start(pty.Options{
+		Path: cmd,
+	})
 	if err != nil {
 		panic(err)
 	}

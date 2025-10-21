@@ -1,11 +1,12 @@
 package vte
 
 import (
+	"sync"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/views"
 	"github.com/malivvan/cui"
-	"os/exec"
-	"sync"
+	"github.com/malivvan/cui/vte/pty"
 )
 
 type Terminal struct {
@@ -13,7 +14,7 @@ type Terminal struct {
 
 	term    *VT
 	running bool
-	cmd     *exec.Cmd
+	opt     pty.Options
 	app     *cui.Application
 	w       int
 	h       int
@@ -21,12 +22,12 @@ type Terminal struct {
 	sync.RWMutex
 }
 
-func NewTerminal(app *cui.Application, cmd *exec.Cmd) *Terminal {
+func NewTerminal(app *cui.Application, opt pty.Options) *Terminal {
 	t := &Terminal{
 		Box:  cui.NewBox(),
 		term: New(),
 		app:  app,
-		cmd:  cmd,
+		opt:  opt,
 	}
 	return t
 }
@@ -49,7 +50,7 @@ func (t *Terminal) Draw(s tcell.Screen) {
 	}
 
 	if !t.running {
-		err := t.term.Start(t.cmd)
+		err := t.term.Start(t.opt)
 		if err != nil {
 			panic(err)
 		}

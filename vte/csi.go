@@ -78,7 +78,7 @@ func (vt *VT) csi(csi string, params []int) {
 		resp.WriteString("22")
 		// Response terminator
 		resp.WriteString("c")
-		vt.pty.WriteString(resp.String())
+		vt.pty.Write([]byte(resp.String()))
 	case "d":
 		vt.vpa(ps(params))
 	case "e":
@@ -103,13 +103,13 @@ func (vt *VT) csi(csi string, params []int) {
 		switch ps(params) {
 		case 5:
 			// "Ok"
-			vt.pty.WriteString("\x1B[0n")
+			vt.pty.Write([]byte("\x1B[0n"))
 		case 6:
 			// report cursor position
 			// This sequence can be identical to a function key?
 			// CSI r ; c R
 			resp := fmt.Sprintf("\x1B[%d;%dR", vt.cursor.row+1, vt.cursor.col+1)
-			vt.pty.WriteString(resp)
+			vt.pty.Write([]byte(resp))
 		}
 	case "r":
 		vt.decstbm(params)
