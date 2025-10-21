@@ -216,7 +216,7 @@ type TextView struct {
 	// highlighted.
 	highlighted func(added, removed, remaining []string)
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewTextView returns a new text view.
@@ -241,43 +241,47 @@ func NewTextView() *TextView {
 // SetScrollable sets the flag that decides whether or not the text view is
 // scrollable. If true, text is kept in a buffer and can be navigated. If false,
 // the last line will always be visible.
-func (t *TextView) SetScrollable(scrollable bool) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetScrollable(scrollable bool) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.scrollable = scrollable
 	if !scrollable {
 		t.trackEnd = true
 	}
+	return t
 }
 
 // SetScrollBarVisibility specifies the display of the scroll bar.
-func (t *TextView) SetScrollBarVisibility(visibility ScrollBarVisibility) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetScrollBarVisibility(visibility ScrollBarVisibility) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.scrollBarVisibility = visibility
+	return t
 }
 
 // SetScrollBarColor sets the color of the scroll bar.
-func (t *TextView) SetScrollBarColor(color tcell.Color) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetScrollBarColor(color tcell.Color) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.scrollBarColor = color
+	return t
 }
 
 // SetWrap sets the flag that, if true, leads to lines that are longer than the
 // available width being wrapped onto the next line. If false, any characters
 // beyond the available width are not displayed.
-func (t *TextView) SetWrap(wrap bool) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetWrap(wrap bool) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if t.wrap != wrap {
 		t.index = nil
 	}
 	t.wrap = wrap
+	return t
 }
 
 // SetWordWrap sets the flag that, if true and if the "wrap" flag is also true
@@ -285,87 +289,95 @@ func (t *TextView) SetWrap(wrap bool) {
 // that trailing spaces will not be printed.
 //
 // This flag is ignored if the "wrap" flag is false.
-func (t *TextView) SetWordWrap(wrapOnWords bool) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetWordWrap(wrapOnWords bool) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if t.wordWrap != wrapOnWords {
 		t.index = nil
 	}
 	t.wordWrap = wrapOnWords
+	return t
 }
 
 // SetTextAlign sets the horizontal alignment of the text. This must be either
 // AlignLeft, AlignCenter, or AlignRight.
-func (t *TextView) SetTextAlign(align int) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetTextAlign(align int) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if t.align != align {
 		t.index = nil
 	}
 	t.align = align
+	return t
 }
 
 // SetVerticalAlign sets the vertical alignment of the text. This must be
 // either AlignTop, AlignMiddle, or AlignBottom.
-func (t *TextView) SetVerticalAlign(valign VerticalAlignment) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetVerticalAlign(valign VerticalAlignment) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if t.valign != valign {
 		t.index = nil
 	}
 	t.valign = valign
+	return t
 }
 
 // SetTextColor sets the initial color of the text (which can be changed
 // dynamically by sending color strings in square brackets to the text view if
 // dynamic colors are enabled).
-func (t *TextView) SetTextColor(color tcell.Color) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetTextColor(color tcell.Color) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.textColor = color
+	return t
 }
 
 // SetHighlightForegroundColor sets the foreground color of highlighted text.
-func (t *TextView) SetHighlightForegroundColor(color tcell.Color) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetHighlightForegroundColor(color tcell.Color) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.highlightForeground = color
+	return t
 }
 
 // SetHighlightBackgroundColor sets the foreground color of highlighted text.
-func (t *TextView) SetHighlightBackgroundColor(color tcell.Color) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetHighlightBackgroundColor(color tcell.Color) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.highlightBackground = color
+	return t
 }
 
 // SetBytes sets the text of this text view to the provided byte slice.
 // Previously contained text will be removed.
-func (t *TextView) SetBytes(text []byte) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetBytes(text []byte) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.clear()
 	t.write(text)
+	return t
 }
 
 // SetText sets the text of this text view to the provided string. Previously
 // contained text will be removed.
-func (t *TextView) SetText(text string) {
+func (t *TextView) SetText(text string) *TextView {
 	t.SetBytes([]byte(text))
+	return t
 }
 
 // GetBytes returns the current text of this text view. If "stripTags" is set
 // to true, any region/color tags are stripped from the text.
 func (t *TextView) GetBytes(stripTags bool) []byte {
-	t.RLock()
-	defer t.RUnlock()
+	t.mu.RLock()
+	defer t.mu.RUnlock()
 
 	if !stripTags {
 		if len(t.recentBytes) > 0 {
@@ -387,34 +399,36 @@ func (t *TextView) GetText(stripTags bool) string {
 // GetBufferSize returns the number of lines and the length of the longest line
 // in the text buffer. The screen size of the widget is available via GetRect.
 func (t *TextView) GetBufferSize() (rows int, maxLen int) {
-	t.RLock()
-	defer t.RUnlock()
+	t.mu.RLock()
+	defer t.mu.RUnlock()
 
 	return len(t.buffer), t.longestLine
 }
 
 // SetDynamicColors sets the flag that allows the text color to be changed
 // dynamically. See class description for details.
-func (t *TextView) SetDynamicColors(dynamic bool) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetDynamicColors(dynamic bool) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if t.dynamicColors != dynamic {
 		t.index = nil
 	}
 	t.dynamicColors = dynamic
+	return t
 }
 
 // SetRegions sets the flag that allows to define regions in the text. See class
 // description for details.
-func (t *TextView) SetRegions(regions bool) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetRegions(regions bool) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if t.regions != regions {
 		t.index = nil
 	}
 	t.regions = regions
+	return t
 }
 
 // SetChangedFunc sets a handler function which is called when the text of the
@@ -433,21 +447,23 @@ func (t *TextView) SetRegions(regions bool) {
 //     Application.QueueUpdate().
 //
 // See package description for details on dealing with concurrency.
-func (t *TextView) SetChangedFunc(handler func()) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetChangedFunc(handler func()) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.changed = handler
+	return t
 }
 
 // SetDoneFunc sets a handler which is called when the user presses on the
 // following keys: Escape, Enter, Tab, Backtab. The key is passed to the
 // handler.
-func (t *TextView) SetDoneFunc(handler func(key tcell.Key)) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetDoneFunc(handler func(key tcell.Key)) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.done = handler
+	return t
 }
 
 // SetHighlightedFunc sets a handler which is called when the list of currently
@@ -457,8 +473,9 @@ func (t *TextView) SetDoneFunc(handler func(key tcell.Key)) {
 //
 // Note that because regions are only determined during drawing, this function
 // can only fire for regions that have existed during the last call to Draw().
-func (t *TextView) SetHighlightedFunc(handler func(added, removed, remaining []string)) {
+func (t *TextView) SetHighlightedFunc(handler func(added, removed, remaining []string)) *TextView {
 	t.highlighted = handler
+	return t
 }
 
 func (t *TextView) clipBuffer() {
@@ -474,15 +491,16 @@ func (t *TextView) clipBuffer() {
 
 // SetMaxLines sets the maximum number of newlines the text view will hold
 // before discarding older data from the buffer.
-func (t *TextView) SetMaxLines(maxLines int) {
+func (t *TextView) SetMaxLines(maxLines int) *TextView {
 	t.maxLines = maxLines
 	t.clipBuffer()
+	return t
 }
 
 // ScrollTo scrolls to the specified row and column (both starting with 0).
 func (t *TextView) ScrollTo(row, column int) {
-	t.Lock()
-	defer t.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if !t.scrollable {
 		return
@@ -495,8 +513,8 @@ func (t *TextView) ScrollTo(row, column int) {
 // ScrollToBeginning scrolls to the top left corner of the text if the text view
 // is scrollable.
 func (t *TextView) ScrollToBeginning() {
-	t.Lock()
-	defer t.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if !t.scrollable {
 		return
@@ -510,8 +528,8 @@ func (t *TextView) ScrollToBeginning() {
 // is scrollable. Adding new rows to the end of the text view will cause it to
 // scroll with the new data.
 func (t *TextView) ScrollToEnd() {
-	t.Lock()
-	defer t.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if !t.scrollable {
 		return
@@ -523,16 +541,16 @@ func (t *TextView) ScrollToEnd() {
 // GetScrollOffset returns the number of rows and columns that are skipped at
 // the top left corner when the text view has been scrolled.
 func (t *TextView) GetScrollOffset() (row, column int) {
-	t.RLock()
-	defer t.RUnlock()
+	t.mu.RLock()
+	defer t.mu.RUnlock()
 
 	return t.lineOffset, t.columnOffset
 }
 
 // Clear removes all text from the buffer.
 func (t *TextView) Clear() {
-	t.Lock()
-	defer t.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.clear()
 }
@@ -558,7 +576,7 @@ func (t *TextView) clear() {
 // Text in highlighted regions will be drawn inverted, i.e. with their
 // background and foreground colors swapped.
 func (t *TextView) Highlight(regionIDs ...string) {
-	t.Lock()
+	t.mu.Lock()
 
 	// Toggle highlights.
 	if t.toggleHighlights {
@@ -608,17 +626,17 @@ func (t *TextView) Highlight(regionIDs ...string) {
 
 	// Notify.
 	if t.highlighted != nil && (len(added) > 0 || len(removed) > 0) {
-		t.Unlock()
+		t.mu.Unlock()
 		t.highlighted(added, removed, remaining)
 	} else {
-		t.Unlock()
+		t.mu.Unlock()
 	}
 }
 
 // GetHighlights returns the IDs of all currently highlighted regions.
 func (t *TextView) GetHighlights() (regionIDs []string) {
-	t.RLock()
-	defer t.RUnlock()
+	t.mu.RLock()
+	defer t.mu.RUnlock()
 
 	for id := range t.highlights {
 		regionIDs = append(regionIDs, id)
@@ -630,8 +648,9 @@ func (t *TextView) GetHighlights() (regionIDs []string) {
 // When set to true, the Highlight() function (or a mouse click) will toggle the
 // provided/selected regions. When set to false, Highlight() (or a mouse click)
 // will simply highlight the provided regions.
-func (t *TextView) SetToggleHighlights(toggle bool) {
+func (t *TextView) SetToggleHighlights(toggle bool) *TextView {
 	t.toggleHighlights = toggle
+	return t
 }
 
 // ScrollToHighlight will cause the visible area to be scrolled so that the
@@ -643,8 +662,8 @@ func (t *TextView) SetToggleHighlights(toggle bool) {
 // Nothing happens if there are no highlighted regions or if the text view is
 // not scrollable.
 func (t *TextView) ScrollToHighlight() {
-	t.Lock()
-	defer t.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	if len(t.highlights) == 0 || !t.scrollable || !t.regions {
 		return
@@ -661,8 +680,8 @@ func (t *TextView) ScrollToHighlight() {
 // If the region does not exist or if regions are turned off, an empty string
 // is returned.
 func (t *TextView) GetRegionText(regionID string) string {
-	t.RLock()
-	defer t.RUnlock()
+	t.mu.RLock()
+	defer t.mu.RUnlock()
 
 	if !t.regions || len(regionID) == 0 {
 		return ""
@@ -736,8 +755,8 @@ func (t *TextView) GetRegionText(regionID string) string {
 
 // Focus is called when this primitive receives focus.
 func (t *TextView) Focus(delegate func(p Primitive)) {
-	t.Lock()
-	defer t.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	// Implemented here with locking because this is used by layout primitives.
 	t.hasFocus = true
@@ -745,8 +764,8 @@ func (t *TextView) Focus(delegate func(p Primitive)) {
 
 // HasFocus returns whether or not this primitive has focus.
 func (t *TextView) HasFocus() bool {
-	t.RLock()
-	defer t.RUnlock()
+	t.mu.RLock()
+	defer t.mu.RUnlock()
 
 	// Implemented here with locking because this may be used in the "changed"
 	// callback.
@@ -757,13 +776,13 @@ func (t *TextView) HasFocus() bool {
 // replaced with TabSize space characters. A "\n" or "\r\n" will be interpreted
 // as a new line.
 func (t *TextView) Write(p []byte) (n int, err error) {
-	t.Lock()
+	t.mu.Lock()
 	changed := t.changed
 	if changed != nil {
 		// Notify at the end.
 		defer changed()
 	}
-	defer t.Unlock()
+	defer t.mu.Unlock()
 
 	return t.write(p)
 }
@@ -823,26 +842,28 @@ func (t *TextView) write(p []byte) (n int, err error) {
 
 // SetWrapWidth set the maximum width of lines when wrapping is enabled.
 // When set to 0 the width of the TextView is used.
-func (t *TextView) SetWrapWidth(width int) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetWrapWidth(width int) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.wrapWidth = width
+	return t
 }
 
 // SetReindexBuffer set a flag controlling whether the buffer is reindexed when
 // it is modified. This improves the performance of TextViews whose contents
 // always have line-breaks in the same location. This must be called after the
 // buffer has been indexed.
-func (t *TextView) SetReindexBuffer(reindex bool) {
-	t.Lock()
-	defer t.Unlock()
+func (t *TextView) SetReindexBuffer(reindex bool) *TextView {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	t.reindex = reindex
 
 	if reindex {
 		t.index = nil
 	}
+	return t
 }
 
 // reindexBuffer re-indexes the buffer such that we can use it to easily draw
@@ -1033,8 +1054,8 @@ func (t *TextView) Draw(screen tcell.Screen) {
 
 	t.Box.Draw(screen)
 
-	t.Lock()
-	defer t.Unlock()
+	t.mu.Lock()
+	defer t.mu.Unlock()
 
 	// Get the available size.
 	x, y, width, height := t.GetInnerRect()
@@ -1268,7 +1289,7 @@ func (t *TextView) Draw(screen tcell.Screen) {
 					if fg == tcell.ColorDefault {
 						fg = Styles.PrimaryTextColor
 						if fg == tcell.ColorDefault {
-							fg = tcell.ColorWhite.TrueColor()
+							fg = tcell.ColorWhite
 						}
 					}
 					if bg == tcell.ColorDefault {
@@ -1276,9 +1297,9 @@ func (t *TextView) Draw(screen tcell.Screen) {
 						c := colorful.Color{R: float64(r) / 255, G: float64(g) / 255, B: float64(b) / 255}
 						_, _, li := c.Hcl()
 						if li < .5 {
-							bg = tcell.ColorWhite.TrueColor()
+							bg = tcell.ColorWhite
 						} else {
-							bg = tcell.ColorBlack.TrueColor()
+							bg = tcell.ColorBlack
 						}
 					}
 					style = style.Foreground(fg).Background(bg)
@@ -1336,8 +1357,8 @@ func (t *TextView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 			return
 		}
 
-		t.Lock()
-		defer t.Unlock()
+		t.mu.Lock()
+		defer t.mu.Unlock()
 
 		if !t.scrollable {
 			return

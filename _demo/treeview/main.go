@@ -2,7 +2,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/gdamore/tcell/v2"
@@ -17,25 +17,25 @@ func main() {
 	app.EnableMouse(true)
 
 	rootDir := "."
-	root := cui.NewTreeNode(rootDir)
-	root.SetColor(tcell.ColorRed.TrueColor())
-	tree := cui.NewTreeView()
-	tree.SetRoot(root)
-	tree.SetCurrentNode(root)
+	root := cui.NewTreeNode(rootDir).
+		SetColor(tcell.ColorRed)
+	tree := cui.NewTreeView().
+		SetRoot(root).
+		SetCurrentNode(root)
 
 	// A helper function which adds the files and directories of the given path
 	// to the given target node.
 	add := func(target *cui.TreeNode, path string) {
-		files, err := ioutil.ReadDir(path)
+		files, err := os.ReadDir(path)
 		if err != nil {
 			panic(err)
 		}
 		for _, file := range files {
-			node := cui.NewTreeNode(file.Name())
-			node.SetReference(filepath.Join(path, file.Name()))
-			node.SetSelectable(file.IsDir())
+			node := cui.NewTreeNode(file.Name()).
+				SetReference(filepath.Join(path, file.Name())).
+				SetSelectable(file.IsDir())
 			if file.IsDir() {
-				node.SetColor(tcell.ColorGreen.TrueColor())
+				node.SetColor(tcell.ColorGreen)
 			}
 			target.AddChild(node)
 		}

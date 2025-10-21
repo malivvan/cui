@@ -12,7 +12,7 @@ type WindowManager struct {
 
 	windows []*Window
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewWindowManager returns a new window manager.
@@ -23,29 +23,30 @@ func NewWindowManager() *WindowManager {
 }
 
 // Add adds a window to the manager.
-func (wm *WindowManager) Add(w ...*Window) {
-	wm.Lock()
-	defer wm.Unlock()
+func (wm *WindowManager) Add(w ...*Window) *WindowManager {
+	wm.mu.Lock()
+	defer wm.mu.Unlock()
 
 	for _, window := range w {
 		window.SetBorder(true)
 	}
 
 	wm.windows = append(wm.windows, w...)
+	return wm
 }
 
 // Clear removes all windows from the manager.
 func (wm *WindowManager) Clear() {
-	wm.Lock()
-	defer wm.Unlock()
+	wm.mu.Lock()
+	defer wm.mu.Unlock()
 
 	wm.windows = nil
 }
 
 // Focus is called when this primitive receives focus.
 func (wm *WindowManager) Focus(delegate func(p Primitive)) {
-	wm.Lock()
-	defer wm.Unlock()
+	wm.mu.Lock()
+	defer wm.mu.Unlock()
 
 	if len(wm.windows) == 0 {
 		return
@@ -56,8 +57,8 @@ func (wm *WindowManager) Focus(delegate func(p Primitive)) {
 
 // HasFocus returns whether or not this primitive has focus.
 func (wm *WindowManager) HasFocus() bool {
-	wm.RLock()
-	defer wm.RUnlock()
+	wm.mu.RLock()
+	defer wm.mu.RUnlock()
 
 	for _, w := range wm.windows {
 		if w.HasFocus() {
@@ -74,8 +75,8 @@ func (wm *WindowManager) Draw(screen tcell.Screen) {
 		return
 	}
 
-	wm.RLock()
-	defer wm.RUnlock()
+	wm.mu.RLock()
+	defer wm.mu.RUnlock()
 
 	wm.Box.Draw(screen)
 
