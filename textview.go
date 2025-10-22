@@ -123,7 +123,7 @@ type TextView struct {
 	align int
 
 	// The vertical text alignment, one of AlignTop, AlignMiddle, or AlignBottom.
-	valign VerticalAlignment
+	valign int
 
 	// Information about visible regions as of the last call to Draw().
 	regionInfos []*textViewRegion
@@ -315,7 +315,7 @@ func (t *TextView) SetTextAlign(align int) *TextView {
 
 // SetVerticalAlign sets the vertical alignment of the text. This must be
 // either AlignTop, AlignMiddle, or AlignBottom.
-func (t *TextView) SetVerticalAlign(valign VerticalAlignment) *TextView {
+func (t *TextView) SetVerticalAlign(valign int) *TextView {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 

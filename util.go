@@ -28,12 +28,9 @@ const (
 	AlignRight
 )
 
-// VerticalAlignment represents vertical alignment.
-type VerticalAlignment int
-
 // Vertical alignment within a box.
 const (
-	AlignTop VerticalAlignment = iota
+	AlignTop int = iota
 	AlignMiddle
 	AlignBottom
 )
