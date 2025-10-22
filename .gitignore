@@ -4,3 +4,4 @@ tmp/
 vendor/
 *.sh
 cui.test
+recording.log

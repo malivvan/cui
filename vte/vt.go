@@ -282,10 +282,12 @@ func (vt *VT) Resize(w int, h int) {
 		vt.activeScreen = vt.altScreen
 	}
 
-	vt.pty.SetSize(&pty.WinSize{
-		Cols: uint16(w),
-		Rows: uint16(h),
-	})
+	if vt.pty != nil {
+		_ = vt.pty.SetSize(&pty.WinSize{
+			Cols: uint16(w),
+			Rows: uint16(h),
+		})
+	}
 }
 
 func (vt *VT) width() int {
