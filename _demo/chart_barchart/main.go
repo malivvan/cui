@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	barGraph := chart.NewBarChart()
 	barGraph.SetRect(4, 2, 50, 20)
 	barGraph.SetBorder(true)

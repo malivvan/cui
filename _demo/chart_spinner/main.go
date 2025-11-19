@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	grid := cui.NewGrid()
 	grid.SetBorder(true)
 	grid.SetTitle("Spinners")

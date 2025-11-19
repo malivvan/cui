@@ -15,14 +15,14 @@ type Terminal struct {
 	term    *VT
 	running bool
 	opt     pty.Options
-	app     *cui.Application
+	app     *cui.App
 	w       int
 	h       int
 
 	sync.RWMutex
 }
 
-func NewTerminal(app *cui.Application, opt pty.Options) *Terminal {
+func NewTerminal(app *cui.App, opt pty.Options) *Terminal {
 	t := &Terminal{
 		Box:  cui.NewBox(),
 		term: New(),

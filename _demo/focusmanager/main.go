@@ -16,7 +16,7 @@ func wrap(f func()) func(ev *tcell.EventKey) *tcell.EventKey {
 }
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)

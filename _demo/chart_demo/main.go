@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 
 	// spinners
 	spinners := []*chart.Spinner{

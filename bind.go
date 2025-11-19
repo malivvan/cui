@@ -21,7 +21,7 @@ const (
 // ErrInvalidKeyEvent is the error returned when encoding or decoding a key event fails.
 var ErrInvalidKeyEvent = errors.New("invalid key event")
 
-// UnifyEnterKeys is a flag that determines whether or not KPEnter (keypad
+// UnifyEnterKeys is a flag that determines whether KPEnter (keypad
 // enter) key events are interpreted as Enter key events. When enabled, Ctrl+J
 // key events are also interpreted as Enter key events.
 var UnifyEnterKeys = true

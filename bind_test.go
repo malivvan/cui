@@ -178,7 +178,7 @@ func ExampleNewBindConfig() {
 	c.SetKey(tcell.ModNone, tcell.KeyEscape, handleExit)
 
 	// Capture input. This will differ based on the framework in use (if any).
-	// When using tview or cview, call Application.SetInputCapture before calling
-	// Application.Run.
+	// When using tview or cview, call App.SetInputCapture before calling
+	// App.Run.
 	// app.SetInputCapture(c.Capture)
 }

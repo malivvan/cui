@@ -11,7 +11,7 @@ import (
 
 // Show a navigable tree view of the current directory.
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)

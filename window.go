@@ -76,7 +76,7 @@ func (w *Window) Blur() {
 	w.primitive.Blur()
 }
 
-// HasFocus returns whether or not this primitive has focus.
+// HasFocus returns whether this primitive has focus.
 func (w *Window) HasFocus() bool {
 	w.mu.RLock()
 	defer w.mu.RUnlock()

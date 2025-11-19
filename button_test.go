@@ -35,7 +35,7 @@ func TestButton(t *testing.T) {
 
 	app, err := newTestApp(b)
 	if err != nil {
-		t.Errorf("failed to initialize Application: %s", err)
+		t.Errorf("failed to initialize App: %s", err)
 	}
 
 	b.Draw(app.screen)

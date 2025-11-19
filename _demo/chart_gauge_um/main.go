@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	gauge := chart.NewUtilModeGauge()
 	gauge.SetLabel("cpu usage:")
 	gauge.SetLabelColor(tcell.ColorLightSkyBlue)

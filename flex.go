@@ -17,7 +17,7 @@ type flexItem struct {
 	Item       Primitive // The item to be positioned. May be nil for an empty item.
 	FixedSize  int       // The item's fixed size which may not be changed, 0 if it has no fixed size.
 	Proportion int       // The item's proportion.
-	Focus      bool      // Whether or not this item attracts the layout's focus.
+	Focus      bool      // Whether this item attracts the layout's focus.
 }
 
 // Flex is a basic implementation of the Flexbox layout. The contained
@@ -243,7 +243,7 @@ func (f *Flex) Focus(delegate func(p Primitive)) {
 	f.Unlock()
 }
 
-// HasFocus returns whether or not this primitive has focus.
+// HasFocus returns whether this primitive has focus.
 func (f *Flex) HasFocus() bool {
 	f.RLock()
 	defer f.RUnlock()

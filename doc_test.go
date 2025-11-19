@@ -9,7 +9,7 @@ import (
 // Example of an application with multiple layouts.
 func ExampleNewApplication() {
 	// Initialize application.
-	app := NewApplication()
+	app := New()
 	// HandleMessage panics gracefully.
 	defer app.HandlePanic()
 
@@ -72,7 +72,7 @@ func ExampleNewApplication() {
 // Example of an application with mouse support.
 func ExampleApplication_EnableMouse() {
 	// Initialize application.
-	app := NewApplication()
+	app := New()
 	// HandleMessage panics gracefully.
 	defer app.HandlePanic()
 

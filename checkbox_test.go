@@ -49,7 +49,7 @@ func TestCheckBox(t *testing.T) {
 
 	app, err := newTestApp(c)
 	if err != nil {
-		t.Errorf("failed to initialize Application: %s", err)
+		t.Errorf("failed to initialize App: %s", err)
 	}
 
 	c.Draw(app.screen)

@@ -31,7 +31,7 @@ func main() {
 
 	wm.Add(w1, w2)
 
-	app := cui.NewApplication()
+	app := cui.New()
 	app.SetRoot(wm, true)
 	app.EnableMouse(true)
 	if err := app.Run(); err != nil {

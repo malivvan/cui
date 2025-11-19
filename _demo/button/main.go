@@ -4,7 +4,7 @@ package main
 import "github.com/malivvan/cui"
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)

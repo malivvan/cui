@@ -2,7 +2,7 @@
 package cui implements rich widgets for terminal based user interfaces.
 
 See the demos folder and the example application provided with the
-NewApplication documentation for usage examples.
+New documentation for usage examples.
 
 # Types
 
@@ -44,14 +44,14 @@ The following widgets are available:
 	  highlighted, collapsed, expanded, and more.
 	Window - A draggable and resizable container.
 
-Widgets may be used without an application created via NewApplication, allowing
+Widgets may be used without an application created via New, allowing
 them to be integrated into any tcell-based application.
 
 # Concurrency
 
 All functions may be called concurrently (they are thread-safe). When called
 from multiple threads, functions will block until the application or widget
-becomes available. Function calls may be queued with Application.QueueUpdate to
+becomes available. Function calls may be queued with App.QueueUpdate to
 avoid blocking.
 
 # Unicode Support
@@ -88,7 +88,7 @@ Application.Run. See the example application provided with the
 Application.EnableMouse documentation.
 
 Double clicks are treated single clicks by default. Specify a maximum duration
-between clicks with Application.SetDoubleClickInterval to enable double clicks.
+between clicks with App.SetDoubleClickInterval to enable double clicks.
 A standard duration is provided as StandardDoubleClick.
 
 Mouse events are passed to:
@@ -203,7 +203,7 @@ containing the text "Hello, world!":
 	  tv.SetText("Hello, world!").
 	     SetBorder(true).
 	     SetTitle("Greetings")
-	  if err := cui.NewApplication().SetRoot(tv, true).Run(); err != nil {
+	  if err := cui.New().SetRoot(tv, true).Run(); err != nil {
 	    panic(err)
 	  }
 	}

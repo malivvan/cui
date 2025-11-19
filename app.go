@@ -16,7 +16,7 @@ const (
 	resizeEventThrottle = 50 * time.Millisecond
 )
 
-// Application represents the top node of an application.
+// App represents the top node of an application.
 //
 // It is not strictly required to use this class as none of the other classes
 // depend on it. However, it provides useful tools to set up an application and
@@ -25,10 +25,10 @@ const (
 // The following command displays a primitive p on the screen until Ctrl-C is
 // pressed:
 //
-//	if err := cui.NewApplication().SetRoot(p, true).Run(); err != nil {
+//	if err := cui.New().SetRoot(p, true).Run(); err != nil {
 //	    panic(err)
 //	}
-type Application struct {
+type App struct {
 	// The application's screen. Apart from Run(), this variable should never be
 	// set directly. Always use the screenReplacement channel after calling
 	// Fini(), to set a new screen (or nil to stop the application).
@@ -115,9 +115,9 @@ type Application struct {
 	sync.RWMutex
 }
 
-// NewApplication creates and returns a new application.
-func NewApplication() *Application {
-	return &Application{
+// New creates and returns a new application.
+func New() *App {
+	return &App{
 		enableBracketedPaste: true,
 		events:               make(chan tcell.Event, queueSize),
 		updates:              make(chan func(), queueSize),
@@ -131,7 +131,7 @@ func NewApplication() *Application {
 //
 // Panics may only be handled by the panicking goroutine. Because of this,
 // HandlePanic must be deferred at the start of each goroutine (including main).
-func (a *Application) HandlePanic() {
+func (a *App) HandlePanic() {
 	p := recover()
 	if p == nil {
 		return
@@ -151,17 +151,17 @@ func (a *Application) HandlePanic() {
 // Note that this also affects the default event handling of the application
 // itself: Such a handler can intercept the Ctrl-C event which closes the
 // application.
-func (a *Application) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) {
+func (a *App) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *App {
 	a.Lock()
 	defer a.Unlock()
 
 	a.inputCapture = capture
-
+	return a
 }
 
 // GetInputCapture returns the function installed with SetInputCapture() or nil
 // if no such function has been installed.
-func (a *Application) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+func (a *App) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
 	a.RLock()
 	defer a.RUnlock()
 
@@ -173,22 +173,23 @@ func (a *Application) GetInputCapture() func(event *tcell.EventKey) *tcell.Event
 // forwarded to the appropriate mouse event handler. This function can then
 // choose to forward that event (or a different one) by returning it or stop
 // the event processing by returning a nil mouse event.
-func (a *Application) SetMouseCapture(capture func(event *tcell.EventMouse, action MouseAction) (*tcell.EventMouse, MouseAction)) {
+func (a *App) SetMouseCapture(capture func(event *tcell.EventMouse, action MouseAction) (*tcell.EventMouse, MouseAction)) *App {
 	a.mouseCapture = capture
-
+	return a
 }
 
 // GetMouseCapture returns the function installed with SetMouseCapture() or nil
 // if no such function has been installed.
-func (a *Application) GetMouseCapture() func(event *tcell.EventMouse, action MouseAction) (*tcell.EventMouse, MouseAction) {
+func (a *App) GetMouseCapture() func(event *tcell.EventMouse, action MouseAction) (*tcell.EventMouse, MouseAction) {
 	return a.mouseCapture
 }
 
 // SetDoubleClickInterval sets the maximum time between clicks to register a
 // double click rather than a single click. A standard duration is provided as
 // StandardDoubleClick. No interval is set by default, disabling double clicks.
-func (a *Application) SetDoubleClickInterval(interval time.Duration) {
+func (a *App) SetDoubleClickInterval(interval time.Duration) *App {
 	a.doubleClickInterval = interval
+	return a
 }
 
 // SetScreen allows you to provide your own tcell.Screen object. For most
@@ -197,9 +198,9 @@ func (a *Application) SetDoubleClickInterval(interval time.Duration) {
 //
 // This function is typically called before the first call to Run(). Init() need
 // not be called on the screen.
-func (a *Application) SetScreen(screen tcell.Screen) {
+func (a *App) SetScreen(screen tcell.Screen) *App {
 	if screen == nil {
-		return // Invalid input. Do nothing.
+		return a // Invalid input. Do nothing.
 	}
 
 	a.Lock()
@@ -207,7 +208,7 @@ func (a *Application) SetScreen(screen tcell.Screen) {
 		// Run() has not been called yet.
 		a.screen = screen
 		a.Unlock()
-		return
+		return a
 	}
 
 	// Run() is already in progress. Exchange screen.
@@ -215,12 +216,13 @@ func (a *Application) SetScreen(screen tcell.Screen) {
 	a.Unlock()
 	oldScreen.Fini()
 	a.screenReplacement <- screen
+	return a
 }
 
 // GetScreen returns the current tcell.Screen of the application. Lock the
 // application when manipulating the screen to prevent race conditions. This
 // value is only available after calling Init or Run.
-func (a *Application) GetScreen() tcell.Screen {
+func (a *App) GetScreen() tcell.Screen {
 	a.RLock()
 	defer a.RUnlock()
 	return a.screen
@@ -228,7 +230,7 @@ func (a *Application) GetScreen() tcell.Screen {
 
 // GetScreenSize returns the size of the application's screen. These values are
 // only available after calling Init or Run.
-func (a *Application) GetScreenSize() (width, height int) {
+func (a *App) GetScreenSize() (width, height int) {
 	a.RLock()
 	defer a.RUnlock()
 	return a.width, a.height
@@ -237,13 +239,13 @@ func (a *Application) GetScreenSize() (width, height int) {
 // Init initializes the application screen. Calling Init before running is not
 // required. Its primary use is to populate screen dimensions before running an
 // application.
-func (a *Application) Init() error {
+func (a *App) Init() error {
 	a.Lock()
 	defer a.Unlock()
 	return a.init()
 }
 
-func (a *Application) init() error {
+func (a *App) init() error {
 	if a.screen != nil {
 		return nil
 	}
@@ -267,7 +269,7 @@ func (a *Application) init() error {
 }
 
 // EnableBracketedPaste enables bracketed paste mode, which is enabled by default.
-func (a *Application) EnableBracketedPaste(enable bool) {
+func (a *App) EnableBracketedPaste(enable bool) *App {
 	a.Lock()
 	defer a.Unlock()
 	if enable != a.enableBracketedPaste && a.screen != nil {
@@ -278,10 +280,11 @@ func (a *Application) EnableBracketedPaste(enable bool) {
 		}
 	}
 	a.enableBracketedPaste = enable
+	return a
 }
 
 // EnableMouse enables mouse events.
-func (a *Application) EnableMouse(enable bool) {
+func (a *App) EnableMouse(enable bool) *App {
 	a.Lock()
 	defer a.Unlock()
 	if enable != a.enableMouse && a.screen != nil {
@@ -292,11 +295,12 @@ func (a *Application) EnableMouse(enable bool) {
 		}
 	}
 	a.enableMouse = enable
+	return a
 }
 
 // Run starts the application and thus the event loop. This function returns
 // when Stop() was called.
-func (a *Application) Run() error {
+func (a *App) Run() error {
 	a.Lock()
 
 	// Initialize screen
@@ -490,7 +494,7 @@ func (a *Application) Run() error {
 
 // fireMouseActions analyzes the provided mouse event, derives mouse actions
 // from it and then forwards them to the corresponding primitives.
-func (a *Application) fireMouseActions(event *tcell.EventMouse) (consumed, isMouseDownAction bool) {
+func (a *App) fireMouseActions(event *tcell.EventMouse) (consumed, isMouseDownAction bool) {
 	// We want to relay follow-up events to the same target primitive.
 	var targetPrimitive Primitive
 
@@ -588,7 +592,7 @@ func (a *Application) fireMouseActions(event *tcell.EventMouse) (consumed, isMou
 }
 
 // Stop stops the application, causing Run() to return.
-func (a *Application) Stop() {
+func (a *App) Stop() {
 	a.Lock()
 	defer a.Unlock()
 
@@ -596,7 +600,7 @@ func (a *Application) Stop() {
 	a.screenReplacement <- nil
 }
 
-func (a *Application) finalizeScreen() {
+func (a *App) finalizeScreen() {
 	screen := a.screen
 	if screen == nil {
 		return
@@ -613,7 +617,7 @@ func (a *Application) finalizeScreen() {
 // A return value of true indicates that the application was suspended and "f"
 // was called. If false is returned, the application was already suspended,
 // terminal UI mode was not exited, and "f" was not called.
-func (a *Application) Suspend(f func()) bool {
+func (a *App) Suspend(f func()) bool {
 	a.Lock()
 	if a.screen == nil {
 		a.Unlock()
@@ -648,7 +652,7 @@ func (a *Application) Suspend(f func()) bool {
 // When no primitives are provided, the Draw function of the application's root
 // primitive is called. This results in drawing the entire screen. Handlers set
 // via BeforeDrawFunc and AfterDrawFunc are also called.
-func (a *Application) Draw(p ...Primitive) {
+func (a *App) Draw(p ...Primitive) {
 	a.QueueUpdate(func() {
 		if len(p) == 0 {
 			a.draw()
@@ -667,7 +671,7 @@ func (a *Application) Draw(p ...Primitive) {
 }
 
 // draw actually does what Draw() promises to do.
-func (a *Application) draw() {
+func (a *App) draw() {
 	a.Lock()
 
 	screen := a.screen
@@ -719,16 +723,17 @@ func (a *Application) draw() {
 // you may call screen.Clear().
 //
 // Provide nil to uninstall the callback function.
-func (a *Application) SetBeforeDrawFunc(handler func(screen tcell.Screen) bool) {
+func (a *App) SetBeforeDrawFunc(handler func(screen tcell.Screen) bool) *App {
 	a.Lock()
 	defer a.Unlock()
 
 	a.beforeDraw = handler
+	return a
 }
 
 // GetBeforeDrawFunc returns the callback function installed with
 // SetBeforeDrawFunc() or nil if none has been installed.
-func (a *Application) GetBeforeDrawFunc() func(screen tcell.Screen) bool {
+func (a *App) GetBeforeDrawFunc() func(screen tcell.Screen) bool {
 	a.RLock()
 	defer a.RUnlock()
 
@@ -739,16 +744,17 @@ func (a *Application) GetBeforeDrawFunc() func(screen tcell.Screen) bool {
 // primitive was drawn during screen updates.
 //
 // Provide nil to uninstall the callback function.
-func (a *Application) SetAfterDrawFunc(handler func(screen tcell.Screen)) {
+func (a *App) SetAfterDrawFunc(handler func(screen tcell.Screen)) *App {
 	a.Lock()
 	defer a.Unlock()
 
 	a.afterDraw = handler
+	return a
 }
 
 // GetAfterDrawFunc returns the callback function installed with
 // SetAfterDrawFunc() or nil if none has been installed.
-func (a *Application) GetAfterDrawFunc() func(screen tcell.Screen) {
+func (a *App) GetAfterDrawFunc() func(screen tcell.Screen) {
 	a.RLock()
 	defer a.RUnlock()
 
@@ -762,7 +768,7 @@ func (a *Application) GetAfterDrawFunc() func(screen tcell.Screen) {
 // the application starts.
 //
 // It also calls SetFocus() on the primitive and draws the application.
-func (a *Application) SetRoot(root Primitive, fullscreen bool) {
+func (a *App) SetRoot(root Primitive, fullscreen bool) *App {
 	a.Lock()
 	a.root = root
 	a.rootFullscreen = fullscreen
@@ -774,15 +780,18 @@ func (a *Application) SetRoot(root Primitive, fullscreen bool) {
 	a.SetFocus(root)
 
 	a.Draw()
+
+	return a
 }
 
 // ResizeToFullScreen resizes the given primitive such that it fills the entire
 // screen.
-func (a *Application) ResizeToFullScreen(p Primitive) {
+func (a *App) ResizeToFullScreen(p Primitive) *App {
 	a.RLock()
 	width, height := a.width, a.height
 	a.RUnlock()
 	p.SetRect(0, 0, width, height)
+	return a
 }
 
 // SetAfterResizeFunc installs a callback function which is invoked when the
@@ -791,16 +800,17 @@ func (a *Application) ResizeToFullScreen(p Primitive) {
 // application is drawn.
 //
 // Provide nil to uninstall the callback function.
-func (a *Application) SetAfterResizeFunc(handler func(width int, height int)) {
+func (a *App) SetAfterResizeFunc(handler func(width int, height int)) *App {
 	a.Lock()
 	defer a.Unlock()
 
 	a.afterResize = handler
+	return a
 }
 
 // GetAfterResizeFunc returns the callback function installed with
 // SetAfterResizeFunc() or nil if none has been installed.
-func (a *Application) GetAfterResizeFunc() func(width int, height int) {
+func (a *App) GetAfterResizeFunc() func(width int, height int) {
 	a.RLock()
 	defer a.RUnlock()
 
@@ -813,14 +823,14 @@ func (a *Application) GetAfterResizeFunc() func(width int, height int) {
 //
 // Blur() will be called on the previously focused primitive. Focus() will be
 // called on the new primitive.
-func (a *Application) SetFocus(p Primitive) {
+func (a *App) SetFocus(p Primitive) *App {
 	a.Lock()
 
 	if a.beforeFocus != nil {
 		a.Unlock()
 		ok := a.beforeFocus(p)
 		if !ok {
-			return
+			return a
 		}
 		a.Lock()
 	}
@@ -848,11 +858,13 @@ func (a *Application) SetFocus(p Primitive) {
 			a.SetFocus(p)
 		})
 	}
+
+	return a
 }
 
 // GetFocus returns the primitive which has the current focus. If none has it,
 // nil is returned.
-func (a *Application) GetFocus() Primitive {
+func (a *App) GetFocus() Primitive {
 	a.RLock()
 	defer a.RUnlock()
 
@@ -863,22 +875,24 @@ func (a *Application) GetFocus() Primitive {
 // application's focus changes. Return false to maintain the current focus.
 //
 // Provide nil to uninstall the callback function.
-func (a *Application) SetBeforeFocusFunc(handler func(p Primitive) bool) {
+func (a *App) SetBeforeFocusFunc(handler func(p Primitive) bool) *App {
 	a.Lock()
 	defer a.Unlock()
 
 	a.beforeFocus = handler
+	return a
 }
 
 // SetAfterFocusFunc installs a callback function which is invoked after the
 // application's focus changes.
 //
 // Provide nil to uninstall the callback function.
-func (a *Application) SetAfterFocusFunc(handler func(p Primitive)) {
+func (a *App) SetAfterFocusFunc(handler func(p Primitive)) *App {
 	a.Lock()
 	defer a.Unlock()
 
 	a.afterFocus = handler
+	return a
 }
 
 // QueueUpdate queues a function to be executed as part of the event loop.
@@ -887,7 +901,7 @@ func (a *Application) SetAfterFocusFunc(handler func(p Primitive)) {
 // may not be desirable. You can call Draw() from f if the screen should be
 // refreshed after each update. Alternatively, use QueueUpdateDraw() to follow
 // up with an immediate refresh of the screen.
-func (a *Application) QueueUpdate(f func()) {
+func (a *App) QueueUpdate(f func()) {
 	a.updates <- f
 }
 
@@ -895,7 +909,7 @@ func (a *Application) QueueUpdate(f func()) {
 // are provided, the primitives are drawn after the provided function returns.
 // When no primitives are provided, the entire screen is drawn after the
 // provided function returns.
-func (a *Application) QueueUpdateDraw(f func(), p ...Primitive) {
+func (a *App) QueueUpdateDraw(f func(), p ...Primitive) {
 	a.QueueUpdate(func() {
 		f()
 
@@ -914,15 +928,15 @@ func (a *Application) QueueUpdateDraw(f func(), p ...Primitive) {
 	})
 }
 
-// QueueEvent sends an event to the Application event loop.
+// QueueEvent sends an event to the App event loop.
 //
 // It is not recommended for event to be nil.
-func (a *Application) QueueEvent(event tcell.Event) {
+func (a *App) QueueEvent(event tcell.Event) {
 	a.events <- event
 }
 
 // RingBell sends a bell code to the terminal.
-func (a *Application) RingBell() {
+func (a *App) RingBell() {
 	a.QueueUpdate(func() {
 		fmt.Print(string(byte(7)))
 	})

@@ -12,7 +12,7 @@ import (
 var mainGo string
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	buf := editor.NewBufferFromString(mainGo, "main.go")

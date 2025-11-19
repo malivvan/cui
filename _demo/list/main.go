@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)

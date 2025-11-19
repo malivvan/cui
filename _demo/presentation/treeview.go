@@ -26,7 +26,7 @@ const treeAllCode = `[green]package[white] main
 	tree.[yellow]SetRoot[white](root).
 		[yellow]SetCurrentNode[white](root)
 
-	cui.[yellow]NewApplication[white]().
+	cui.[yellow]New[white]().
 		[yellow]SetRoot[white](tree, true).
 		[yellow]Run[white]()
 }`

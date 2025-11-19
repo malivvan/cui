@@ -60,7 +60,7 @@ func (r *RadioButtons) InputHandler() func(event *tcell.EventKey, setFocus func(
 }
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	radioButtons := NewRadioButtons([]string{"Lions", "Elephants", "Giraffes"})

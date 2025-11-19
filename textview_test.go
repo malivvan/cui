@@ -240,7 +240,7 @@ func TestTextViewDraw(t *testing.T) {
 
 			app, err := newTestApp(tv)
 			if err != nil {
-				t.Errorf("failed to initialize Application: %s", err)
+				t.Errorf("failed to initialize App: %s", err)
 			}
 
 			if c.app {
@@ -273,7 +273,7 @@ func BenchmarkTextViewDraw(b *testing.B) {
 
 			app, err := newTestApp(tv)
 			if err != nil {
-				b.Errorf("failed to initialize Application: %s", err)
+				b.Errorf("failed to initialize App: %s", err)
 			}
 
 			if c.app {

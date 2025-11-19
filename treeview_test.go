@@ -24,7 +24,7 @@ func TestTreeView(t *testing.T) {
 
 	app, err := newTestApp(tr)
 	if err != nil {
-		t.Errorf("failed to initialize Application: %s", err)
+		t.Errorf("failed to initialize App: %s", err)
 	}
 
 	// Create root node

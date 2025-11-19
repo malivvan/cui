@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	dialog := chart.NewMessageDialog(chart.ErrorDailog)
 	dialog.SetTitle("error dialog")
 	dialog.SetMessage("This is first line of error\nThis is second line of the error message")

@@ -24,7 +24,7 @@ const inputField = `[green]package[white] main
             n, _ := strconv.[yellow]Atoi[white](text)
             [blue]// We have a number.[white]
         })
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](input, true).
         [yellow]Run[white]()
 }`

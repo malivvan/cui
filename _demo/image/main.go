@@ -13,7 +13,7 @@ import (
 var imagePNG []byte
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	dec, err := png.Decode(bytes.NewReader(imagePNG))

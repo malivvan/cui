@@ -16,7 +16,7 @@ type company struct {
 }
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	inputField := cui.NewInputField()

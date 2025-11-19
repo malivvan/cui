@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	app := cui.NewApplication()
+	app := cui.New()
 
 	sinData := func() [][]float64 {
 		n := 220

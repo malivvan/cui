@@ -6,8 +6,20 @@ import (
 	"github.com/malivvan/cui"
 )
 
+type formItemLabelWidthSetter[T cui.Primitive] interface{ SetLabelWidth(int) T }
+
+// setFormItemLabelWidth sets the screen width of the label. A value of 0 will cause the
+// primitive to use the width of the label string.
+func setFormItemLabelWidth[T cui.Primitive](widget T, width int) bool {
+	if setter, ok := cui.Primitive(widget).(formItemLabelWidthSetter[T]); ok {
+		setter.SetLabelWidth(width)
+		return true
+	}
+	return false
+}
+
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
 	app.EnableMouse(true)
@@ -20,6 +32,7 @@ func main() {
 	inputField.SetDoneFunc(func(key tcell.Key) {
 		app.Stop()
 	})
+	setFormItemLabelWidth(inputField, 30)
 
 	app.SetRoot(inputField, true)
 	if err := app.Run(); err != nil {

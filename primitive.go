@@ -16,14 +16,14 @@ type Primitive interface {
 	// SetRect sets a new position of the primitive.
 	SetRect(x, y, width, height int)
 
-	// GetVisible returns whether or not the primitive is visible.
+	// GetVisible returns whether the primitive is visible.
 	GetVisible() bool
 
-	// SetVisible sets whether or not the primitive is visible.
+	// SetVisible sets whether the primitive is visible.
 	SetVisible(v bool)
 
 	// InputHandler returns a handler which receives key events when it has focus.
-	// It is called by the Application class.
+	// It is called by the App class.
 	//
 	// A value of nil may also be returned, in which case this primitive cannot
 	// receive focus and will not process any key events.
@@ -32,7 +32,7 @@ type Primitive interface {
 	// set the focus to a different primitive, so that future key events are sent
 	// to that primitive.
 	//
-	// The Application's Draw() function will be called automatically after the
+	// The App's Draw() function will be called automatically after the
 	// handler returns.
 	//
 	// The Box class provides functionality to intercept keyboard input. If you
@@ -55,7 +55,7 @@ type Primitive interface {
 	GetFocusable() Focusable
 
 	// MouseHandler returns a handler which receives mouse events.
-	// It is called by the Application class.
+	// It is called by the App class.
 	//
 	// A value of nil may also be returned to stop the downward propagation of
 	// mouse events.

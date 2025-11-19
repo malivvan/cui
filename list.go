@@ -11,7 +11,7 @@ import (
 
 // ListItem represents an item in a List.
 type ListItem struct {
-	disabled      bool        // Whether or not the list item is selectable.
+	disabled      bool        // Whether the list item is selectable.
 	mainText      []byte      // The main text of the list item.
 	secondaryText []byte      // A secondary text to be shown underneath the main text.
 	shortcut      rune        // The key to select the list item directly, 0 if there is no shortcut.

@@ -31,10 +31,10 @@ type TreeNode struct {
 	// The text color.
 	color tcell.Color
 
-	// Whether or not this node can be focused and selected.
+	// Whether this node can be focused and selected.
 	selectable bool
 
-	// Whether or not this node's children should be displayed.
+	// Whether this node's children should be displayed.
 	expanded bool
 
 	// The additional horizontal indent of this node's text.
@@ -192,7 +192,7 @@ func (n *TreeNode) SetSelectedFunc(handler func()) *TreeNode {
 	return n
 }
 
-// SetExpanded sets whether or not this node's child nodes should be displayed.
+// SetExpanded sets whether this node's child nodes should be displayed.
 func (n *TreeNode) SetExpanded(expanded bool) *TreeNode {
 	n.mu.Lock()
 	defer n.mu.Unlock()

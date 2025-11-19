@@ -79,7 +79,7 @@ const tableBasic = `[green]func[white] [yellow]main[white]() {
                 })
         }
     }
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](table, true).
         [yellow]Run[white]()
 }`
@@ -111,7 +111,7 @@ const tableSeparator = `[green]func[white] [yellow]main[white]() {
                 })
         }
     }
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](table, true).
         [yellow]Run[white]()
 }`
@@ -143,7 +143,7 @@ const tableBorders = `[green]func[white] [yellow]main[white]() {
                 })
         }
     }
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](table, true).
         [yellow]Run[white]()
 }`
@@ -176,7 +176,7 @@ const tableSelectRow = `[green]func[white] [yellow]main[white]() {
                 })
         }
     }
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](table, true).
         [yellow]Run[white]()
 }`
@@ -209,7 +209,7 @@ const tableSelectColumn = `[green]func[white] [yellow]main[white]() {
                 })
         }
     }
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](table, true).
         [yellow]Run[white]()
 }`
@@ -242,7 +242,7 @@ const tableSelectCell = `[green]func[white] [yellow]main[white]() {
                 })
         }
     }
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](table, true).
         [yellow]Run[white]()
 }`

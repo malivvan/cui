@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	gauge := chart.NewActivityModeGauge()
 	gauge.SetTitle("activity mode gauge")
 	gauge.SetPgBgColor(tcell.ColorOrange)

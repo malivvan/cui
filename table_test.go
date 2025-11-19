@@ -31,7 +31,7 @@ func TestTable(t *testing.T) {
 
 			app, err := newTestApp(table)
 			if err != nil {
-				t.Errorf("failed to initialize Application: %s", err)
+				t.Errorf("failed to initialize App: %s", err)
 			}
 
 			for row := 0; row < c.rows; row++ {
@@ -60,7 +60,7 @@ func BenchmarkTableDraw(b *testing.B) {
 
 			app, err := newTestApp(table)
 			if err != nil {
-				b.Errorf("failed to initialize Application: %s", err)
+				b.Errorf("failed to initialize App: %s", err)
 			}
 
 			table.Draw(app.screen)

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	gauge := chart.NewPercentageModeGauge()
 	gauge.SetTitle("percentage mode gauge")
 	gauge.SetRect(10, 4, 50, 3)

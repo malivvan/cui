@@ -10,7 +10,7 @@ import (
 )
 
 const textView1 = `[green]func[white] [yellow]main[white]() {
-	app := cui.[yellow]NewApplication[white]()
+	app := cui.[yellow]New[white]()
     textView := cui.[yellow]NewTextView[white]().
         [yellow]SetTextColor[white](tcell.ColorYellow.TrueColor()).
         [yellow]SetScrollable[white](false).
@@ -103,7 +103,7 @@ const textView2 = `[green]package[white] main
             }
         })
     fmt.[yellow]Fprint[white](["7"]textView[""], content)
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](["8"]textView[""], true).
         [yellow]Run[white]()
 }`

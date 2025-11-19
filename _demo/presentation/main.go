@@ -39,7 +39,7 @@ const (
 type Slide func(nextSlide func()) (title string, info string, content cui.Primitive)
 
 // The application.
-var app = cui.NewApplication()
+var app = cui.New()
 
 // Starting point for the presentation.
 func main() {

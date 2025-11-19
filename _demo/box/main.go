@@ -7,16 +7,15 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	defer app.HandlePanic()
 
-	box := cui.NewBox()
-	box.SetBorder(true)
-	box.SetBorderAttributes(tcell.AttrBold)
-	box.SetTitle("A [red]c[yellow]o[green]l[darkcyan]o[blue]r[darkmagenta]f[red]u[yellow]l[white] [black:red]c[:yellow]o[:green]l[:darkcyan]o[:blue]r[:darkmagenta]f[:red]u[:yellow]l[white:] [::bu]title")
+	box := cui.NewBox().
+		SetBorder(true).
+		SetBorderAttributes(tcell.AttrBold).
+		SetTitle("A [red]c[yellow]o[green]l[darkcyan]o[blue]r[darkmagenta]f[red]u[yellow]l[white] [black:red]c[:yellow]o[:green]l[:darkcyan]o[:blue]r[:darkmagenta]f[:red]u[:yellow]l[white:] [::bu]title")
 
-	app.SetRoot(box, true)
-	if err := app.Run(); err != nil {
+	if err := app.SetRoot(box, true).Run(); err != nil {
 		panic(err)
 	}
 }

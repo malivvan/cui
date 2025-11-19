@@ -11,7 +11,7 @@ Capitalize on low hanging fruit to identify a ballpark value added activity to b
 [yellow]Press Enter, then Tab/Backtab for word selections`
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 
 	textView := cui.NewTextView()
 	textView.SetDynamicColors(true)

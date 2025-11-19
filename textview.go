@@ -440,11 +440,11 @@ func (t *TextView) SetRegions(regions bool) *TextView {
 // Note that to avoid race conditions or deadlocks, there are a few rules you
 // should follow:
 //
-//   - You can call Application.Draw() from this handler.
+//   - You can call App.Draw() from this handler.
 //   - You can call TextView.HasFocus() from this handler.
 //   - During the execution of this handler, access to any other variables from
 //     this primitive or any other primitive should be queued using
-//     Application.QueueUpdate().
+//     App.QueueUpdate().
 //
 // See package description for details on dealing with concurrency.
 func (t *TextView) SetChangedFunc(handler func()) *TextView {

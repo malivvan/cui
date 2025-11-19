@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	app := cui.NewApplication()
+	app := cui.New()
 
 	// >>> Data Function <<<
 	// With these values, the curve will start with a value of 0 and reach a

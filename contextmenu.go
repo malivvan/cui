@@ -2,8 +2,8 @@ package cui
 
 import "sync"
 
-// ContextMenu is a menu that appears upon user interaction, such as right
-// clicking or pressing Alt+Enter.
+// ContextMenu is a menu that appears upon user interaction, such as
+// right-clicking or pressing Alt+Enter.
 type ContextMenu struct {
 	parent   Primitive
 	item     int
@@ -53,7 +53,7 @@ func (c *ContextMenu) ContextMenuList() *List {
 
 // AddContextItem adds an item to the context menu. Adding an item with no text
 // or shortcut will add a divider.
-func (c *ContextMenu) AddContextItem(text string, shortcut rune, selected func(index int)) {
+func (c *ContextMenu) AddContextItem(text string, shortcut rune, selected func(index int)) *ContextMenu {
 	c.l.Lock()
 	defer c.l.Unlock()
 
@@ -70,6 +70,8 @@ func (c *ContextMenu) AddContextItem(text string, shortcut rune, selected func(i
 		c.list.items[index].disabled = true
 		c.list.Unlock()
 	}
+
+	return c
 }
 
 func (c *ContextMenu) wrap(f func(index int)) func() {
@@ -79,44 +81,48 @@ func (c *ContextMenu) wrap(f func(index int)) func() {
 }
 
 // ClearContextMenu removes all items from the context menu.
-func (c *ContextMenu) ClearContextMenu() {
+func (c *ContextMenu) ClearContextMenu() *ContextMenu {
 	c.l.Lock()
 	defer c.l.Unlock()
 
 	c.initializeList()
 
 	c.list.Clear()
+	return c
 }
 
 // SetContextSelectedFunc sets the function which is called when the user
 // selects a context menu item. The function receives the item's index in the
 // menu (starting with 0), its text and its shortcut rune. SetSelectedFunc must
 // be called before the context menu is shown.
-func (c *ContextMenu) SetContextSelectedFunc(handler func(index int, text string, shortcut rune)) {
+func (c *ContextMenu) SetContextSelectedFunc(handler func(index int, text string, shortcut rune)) *ContextMenu {
 	c.l.Lock()
 	defer c.l.Unlock()
 
 	c.selected = handler
+	return c
 }
 
 // ShowContextMenu shows the context menu. Provide -1 for both to position on
 // the selected item, or specify a 	position.
-func (c *ContextMenu) ShowContextMenu(item int, x int, y int, setFocus func(Primitive)) {
+func (c *ContextMenu) ShowContextMenu(item int, x int, y int, setFocus func(Primitive)) *ContextMenu {
 	c.l.Lock()
 	defer c.l.Unlock()
 
 	c.show(item, x, y, setFocus)
+	return c
 }
 
 // HideContextMenu hides the context menu.
-func (c *ContextMenu) HideContextMenu(setFocus func(Primitive)) {
+func (c *ContextMenu) HideContextMenu(setFocus func(Primitive)) *ContextMenu {
 	c.l.Lock()
 	defer c.l.Unlock()
 
 	c.hide(setFocus)
+	return c
 }
 
-// ContextMenuVisible returns whether or not the context menu is visible.
+// ContextMenuVisible returns whether the context menu is visible.
 func (c *ContextMenu) ContextMenuVisible() bool {
 	c.l.Lock()
 	defer c.l.Unlock()

@@ -26,7 +26,7 @@ const sliderCode = `[green]package[white] main
     slider.[yellow][yellow]SetDoneFunc[white]([yellow]func[white](key tcell.Key) {
         [yellow]nextSlide[white]()
     })
-    app := cui.[yellow]NewApplication[white]()
+    app := cui.[yellow]New[white]()
     app.[yellow]SetRoot[white](slider, true)
     app.[yellow]Run[white]()
 }`

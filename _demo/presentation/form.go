@@ -23,7 +23,7 @@ const form = `[green]package[white] main
         [yellow]AddPasswordField[white]([red]"Password:"[white], [red]""[white], [red]10[white], [red]'*'[white], nil).
         [yellow]AddButton[white]([red]"Save"[white], [yellow]func[white]() { [blue]/* Save data */[white] }).
         [yellow]AddButton[white]([red]"Cancel"[white], [yellow]func[white]() { [blue]/* Cancel */[white] })
-    cui.[yellow]NewApplication[white]().
+    cui.[yellow]New[white]().
         [yellow]SetRoot[white](form, true).
         [yellow]Run[white]()
 }`

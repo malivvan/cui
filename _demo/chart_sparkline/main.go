@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app := cui.NewApplication()
+	app := cui.New()
 	iowaitSparkline := chart.NewSparkline()
 	iowaitSparkline.SetBorder(false)
 	iowaitSparkline.SetDataTitle("Disk I/O (iowait)")
