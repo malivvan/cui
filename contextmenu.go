@@ -13,7 +13,7 @@ type ContextMenu struct {
 	x, y     int
 	selected func(int, string, rune)
 
-	l sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewContextMenu returns a new context menu.
@@ -43,8 +43,8 @@ func (c *ContextMenu) initializeList() {
 
 // ContextMenuList returns the underlying List of the context menu.
 func (c *ContextMenu) ContextMenuList() *List {
-	c.l.Lock()
-	defer c.l.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	c.initializeList()
 
@@ -54,8 +54,8 @@ func (c *ContextMenu) ContextMenuList() *List {
 // AddContextItem adds an item to the context menu. Adding an item with no text
 // or shortcut will add a divider.
 func (c *ContextMenu) AddContextItem(text string, shortcut rune, selected func(index int)) *ContextMenu {
-	c.l.Lock()
-	defer c.l.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	c.initializeList()
 
@@ -65,10 +65,10 @@ func (c *ContextMenu) AddContextItem(text string, shortcut rune, selected func(i
 
 	c.list.AddItem(item)
 	if text == "" && shortcut == 0 {
-		c.list.Lock()
+		c.list.mu.Lock()
 		index := len(c.list.items) - 1
 		c.list.items[index].disabled = true
-		c.list.Unlock()
+		c.list.mu.Unlock()
 	}
 
 	return c
@@ -82,8 +82,8 @@ func (c *ContextMenu) wrap(f func(index int)) func() {
 
 // ClearContextMenu removes all items from the context menu.
 func (c *ContextMenu) ClearContextMenu() *ContextMenu {
-	c.l.Lock()
-	defer c.l.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	c.initializeList()
 
@@ -96,8 +96,8 @@ func (c *ContextMenu) ClearContextMenu() *ContextMenu {
 // menu (starting with 0), its text and its shortcut rune. SetSelectedFunc must
 // be called before the context menu is shown.
 func (c *ContextMenu) SetContextSelectedFunc(handler func(index int, text string, shortcut rune)) *ContextMenu {
-	c.l.Lock()
-	defer c.l.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	c.selected = handler
 	return c
@@ -106,8 +106,8 @@ func (c *ContextMenu) SetContextSelectedFunc(handler func(index int, text string
 // ShowContextMenu shows the context menu. Provide -1 for both to position on
 // the selected item, or specify a 	position.
 func (c *ContextMenu) ShowContextMenu(item int, x int, y int, setFocus func(Widget)) *ContextMenu {
-	c.l.Lock()
-	defer c.l.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	c.show(item, x, y, setFocus)
 	return c
@@ -115,8 +115,8 @@ func (c *ContextMenu) ShowContextMenu(item int, x int, y int, setFocus func(Widg
 
 // HideContextMenu hides the context menu.
 func (c *ContextMenu) HideContextMenu(setFocus func(Widget)) *ContextMenu {
-	c.l.Lock()
-	defer c.l.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	c.hide(setFocus)
 	return c
@@ -124,8 +124,8 @@ func (c *ContextMenu) HideContextMenu(setFocus func(Widget)) *ContextMenu {
 
 // ContextMenuVisible returns whether the context menu is visible.
 func (c *ContextMenu) ContextMenuVisible() bool {
-	c.l.Lock()
-	defer c.l.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	return c.open
 }
@@ -141,31 +141,31 @@ func (c *ContextMenu) show(item int, x int, y int, setFocus func(Widget)) {
 	c.item = item
 	c.x, c.y = x, y
 
-	c.list.Lock()
+	c.list.mu.Lock()
 	for i, item := range c.list.items {
 		if !item.disabled {
 			c.list.currentItem = i
 			break
 		}
 	}
-	c.list.Unlock()
+	c.list.mu.Unlock()
 
 	c.list.SetSelectedFunc(func(index int, item *ListItem) {
-		c.l.Lock()
+		c.mu.Lock()
 
 		// A context item was selected. Close the menu.
 		c.hide(setFocus)
 
 		if c.selected != nil {
-			c.l.Unlock()
+			c.mu.Unlock()
 			c.selected(index, string(item.mainText), item.shortcut)
 		} else {
-			c.l.Unlock()
+			c.mu.Unlock()
 		}
 	})
 	c.list.SetDoneFunc(func() {
-		c.l.Lock()
-		defer c.l.Unlock()
+		c.mu.Lock()
+		defer c.mu.Unlock()
 
 		c.hide(setFocus)
 	})

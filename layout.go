@@ -23,6 +23,8 @@ type LayoutItem struct {
 }
 
 type Layout struct {
+	box *Box
+
 	// The items contained in the layout
 	items []*LayoutItem
 
@@ -41,78 +43,293 @@ type Layout struct {
 
 	direction int
 
-	x, y, width, height int
-
-	visible bool
-
-	// The layout's background color.
-	backgroundColor tcell.Color
-
-	// An optional capture function which receives a key event and returns the
-	// event to be forwarded to the primitive's default input handler (nil if
-	// nothing should be forwarded).
-	inputCapture func(event *tcell.EventKey) *tcell.EventKey
-
-	// An optional capture function which receives a mouse event and returns the
-	// event to be forwarded to the primitive's default mouse event handler (at
-	// least one nil if nothing should be forwarded).
-	mouseCapture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)
-
-	l sync.RWMutex
+	mu sync.RWMutex
 }
 
 func NewLayout() *Layout {
-	layout := &Layout{
-		backgroundColor:       Styles.PrimitiveBackgroundColor,
+	return &Layout{
+		box:                   NewBox(),
 		focusedSplitterNumber: -1,
 		splitterStyle:         tcell.StyleDefault.Foreground(Styles.BorderColor),
-		visible:               true,
 	}
+}
 
-	return layout
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (l *Layout) set(setter func(l *Layout)) *Layout {
+	l.mu.Lock()
+	setter(l)
+	l.mu.Unlock()
+	return l
+}
+
+func (l *Layout) get(getter func(l *Layout)) {
+	l.mu.RLock()
+	getter(l)
+	l.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Layout.
+func (l *Layout) GetTitle() string {
+	return l.box.GetTitle()
+}
+
+// SetTitle sets the title of this Layout.
+func (l *Layout) SetTitle(title string) *Layout {
+	l.box.SetTitle(title)
+	return l
+}
+
+// GetTitleAlign returns the title alignment of this Layout.
+func (l *Layout) GetTitleAlign() int {
+	return l.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this Layout.
+func (l *Layout) SetTitleAlign(align int) *Layout {
+	l.box.SetTitleAlign(align)
+	return l
+}
+
+// GetBorder returns whether this Layout has a border.
+func (l *Layout) GetBorder() bool {
+	return l.box.GetBorder()
+}
+
+// SetBorder sets whether this Layout has a border.
+func (l *Layout) SetBorder(show bool) *Layout {
+	l.box.SetBorder(show)
+	return l
+}
+
+// GetBorderColor returns the border color of this Layout.
+func (l *Layout) GetBorderColor() tcell.Color {
+	return l.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Layout.
+func (l *Layout) SetBorderColor(color tcell.Color) *Layout {
+	l.box.SetBorderColor(color)
+	return l
+}
+
+// GetBorderAttributes returns the border attributes of this Layout.
+func (l *Layout) GetBorderAttributes() tcell.AttrMask {
+	return l.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Layout.
+func (l *Layout) SetBorderAttributes(attr tcell.AttrMask) *Layout {
+	l.box.SetBorderAttributes(attr)
+	return l
+}
+
+// GetBorderColorFocused returns the border color of this Layout when focusel.
+func (l *Layout) GetBorderColorFocused() tcell.Color {
+	return l.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Layout when focusel.
+func (l *Layout) SetBorderColorFocused(color tcell.Color) *Layout {
+	l.box.SetBorderColorFocused(color)
+	return l
+}
+
+// GetTitleColor returns the title color of this Layout.
+func (l *Layout) GetTitleColor() tcell.Color {
+	return l.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Layout.
+func (l *Layout) SetTitleColor(color tcell.Color) *Layout {
+	l.box.SetTitleColor(color)
+	return l
+}
+
+// GetDrawFunc returns the custom draw function of this Layout.
+func (l *Layout) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return l.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Layout.
+func (l *Layout) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Layout {
+	l.box.SetDrawFunc(handler)
+	return l
+}
+
+// ShowFocus sets whether this Layout should show a focus indicator when focusel.
+func (l *Layout) ShowFocus(showFocus bool) *Layout {
+	l.box.ShowFocus(showFocus)
+	return l
+}
+
+// GetMouseCapture returns the mouse capture function of this Layout.
+func (l *Layout) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return l.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Layout.
+func (l *Layout) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Layout {
+	l.box.SetMouseCapture(capture)
+	return l
+}
+
+// GetBackgroundColor returns the background color of this Layout.
+func (l *Layout) GetBackgroundColor() tcell.Color {
+	return l.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this Layout.
+func (l *Layout) SetBackgroundColor(color tcell.Color) *Layout {
+	l.box.SetBackgroundColor(color)
+	return l
+}
+
+// GetBackgroundTransparent returns whether the background of this Layout is transparent.
+func (l *Layout) GetBackgroundTransparent() bool {
+	return l.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Layout is transparent.
+func (l *Layout) SetBackgroundTransparent(transparent bool) *Layout {
+	l.box.SetBackgroundTransparent(transparent)
+	return l
+}
+
+// GetInputCapture returns the input capture function of this Layout.
+func (l *Layout) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return l.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Layout.
+func (l *Layout) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Layout {
+	l.box.SetInputCapture(capture)
+	return l
+}
+
+// GetPadding returns the padding of this Layout.
+func (l *Layout) GetPadding() (top, bottom, left, right int) {
+	return l.box.GetPadding()
+}
+
+// SetPadding sets the padding of this Layout.
+func (l *Layout) SetPadding(top, bottom, left, right int) *Layout {
+	l.box.SetPadding(top, bottom, left, right)
+	return l
+}
+
+// InRect returns whether the given screen coordinates are within this Layout.
+func (l *Layout) InRect(x, y int) bool {
+	return l.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Layout.
+func (l *Layout) GetInnerRect() (x, y, width, height int) {
+	return l.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Layout is preservel.
+func (l *Layout) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return l.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Layout is preservel.
+func (l *Layout) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return l.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Layout.
+func (l *Layout) GetRect() (x, y, width, height int) {
+	return l.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Layout.
+func (l *Layout) SetRect(x, y, width, height int) {
+	l.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Layout is visible.
+func (l *Layout) GetVisible() bool {
+	return l.box.GetVisible()
+}
+
+// SetVisible sets whether this Layout is visible.
+func (l *Layout) SetVisible(visible bool) {
+	l.box.SetVisible(visible)
+}
+
+func (l *Layout) Focus(delegate func(p Widget)) {
+	l.mu.Lock()
+
+	if l.focusedSplitterNumber == -1 {
+		for _, item := range l.items {
+			if item.Widget != nil {
+				l.mu.Unlock()
+				delegate(item.Widget)
+				return
+			}
+		}
+	}
+	l.mu.Unlock()
+}
+
+func (l *Layout) HasFocus() (hasFocus bool) {
+	l.get(func(l *Layout) {
+		for _, item := range l.items {
+			if item.Widget != nil && item.Widget.HasFocus() {
+				hasFocus = true
+				return
+			}
+		}
+	})
+	return
+}
+
+func (l *Layout) GetFocusable() (focusable Focusable) {
+	l.get(func(l *Layout) {
+		for _, item := range l.items {
+			if item.Widget != nil && item.Widget.HasFocus() {
+				focusable = item.Widget
+				return
+			}
+		}
+	})
+	return
+}
+
+func (l *Layout) Blur() {
+	l.set(func(l *Layout) {
+		l.focusedSplitterNumber = -1
+		for _, item := range l.items {
+			if item.Widget != nil && item.Widget.HasFocus() {
+				item.Widget.Blur()
+			}
+		}
+	})
 }
 
 func (l *Layout) SetDirection(d int) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.direction = d
-	return l
+	return l.set(func(l *Layout) { l.direction = d })
 }
 
-func (l *Layout) GetDirection() int {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	return l.direction
+func (l *Layout) GetDirection() (direction int) {
+	l.get(func(l *Layout) { direction = l.direction })
+	return
 }
 
-// SetBackgroundColor sets the layout's background color.
-func (l *Layout) SetBackgroundColor(color tcell.Color) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.backgroundColor = color
-	return l
-}
-
-// SetSplitter sets the flag indicating whether or not the layout should render a
+// SetSplitter sets the flag indicating whether the layout should render a
 // splitters between primitives
 func (l *Layout) SetSplitter(show bool) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.splitterFlag = show
-	return l
+	return l.set(func(l *Layout) { l.splitterFlag = show })
 }
 
 // SetSplitterColor sets the layout's splitter color.
 func (l *Layout) SetSplitterColor(color tcell.Color) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.splitterStyle = l.splitterStyle.Foreground(color)
-	return l
+	return l.set(func(l *Layout) { l.splitterStyle = l.splitterStyle.Foreground(color) })
 }
 
 // SetSplitterAttributes sets the splitter's style attributes. You can combine
@@ -120,37 +337,19 @@ func (l *Layout) SetSplitterColor(color tcell.Color) *Layout {
 //
 //	layout.SetSplitterAttributes(tcell.AttrUnderline | tcell.AttrBold)
 func (l *Layout) SetSplitterAttributes(attr tcell.AttrMask) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.splitterStyle = l.splitterStyle.Attributes(attr)
-	return l
+	return l.set(func(l *Layout) { l.splitterStyle = l.splitterStyle.Attributes(attr) })
 }
 
 // GetSplitterAttributes returns the splitter's style attributes.
-func (l *Layout) GetSplitterAttributes() tcell.AttrMask {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	_, _, attr := l.splitterStyle.Decompose()
-	return attr
+func (l *Layout) GetSplitterAttributes() (attr tcell.AttrMask) {
+	l.get(func(l *Layout) { _, _, attr = l.splitterStyle.Decompose() })
+	return
 }
 
 // GetSplitterColor returns the layout's splitter color.
-func (l *Layout) GetSplitterColor() tcell.Color {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	color, _, _ := l.splitterStyle.Decompose()
-	return color
-}
-
-// GetBackgroundColor returns the layout's background color.
-func (l *Layout) GetBackgroundColor() tcell.Color {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	return l.backgroundColor
+func (l *Layout) GetSplitterColor() (color tcell.Color) {
+	l.get(func(l *Layout) { color, _, _ = l.splitterStyle.Decompose() })
+	return
 }
 
 func (l *Layout) itemsAmount() (int, int) {
@@ -160,7 +359,6 @@ func (l *Layout) itemsAmount() (int, int) {
 			auto += 1
 		}
 	}
-
 	return len(l.items) - auto, auto
 }
 
@@ -169,16 +367,16 @@ func (l *Layout) itemsSize() int {
 	for _, item := range l.items {
 		size += item.Size
 	}
-
 	return size
 }
 
 func (l *Layout) availableSpace() int {
+	_, _, width, height := l.box.GetInnerRect()
 	switch l.direction {
 	case HorizontalLayout:
-		return l.width
+		return width
 	case VerticalLayout:
-		return l.height
+		return height
 	default:
 		return 0
 	}
@@ -193,30 +391,20 @@ func (l *Layout) splittersAmount() int {
 }
 
 func (l *Layout) Draw(screen tcell.Screen) {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	// Don't draw anything if the box is hidden
-	if !l.visible {
+	if !l.GetVisible() {
 		return
 	}
+
+	l.box.Draw(screen)
+
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	x, y, width, height := l.GetInnerRect()
 
 	// Don't draw anything if there is no space.
-	if l.width <= 0 || l.height <= 0 {
+	if width <= 0 || height <= 0 {
 		return
-	}
-
-	x, y, width, height := l.x, l.y, l.width, l.height
-	def := tcell.StyleDefault
-
-	// Fill background.
-	background := def.Background(l.backgroundColor)
-	if l.backgroundColor != tcell.ColorDefault {
-		for y_ := y; y_ < y+height; y_++ {
-			for x_ := x; x_ < x+width; x_++ {
-				screen.SetContent(x_, y_, ' ', nil, background)
-			}
-		}
 	}
 
 	_, auto := l.itemsAmount()
@@ -292,25 +480,6 @@ func (l *Layout) Draw(screen tcell.Screen) {
 	}
 }
 
-func (l *Layout) GetRect() (int, int, int, int) {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	return l.x, l.y, l.width, l.height
-}
-
-func (l *Layout) SetRect(x, y, width, height int) {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.x = x
-	l.y = y
-	l.width = width
-	l.height = height
-
-	l.rebuildSplitters()
-}
-
 func (l *Layout) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
 	return l.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		for _, item := range l.items {
@@ -322,97 +491,6 @@ func (l *Layout) InputHandler() func(event *tcell.EventKey, setFocus func(p Widg
 			}
 		}
 	})
-}
-
-// WrapInputHandler wraps an input handler (see InputHandler()) with the
-// functionality to capture input (see SetInputCapture()) before passing it
-// on to the provided (default) input handler.
-//
-// This is only meant to be used by subclassing primitives.
-func (l *Layout) WrapInputHandler(inputHandler func(*tcell.EventKey, func(p Widget))) func(*tcell.EventKey, func(p Widget)) {
-	return func(event *tcell.EventKey, setFocus func(p Widget)) {
-		if l.inputCapture != nil {
-			event = l.inputCapture(event)
-		}
-		if event != nil && inputHandler != nil {
-			inputHandler(event, setFocus)
-		}
-	}
-}
-
-func (l *Layout) Focus(delegate func(p Widget)) {
-	l.l.Lock()
-
-	if l.focusedSplitterNumber == -1 {
-		for _, item := range l.items {
-			if item.Widget != nil {
-				l.l.Unlock()
-				delegate(item.Widget)
-				return
-			}
-		}
-	}
-	l.l.Unlock()
-}
-
-func (l *Layout) HasFocus() bool {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	for _, item := range l.items {
-		if item.Widget != nil && item.Widget.HasFocus() {
-			return true
-		}
-	}
-	return false
-}
-
-func (l *Layout) GetFocusable() Focusable {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	for _, item := range l.items {
-		if item.Widget != nil && item.Widget.HasFocus() {
-			return item.Widget
-		}
-	}
-	return nil
-}
-
-func (l *Layout) GetVisible() bool {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	return l.visible
-}
-
-func (l *Layout) SetVisible(v bool) {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.visible = v
-}
-
-func (l *Layout) Blur() {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.focusedSplitterNumber = -1
-	for _, item := range l.items {
-		if item.Widget != nil && item.Widget.HasFocus() {
-			item.Widget.Blur()
-		}
-	}
-}
-
-// InRect returns true if the given coordinate is within the bounds of the box's
-// rectangle.
-func (l *Layout) InRect(x, y int) bool {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	rectX, rectY, width, height := l.x, l.y, l.width, l.height
-	return x >= rectX && x < rectX+width && y >= rectY && y < rectY+height
 }
 
 // MouseHandler returns the mouse handler for this primitive.
@@ -490,134 +568,53 @@ func (l *Layout) MouseHandler() func(action MouseAction, event *tcell.EventMouse
 	})
 }
 
-// WrapMouseHandler wraps a mouse event handler (see MouseHandler()) with the
-// functionality to capture mouse events (see SetMouseCapture()) before passing
-// them on to the provided (default) event handler.
-//
-// This is only meant to be used by subclassing primitives.
-func (l *Layout) WrapMouseHandler(mouseHandler func(MouseAction, *tcell.EventMouse, func(p Widget)) (bool, Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
-	return func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
-		if l.mouseCapture != nil {
-			action, event = l.mouseCapture(action, event)
-		}
-		if event != nil && mouseHandler != nil {
-			consumed, capture = mouseHandler(action, event, setFocus)
-		}
-		return
-	}
-}
-
 func (l *Layout) AddItem(p Widget, size int) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.items = append(l.items, &LayoutItem{
-		Widget: p,
-		Size:   size,
+	return l.set(func(l *Layout) {
+		l.items = append(l.items, &LayoutItem{
+			Widget: p,
+			Size:   size,
+		})
+		l.draggedSplitter = nil
+		l.rebuildSplitters()
 	})
-
-	l.draggedSplitter = nil
-	l.rebuildSplitters()
-
-	return l
 }
 
 func (l *Layout) RemoveItem(i int) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	if i < 0 || i >= len(l.items) {
-		return l
-	}
-
-	l.draggedSplitter = nil
-	l.items = append(l.items[:i], l.items[i+1:]...)
-	l.rebuildSplitters()
-
-	return l
+	return l.set(func(l *Layout) {
+		if i < 0 || i >= len(l.items) {
+			return
+		}
+		l.draggedSplitter = nil
+		l.items = append(l.items[:i], l.items[i+1:]...)
+		l.rebuildSplitters()
+	})
 }
 
-func (l *Layout) GetItem(i int) *LayoutItem {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	if i < 0 || i >= len(l.items) {
-		return nil
-	}
-
-	return l.items[i]
+func (l *Layout) GetItem(i int) (item *LayoutItem) {
+	l.get(func(l *Layout) {
+		if !(i < 0 || i >= len(l.items)) {
+			item = l.items[i]
+		}
+	})
+	return
 }
 
-func (l *Layout) CountItems() int {
-	l.l.RLock()
-	defer l.l.RUnlock()
-
-	return len(l.items)
+func (l *Layout) CountItems() (count int) {
+	l.get(func(l *Layout) { count = len(l.items) })
+	return
 }
 
 func (l *Layout) ClearItems() *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.items = nil
-	l.splitters = nil
-	return l
-}
-
-// SetInputCapture installs a function which captures key events before they are
-// forwarded to the primitive's default key event handler. This function can
-// then choose to forward that key event (or a different one) to the default
-// handler by returning it. If nil is returned, the default handler will not
-// be called.
-//
-// Providing a nil handler will remove a previously existing handler.
-//
-// Note that this function will not have an effect on primitives composed of
-// other primitives, such as Form, Flex, or Grid. Key events are only captured
-// by the primitives that have focus (e.g. InputField) and only one primitive
-// can have focus at a time. Composing primitives such as Form pass the focus on
-// to their contained primitives and thus never receive any key events
-// themselves. Therefore, they cannot intercept key events.
-func (l *Layout) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.inputCapture = capture
-	return l
-}
-
-// GetInputCapture returns the function installed with SetInputCapture() or nil
-// if no such function has been installed.
-func (l *Layout) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
-	return l.inputCapture
-}
-
-// SetMouseCapture sets a function which captures mouse events (consisting of
-// the original tcell mouse event and the semantic mouse action) before they are
-// forwarded to the primitive's default mouse event handler. This function can
-// then choose to forward that event (or a different one) by returning it or
-// returning a nil mouse event, in which case the default handler will not be
-// called.
-//
-// Providing a nil handler will remove a previously existing handler.
-func (l *Layout) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Layout {
-	l.l.Lock()
-	defer l.l.Unlock()
-
-	l.mouseCapture = capture
-	return l
-}
-
-// GetMouseCapture returns the function installed with SetMouseCapture() or nil
-// if no such function has been installed.
-func (l *Layout) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
-	return l.mouseCapture
+	return l.set(func(l *Layout) {
+		l.items = nil
+		l.splitters = nil
+	})
 }
 
 func (l *Layout) rebuildSplitters() {
 	l.splitters = nil
 
-	x, y, width, height := l.x, l.y, l.width, l.height
+	x, y, width, height := l.box.GetInnerRect()
 
 	_, auto := l.itemsAmount()
 	size := l.itemsSize()
@@ -750,9 +747,9 @@ func (cr *clipRegion) SetCell(x int, y int, style tcell.Style, ch ...rune) {
 // and attempts to place character at next cell to the right will have
 // undefined effects.  Wide runes that are printed in the
 // last column will be replaced with a single width space on output.
-func (cr *clipRegion) SetContent(x int, y int, mainc rune, combc []rune, style tcell.Style) {
+func (cr *clipRegion) SetContent(x int, y int, primary rune, combining []rune, style tcell.Style) {
 	if cr.InRect(x, y) {
-		cr.Screen.SetContent(x, y, mainc, combc, style)
+		cr.Screen.SetContent(x, y, primary, combining, style)
 	}
 }
 

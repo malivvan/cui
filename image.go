@@ -21,7 +21,7 @@ import (
 // settings, none of which are under the control of this package. Results may
 // vary.
 type Image struct {
-	*Box
+	box *Box
 
 	// The image to be displayed. If nil, the widget will be empty.
 	image image.Image
@@ -66,11 +66,239 @@ type pixel struct {
 // 0.5.
 func NewImage() *Image {
 	return &Image{
-		Box:             NewBox(),
+		box:             NewBox(),
 		aspectRatio:     0.5,
 		alignHorizontal: AlignCenter,
 		alignVertical:   AlignCenter,
 	}
+}
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (img *Image) set(setter func(img *Image)) *Image {
+	img.mu.Lock()
+	setter(img)
+	img.mu.Unlock()
+	return img
+}
+
+func (img *Image) get(getter func(img *Image)) {
+	img.mu.RLock()
+	getter(img)
+	img.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Image.
+func (img *Image) GetTitle() string {
+	return img.box.GetTitle()
+}
+
+// SetTitle sets the title of this Image.
+func (img *Image) SetTitle(title string) *Image {
+	img.box.SetTitle(title)
+	return img
+}
+
+// GetTitleAlign returns the title alignment of this Image.
+func (img *Image) GetTitleAlign() int {
+	return img.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this Image.
+func (img *Image) SetTitleAlign(align int) *Image {
+	img.box.SetTitleAlign(align)
+	return img
+}
+
+// GetBorder returns whether this Image has a border.
+func (img *Image) GetBorder() bool {
+	return img.box.GetBorder()
+}
+
+// SetBorder sets whether this Image has a border.
+func (img *Image) SetBorder(show bool) *Image {
+	img.box.SetBorder(show)
+	return img
+}
+
+// GetBorderColor returns the border color of this Image.
+func (img *Image) GetBorderColor() tcell.Color {
+	return img.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Image.
+func (img *Image) SetBorderColor(color tcell.Color) *Image {
+	img.box.SetBorderColor(color)
+	return img
+}
+
+// GetBorderAttributes returns the border attributes of this Image.
+func (img *Image) GetBorderAttributes() tcell.AttrMask {
+	return img.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Image.
+func (img *Image) SetBorderAttributes(attr tcell.AttrMask) *Image {
+	img.box.SetBorderAttributes(attr)
+	return img
+}
+
+// GetBorderColorFocused returns the border color of this Image when focuseimg.
+func (img *Image) GetBorderColorFocused() tcell.Color {
+	return img.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Image when focuseimg.
+func (img *Image) SetBorderColorFocused(color tcell.Color) *Image {
+	img.box.SetBorderColorFocused(color)
+	return img
+}
+
+// GetTitleColor returns the title color of this Image.
+func (img *Image) GetTitleColor() tcell.Color {
+	return img.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Image.
+func (img *Image) SetTitleColor(color tcell.Color) *Image {
+	img.box.SetTitleColor(color)
+	return img
+}
+
+// GetDrawFunc returns the custom draw function of this Image.
+func (img *Image) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return img.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Image.
+func (img *Image) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Image {
+	img.box.SetDrawFunc(handler)
+	return img
+}
+
+// ShowFocus sets whether this Image should show a focus indicator when focuseimg.
+func (img *Image) ShowFocus(showFocus bool) *Image {
+	img.box.ShowFocus(showFocus)
+	return img
+}
+
+// GetMouseCapture returns the mouse capture function of this Image.
+func (img *Image) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return img.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Image.
+func (img *Image) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Image {
+	img.box.SetMouseCapture(capture)
+	return img
+}
+
+// GetBackgroundColor returns the background color of this Image.
+func (img *Image) GetBackgroundColor() tcell.Color {
+	return img.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this Image.
+func (img *Image) SetBackgroundColor(color tcell.Color) *Image {
+	img.box.SetBackgroundColor(color)
+	return img
+}
+
+// GetBackgroundTransparent returns whether the background of this Image is transparent.
+func (img *Image) GetBackgroundTransparent() bool {
+	return img.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Image is transparent.
+func (img *Image) SetBackgroundTransparent(transparent bool) *Image {
+	img.box.SetBackgroundTransparent(transparent)
+	return img
+}
+
+// GetInputCapture returns the input capture function of this Image.
+func (img *Image) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return img.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Image.
+func (img *Image) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Image {
+	img.box.SetInputCapture(capture)
+	return img
+}
+
+// GetPadding returns the padding of this Image.
+func (img *Image) GetPadding() (top, bottom, left, right int) {
+	return img.box.GetPadding()
+}
+
+// SetPadding sets the padding of this Image.
+func (img *Image) SetPadding(top, bottom, left, right int) *Image {
+	img.box.SetPadding(top, bottom, left, right)
+	return img
+}
+
+// InRect returns whether the given screen coordinates are within this Image.
+func (img *Image) InRect(x, y int) bool {
+	return img.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Image.
+func (img *Image) GetInnerRect() (x, y, width, height int) {
+	return img.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Image is preserveimg.
+func (img *Image) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return img.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Image is preserveimg.
+func (img *Image) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return img.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Image.
+func (img *Image) GetRect() (x, y, width, height int) {
+	return img.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Image.
+func (img *Image) SetRect(x, y, width, height int) {
+	img.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Image is visible.
+func (img *Image) GetVisible() bool {
+	return img.box.GetVisible()
+}
+
+// SetVisible sets whether this Image is visible.
+func (img *Image) SetVisible(visible bool) {
+	img.box.SetVisible(visible)
+}
+
+// Focus is called when this Image receives focus.
+func (img *Image) Focus(delegate func(p Widget)) {
+	img.box.Focus(delegate)
+}
+
+// HasFocus returns whether this Image has focus.
+func (img *Image) HasFocus() bool {
+	return img.box.HasFocus()
+}
+
+// GetFocusable returns the focusable primitive of this Image.
+func (img *Image) GetFocusable() Focusable {
+	return img.box.GetFocusable()
+}
+
+// Blur is called when this Image loses focus.
+func (img *Image) Blur() {
+	img.box.Blur()
 }
 
 // SetImage sets the image to be displayed. If nil, the widget will be empty.
@@ -90,12 +318,11 @@ func (img *Image) SetImage(image image.Image) *Image {
 // ratio. If both are 0, the image uses as much space as possible while still
 // preserving the aspect ratio.
 func (img *Image) SetSize(rows, columns int) *Image {
-	img.mu.Lock()
-	defer img.mu.Unlock()
+	return img.set(func(img *Image) {
+		img.width = columns
+		img.height = rows
+	})
 
-	img.width = columns
-	img.height = rows
-	return img
 }
 
 // SetColors sets the number of colors to use. This should be the number of
@@ -108,32 +335,31 @@ func (img *Image) SetSize(rows, columns int) *Image {
 //
 // The effect of using more colors than supported by the terminal is undefined.
 func (img *Image) SetColors(colors int) *Image {
-	img.mu.Lock()
-	defer img.mu.Unlock()
-
-	img.colors = colors
-	img.lastWidth, img.lastHeight = 0, 0
-	return img
+	return img.set(func(img *Image) {
+		img.colors = colors
+		img.lastWidth, img.lastHeight = 0, 0
+	})
 }
 
 // GetColors returns the number of colors that will be used while drawing the
 // image. This is one of the values listed in [Image.SetColors], except 0 which
 // will be replaced by the actual number of colors used.
-func (img *Image) GetColors() int {
-	img.mu.RLock()
-	defer img.mu.RUnlock()
-
-	switch {
-	case img.colors == 0:
-		return 256
-	case img.colors <= 2:
-		return 2
-	case img.colors <= 8:
-		return 8
-	case img.colors <= 256:
-		return 256
-	}
-	return 16777216
+func (img *Image) GetColors() (colors int) {
+	img.get(func(img *Image) {
+		switch {
+		case img.colors == 0:
+			colors = 256
+		case img.colors <= 2:
+			colors = 2
+		case img.colors <= 8:
+			colors = 8
+		case img.colors <= 256:
+			colors = 256
+		default:
+			colors = 16777216
+		}
+	})
+	return
 }
 
 // SetAspectRatio sets the width of a terminal's cell divided by its height.
@@ -142,15 +368,13 @@ func (img *Image) GetColors() int {
 // specified width or height is 0. The function will panic if the aspect ratio
 // is 0 or less.
 func (img *Image) SetAspectRatio(aspectRatio float64) *Image {
-	img.mu.Lock()
-	defer img.mu.Unlock()
-
 	if aspectRatio <= 0 {
 		panic("aspect ratio must be greater than 0")
 	}
-	img.aspectRatio = aspectRatio
-	img.lastWidth, img.lastHeight = 0, 0
-	return img
+	return img.set(func(img *Image) {
+		img.aspectRatio = aspectRatio
+		img.lastWidth, img.lastHeight = 0, 0
+	})
 }
 
 // SetAlign sets the vertical and horizontal alignment of the image within the
@@ -159,29 +383,20 @@ func (img *Image) SetAspectRatio(aspectRatio float64) *Image {
 // [AlignRight] for horizontal alignment. The default is [AlignCenter] for both
 // (or [AlignTop] and [AlignLeft] if the image is part of a [Form]).
 func (img *Image) SetAlign(vertical, horizontal int) *Image {
-	img.mu.Lock()
-	defer img.mu.Unlock()
-
-	img.alignHorizontal = horizontal
-	img.alignVertical = vertical
-	return img
+	return img.set(func(img *Image) {
+		img.alignHorizontal = horizontal
+		img.alignVertical = vertical
+	})
 }
 
-// SetBackgroundColor sets attributes shared by all form items.
-func (img *Image) SetBackgroundColor(color tcell.Color) *Image {
-	img.mu.Lock()
-	defer img.mu.Unlock()
-
-	img.backgroundColor = color
-	return img
+// InputHandler returns the input handler for this Image.
+func (img *Image) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return img.box.InputHandler()
 }
 
-// GetBackgroundColor returns attributes shared by all form items.
-func (img *Image) GetBackgroundColor() tcell.Color {
-	img.mu.RLock()
-	defer img.mu.RUnlock()
-
-	return img.backgroundColor
+// MouseHandler returns the mouse handler for this Image.
+func (img *Image) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return img.box.MouseHandler()
 }
 
 // Draw draws this primitive onto the screen.
@@ -192,7 +407,7 @@ func (img *Image) Draw(screen tcell.Screen) {
 	img.mu.RLock()
 	defer img.mu.RUnlock()
 
-	img.Box.Draw(screen)
+	img.box.Draw(screen)
 
 	// Regenerate image if necessary.
 	img.render()

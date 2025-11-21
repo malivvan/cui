@@ -30,7 +30,7 @@ import (
 //   - Ctrl-W: Delete the last word before the cursor.
 //   - Ctrl-U: Delete the entire line.
 type InputField struct {
-	*Box
+	box *Box
 
 	// The text that was entered.
 	text []byte
@@ -136,13 +136,13 @@ type InputField struct {
 	// The number of bytes of the text string skipped ahead while drawing.
 	offset int
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewInputField returns a new input field.
 func NewInputField() *InputField {
 	return &InputField{
-		Box:                                     NewBox(),
+		box:                                     NewBox(),
 		labelColor:                              Styles.SecondaryTextColor,
 		fieldBackgroundColor:                    Styles.MoreContrastBackgroundColor,
 		fieldBackgroundColorFocused:             Styles.ContrastBackgroundColor,
@@ -160,274 +160,402 @@ func NewInputField() *InputField {
 	}
 }
 
-func (i *InputField) SetBackgroundColor(color tcell.Color) *InputField {
-	i.Box.SetBackgroundColor(color)
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (i *InputField) set(setter func(i *InputField)) *InputField {
+	i.mu.Lock()
+	setter(i)
+	i.mu.Unlock()
 	return i
+}
+
+func (i *InputField) get(getter func(i *InputField)) {
+	i.mu.RLock()
+	getter(i)
+	i.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this InputField.
+func (i *InputField) GetTitle() string {
+	return i.box.GetTitle()
+}
+
+// SetTitle sets the title of this InputField.
+func (i *InputField) SetTitle(title string) *InputField {
+	i.box.SetTitle(title)
+	return i
+}
+
+// GetTitleAlign returns the title alignment of this InputField.
+func (i *InputField) GetTitleAlign() int {
+	return i.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this InputField.
+func (i *InputField) SetTitleAlign(align int) *InputField {
+	i.box.SetTitleAlign(align)
+	return i
+}
+
+// GetBorder returns whether this InputField has a border.
+func (i *InputField) GetBorder() bool {
+	return i.box.GetBorder()
+}
+
+// SetBorder sets whether this InputField has a border.
+func (i *InputField) SetBorder(show bool) *InputField {
+	i.box.SetBorder(show)
+	return i
+}
+
+// GetBorderColor returns the border color of this InputField.
+func (i *InputField) GetBorderColor() tcell.Color {
+	return i.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this InputField.
+func (i *InputField) SetBorderColor(color tcell.Color) *InputField {
+	i.box.SetBorderColor(color)
+	return i
+}
+
+// GetBorderAttributes returns the border attributes of this InputField.
+func (i *InputField) GetBorderAttributes() tcell.AttrMask {
+	return i.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this InputField.
+func (i *InputField) SetBorderAttributes(attr tcell.AttrMask) *InputField {
+	i.box.SetBorderAttributes(attr)
+	return i
+}
+
+// GetBorderColorFocused returns the border color of this InputField when focusei.
+func (i *InputField) GetBorderColorFocused() tcell.Color {
+	return i.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this InputField when focusei.
+func (i *InputField) SetBorderColorFocused(color tcell.Color) *InputField {
+	i.box.SetBorderColorFocused(color)
+	return i
+}
+
+// GetTitleColor returns the title color of this InputField.
+func (i *InputField) GetTitleColor() tcell.Color {
+	return i.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this InputField.
+func (i *InputField) SetTitleColor(color tcell.Color) *InputField {
+	i.box.SetTitleColor(color)
+	return i
+}
+
+// GetDrawFunc returns the custom draw function of this InputField.
+func (i *InputField) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return i.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this InputField.
+func (i *InputField) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *InputField {
+	i.box.SetDrawFunc(handler)
+	return i
+}
+
+// ShowFocus sets whether this InputField should show a focus indicator when focusei.
+func (i *InputField) ShowFocus(showFocus bool) *InputField {
+	i.box.ShowFocus(showFocus)
+	return i
+}
+
+// GetMouseCapture returns the mouse capture function of this InputField.
+func (i *InputField) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return i.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this InputField.
+func (i *InputField) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *InputField {
+	i.box.SetMouseCapture(capture)
+	return i
+}
+
+// GetBackgroundColor returns the background color of this InputField.
+func (i *InputField) GetBackgroundColor() tcell.Color {
+	return i.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this InputField.
+func (i *InputField) SetBackgroundColor(color tcell.Color) *InputField {
+	i.box.SetBackgroundColor(color)
+	return i
+}
+
+// GetBackgroundTransparent returns whether the background of this InputField is transparent.
+func (i *InputField) GetBackgroundTransparent() bool {
+	return i.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this InputField is transparent.
+func (i *InputField) SetBackgroundTransparent(transparent bool) *InputField {
+	i.box.SetBackgroundTransparent(transparent)
+	return i
+}
+
+// GetInputCapture returns the input capture function of this InputField.
+func (i *InputField) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return i.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this InputField.
+func (i *InputField) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *InputField {
+	i.box.SetInputCapture(capture)
+	return i
+}
+
+// GetPadding returns the padding of this InputField.
+func (i *InputField) GetPadding() (top, bottom, left, right int) {
+	return i.box.GetPadding()
+}
+
+// SetPadding sets the padding of this InputField.
+func (i *InputField) SetPadding(top, bottom, left, right int) *InputField {
+	i.box.SetPadding(top, bottom, left, right)
+	return i
+}
+
+// InRect returns whether the given screen coordinates are within this InputField.
+func (i *InputField) InRect(x, y int) bool {
+	return i.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this InputField.
+func (i *InputField) GetInnerRect() (x, y, width, height int) {
+	return i.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the InputField is preservei.
+func (i *InputField) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return i.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the InputField is preservei.
+func (i *InputField) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return i.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this InputField.
+func (i *InputField) GetRect() (x, y, width, height int) {
+	return i.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this InputField.
+func (i *InputField) SetRect(x, y, width, height int) {
+	i.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this InputField is visible.
+func (i *InputField) GetVisible() bool {
+	return i.box.GetVisible()
+}
+
+// SetVisible sets whether this InputField is visible.
+func (i *InputField) SetVisible(visible bool) {
+	i.box.SetVisible(visible)
+}
+
+// Focus is called when this InputField receives focus.
+func (i *InputField) Focus(delegate func(p Widget)) {
+	i.box.Focus(delegate)
+}
+
+// HasFocus returns whether this InputField has focus.
+func (i *InputField) HasFocus() bool {
+	return i.box.HasFocus()
+}
+
+// GetFocusable returns the focusable primitive of this InputField.
+func (i *InputField) GetFocusable() Focusable {
+	return i.box.GetFocusable()
+}
+
+// Blur is called when this InputField loses focus.
+func (i *InputField) Blur() {
+	i.box.Blur()
 }
 
 // SetText sets the current text of the input field.
 func (i *InputField) SetText(text string) *InputField {
-	i.Lock()
-
+	i.mu.Lock()
 	i.text = []byte(text)
 	i.cursorPos = len(text)
 	if i.changed != nil {
-		i.Unlock()
+		i.mu.Unlock()
 		i.changed(text)
 	} else {
-		i.Unlock()
+		i.mu.Unlock()
 	}
 	return i
 }
 
 // GetText returns the current text of the input field.
-func (i *InputField) GetText() string {
-	i.RLock()
-	defer i.RUnlock()
-
-	return string(i.text)
+func (i *InputField) GetText() (text string) {
+	i.get(func(i *InputField) { text = string(i.text) })
+	return
 }
 
 // SetLabel sets the text to be displayed before the input area.
 func (i *InputField) SetLabel(label string) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.label = []byte(label)
-	return i
+	return i.set(func(i *InputField) { i.label = []byte(label) })
 }
 
 // GetLabel returns the text to be displayed before the input area.
-func (i *InputField) GetLabel() string {
-	i.RLock()
-	defer i.RUnlock()
-
-	return string(i.label)
+func (i *InputField) GetLabel() (label string) {
+	i.get(func(i *InputField) { label = string(i.label) })
+	return
 }
 
 // SetLabelWidth sets the screen width of the label. A value of 0 will cause the
 // primitive to use the width of the label string.
 func (i *InputField) SetLabelWidth(width int) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.labelWidth = width
-	return i
+	return i.set(func(i *InputField) { i.labelWidth = width })
 }
 
 // SetPlaceholder sets the text to be displayed when the input text is empty.
 func (i *InputField) SetPlaceholder(text string) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.placeholder = []byte(text)
-	return i
+	return i.set(func(i *InputField) { i.placeholder = []byte(text) })
 }
 
 // SetLabelColor sets the color of the label.
 func (i *InputField) SetLabelColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.labelColor = color
-	return i
+	return i.set(func(i *InputField) { i.labelColor = color })
 }
 
 // SetLabelColorFocused sets the color of the label when focused.
 func (i *InputField) SetLabelColorFocused(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.labelColorFocused = color
-	return i
+	return i.set(func(i *InputField) { i.labelColorFocused = color })
 }
 
 // SetFieldBackgroundColor sets the background color of the input area.
 func (i *InputField) SetFieldBackgroundColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldBackgroundColor = color
-	return i
+	return i.set(func(i *InputField) { i.fieldBackgroundColor = color })
 }
 
 // SetFieldBackgroundColorFocused sets the background color of the input area
 // when focused.
 func (i *InputField) SetFieldBackgroundColorFocused(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldBackgroundColorFocused = color
-	return i
+	return i.set(func(i *InputField) { i.fieldBackgroundColorFocused = color })
 }
 
 // SetFieldTextColor sets the text color of the input area.
 func (i *InputField) SetFieldTextColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldTextColor = color
-	return i
+	return i.set(func(i *InputField) { i.fieldTextColor = color })
 }
 
 // SetFieldTextColorFocused sets the text color of the input area when focused.
 func (i *InputField) SetFieldTextColorFocused(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldTextColorFocused = color
-	return i
+	return i.set(func(i *InputField) { i.fieldTextColorFocused = color })
 }
 
 // SetPlaceholderTextColor sets the text color of placeholder text.
 func (i *InputField) SetPlaceholderTextColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.placeholderTextColor = color
-	return i
+	return i.set(func(i *InputField) { i.placeholderTextColor = color })
 }
 
 // SetPlaceholderTextColorFocused sets the text color of placeholder text when
 // focused.
 func (i *InputField) SetPlaceholderTextColorFocused(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.placeholderTextColorFocused = color
-	return i
+	return i.set(func(i *InputField) { i.placeholderTextColorFocused = color })
 }
 
 // SetAutocompleteListTextColor sets the text color of the ListItems.
 func (i *InputField) SetAutocompleteListTextColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.autocompleteListTextColor = color
-	return i
+	return i.set(func(i *InputField) { i.autocompleteListTextColor = color })
 }
 
 // SetAutocompleteListBackgroundColor sets the background color of the
 // autocomplete list.
 func (i *InputField) SetAutocompleteListBackgroundColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.autocompleteListBackgroundColor = color
-	return i
+	return i.set(func(i *InputField) { i.autocompleteListBackgroundColor = color })
 }
 
 // SetAutocompleteListSelectedTextColor sets the text color of the selected
 // ListItem.
 func (i *InputField) SetAutocompleteListSelectedTextColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.autocompleteListSelectedTextColor = color
-	return i
+	return i.set(func(i *InputField) { i.autocompleteListSelectedTextColor = color })
 }
 
 // SetAutocompleteListSelectedBackgroundColor sets the background of the
 // selected ListItem.
 func (i *InputField) SetAutocompleteListSelectedBackgroundColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.autocompleteListSelectedBackgroundColor = color
-	return i
+	return i.set(func(i *InputField) { i.autocompleteListSelectedBackgroundColor = color })
 }
 
 // SetAutocompleteSuggestionTextColor sets the text color of the autocomplete
 // suggestion in the input field.
 func (i *InputField) SetAutocompleteSuggestionTextColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.autocompleteSuggestionTextColor = color
-	return i
+	return i.set(func(i *InputField) { i.autocompleteSuggestionTextColor = color })
 }
 
 // SetFieldNoteTextColor sets the text color of the note.
 func (i *InputField) SetFieldNoteTextColor(color tcell.Color) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldNoteTextColor = color
-	return i
+	return i.set(func(i *InputField) { i.fieldNoteTextColor = color })
 }
 
 // SetFieldNote sets the text to show below the input field, e.g. when the
 // input is invalid.
 func (i *InputField) SetFieldNote(note string) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldNote = []byte(note)
-	return i
+	return i.set(func(i *InputField) { i.fieldNote = []byte(note) })
 }
 
 // ResetFieldNote sets the note to an empty string.
 func (i *InputField) ResetFieldNote() *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldNote = nil
-	return i
+	return i.set(func(i *InputField) { i.fieldNote = nil })
 }
 
 // SetFieldWidth sets the screen width of the input area. A value of 0 means
 // extend as much as possible.
 func (i *InputField) SetFieldWidth(width int) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.fieldWidth = width
-	return i
+	return i.set(func(i *InputField) { i.fieldWidth = width })
 }
 
 // GetFieldWidth returns this primitive's field width.
-func (i *InputField) GetFieldWidth() int {
-	i.RLock()
-	defer i.RUnlock()
-
-	return i.fieldWidth
+func (i *InputField) GetFieldWidth() (width int) {
+	i.get(func(i *InputField) { width = i.fieldWidth })
+	return
 }
 
 // GetFieldHeight returns the height of the field.
-func (i *InputField) GetFieldHeight() int {
-	i.RLock()
-	defer i.RUnlock()
-	if len(i.fieldNote) == 0 {
-		return 1
-	}
-	return 2
+func (i *InputField) GetFieldHeight() (height int) {
+	i.get(func(i *InputField) {
+		if len(i.fieldNote) == 0 {
+			height = 1
+		} else {
+			height = 2
+		}
+	})
+	return
 }
 
 // GetCursorPosition returns the cursor position.
-func (i *InputField) GetCursorPosition() int {
-	i.RLock()
-	defer i.RUnlock()
-
-	return i.cursorPos
+func (i *InputField) GetCursorPosition() (cursorPos int) {
+	i.get(func(i *InputField) { cursorPos = i.cursorPos })
+	return
 }
 
 // SetCursorPosition sets the cursor position.
 func (i *InputField) SetCursorPosition(cursorPos int) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.cursorPos = cursorPos
-	return i
+	return i.set(func(i *InputField) { i.cursorPos = cursorPos })
 }
 
 // SetMaskCharacter sets a character that masks user input on a screen. A value
 // of 0 disables masking.
 func (i *InputField) SetMaskCharacter(mask rune) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.maskCharacter = mask
-	return i
+	return i.set(func(i *InputField) { i.maskCharacter = mask })
 }
 
 // SetAutocompleteFunc sets an autocomplete callback function which may return
@@ -437,12 +565,10 @@ func (i *InputField) SetMaskCharacter(mask rune) *InputField {
 // Autocomplete() is called. Entries are cleared when the user selects an entry
 // or presses Escape.
 func (i *InputField) SetAutocompleteFunc(callback func(currentText string) (entries []*ListItem)) *InputField {
-	i.Lock()
+	i.mu.Lock()
 	i.autocomplete = callback
-	i.Unlock()
-
-	i.Autocomplete()
-	return i
+	i.mu.Unlock()
+	return i.Autocomplete()
 }
 
 // Autocomplete invokes the autocomplete callback (if there is one). If the
@@ -454,25 +580,25 @@ func (i *InputField) SetAutocompleteFunc(callback func(currentText string) (entr
 // field is not redrawn automatically unless called from the main goroutine
 // (e.g. in response to events).
 func (i *InputField) Autocomplete() *InputField {
-	i.Lock()
+	i.mu.Lock()
 	if i.autocomplete == nil {
-		i.Unlock()
+		i.mu.Unlock()
 		return i
 	}
-	i.Unlock()
+	i.mu.Unlock()
 
 	// Do we have any autocomplete entries?
 	entries := i.autocomplete(string(i.text))
 	if len(entries) == 0 {
 		// No entries, no list.
-		i.Lock()
+		i.mu.Lock()
 		i.autocompleteList = nil
 		i.autocompleteListSuggestion = nil
-		i.Unlock()
+		i.mu.Unlock()
 		return i
 	}
 
-	i.Lock()
+	i.mu.Lock()
 
 	// Make a list if we have none.
 	if i.autocompleteList == nil {
@@ -503,7 +629,7 @@ func (i *InputField) Autocomplete() *InputField {
 		i.autocompleteList.SetCurrentItem(currentEntry)
 	}
 
-	i.Unlock()
+	i.mu.Unlock()
 
 	return i
 }
@@ -528,24 +654,16 @@ func (i *InputField) autocompleteChanged(_ int, item *ListItem) {
 // This package defines a number of variables prefixed with InputField which may
 // be used for common input (e.g. numbers, maximum text length).
 func (i *InputField) SetAcceptanceFunc(handler func(textToCheck string, lastChar rune) bool) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.accept = handler
-	return i
+	return i.set(func(i *InputField) { i.accept = handler })
 }
 
 // SetChangedFunc sets a handler which is called whenever the text of the input
 // field has changed. It receives the current text (after the change).
 func (i *InputField) SetChangedFunc(handler func(text string)) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.changed = handler
-	return i
+	return i.set(func(i *InputField) { i.changed = handler })
 }
 
-// SetDoneFunc sets a handler which is called when the user is done entering
+// SetDoneFunc setFocus(s a handler which is called when the user is done entering
 // text. The callback function is provided with the key that was pressed, which
 // is one of the following:
 //
@@ -554,20 +672,12 @@ func (i *InputField) SetChangedFunc(handler func(text string)) *InputField {
 //   - KeyTab: Move to the next field.
 //   - KeyBacktab: Move to the previous field.
 func (i *InputField) SetDoneFunc(handler func(key tcell.Key)) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.done = handler
-	return i
+	return i.set(func(i *InputField) { i.done = handler })
 }
 
 // SetFinishedFunc sets a callback invoked when the user leaves this form item.
 func (i *InputField) SetFinishedFunc(handler func(key tcell.Key)) *InputField {
-	i.Lock()
-	defer i.Unlock()
-
-	i.finished = handler
-	return i
+	return i.set(func(i *InputField) { i.finished = handler })
 }
 
 // Draw draws this primitive onto the screen.
@@ -576,10 +686,10 @@ func (i *InputField) Draw(screen tcell.Screen) {
 		return
 	}
 
-	i.Box.Draw(screen)
+	i.box.Draw(screen)
 
-	i.Lock()
-	defer i.Unlock()
+	i.mu.Lock()
+	defer i.mu.Unlock()
 
 	// Select colors
 	labelColor := i.labelColor
@@ -737,7 +847,7 @@ func (i *InputField) Draw(screen tcell.Screen) {
 	}
 
 	// Set cursor.
-	if i.focus.HasFocus() {
+	if i.box.focus.HasFocus() {
 		screen.ShowCursor(x+cursorScreenPos, y)
 	}
 }
@@ -745,14 +855,14 @@ func (i *InputField) Draw(screen tcell.Screen) {
 // InputHandler returns the handler for this primitive.
 func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
 	return i.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
-		i.Lock()
+		i.mu.Lock()
 
 		// Trigger changed events.
 		currentText := i.text
 		defer func() {
-			i.Lock()
+			i.mu.Lock()
 			newText := i.text
-			i.Unlock()
+			i.mu.Unlock()
 
 			if !bytes.Equal(newText, currentText) {
 				i.Autocomplete()
@@ -784,7 +894,7 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			i.cursorPos = len(i.text) - len(regexLeftWord.ReplaceAll(i.text[i.cursorPos:], nil))
 		}
 
-		// Add character function. Returns whether or not the rune character is
+		// Add character function. Returns whether the rune character is
 		// accepted.
 		add := func(r rune) bool {
 			newText := append(append(i.text[:i.cursorPos], []byte(string(r))...), i.text[i.cursorPos:]...)
@@ -810,7 +920,7 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 		switch key := event.Key(); key {
 		case tcell.KeyRune: // Regular character.
 			if event.Modifiers()&tcell.ModAlt > 0 {
-				// We accept some Alt- key combinations.
+				// We accept some Alt-key combinations.
 				switch event.Rune() {
 				case 'a': // Home.
 					home()
@@ -822,14 +932,14 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 					moveWordRight()
 				default:
 					if !add(event.Rune()) {
-						i.Unlock()
+						i.mu.Unlock()
 						return
 					}
 				}
 			} else {
 				// Other keys are simply accepted as regular characters.
 				if !add(event.Rune()) {
-					i.Unlock()
+					i.mu.Unlock()
 					return
 				}
 			}
@@ -879,14 +989,14 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 				if currentItem.GetSecondaryText() != "" {
 					selectionText = currentItem.GetSecondaryText()
 				}
-				i.Unlock()
+				i.mu.Unlock()
 				i.SetText(selectionText)
-				i.Lock()
+				i.mu.Lock()
 				i.autocompleteList = nil
 				i.autocompleteListSuggestion = nil
-				i.Unlock()
+				i.mu.Unlock()
 			} else {
-				i.Unlock()
+				i.mu.Unlock()
 				finish(key)
 			}
 			return
@@ -894,9 +1004,9 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			if i.autocompleteList != nil {
 				i.autocompleteList = nil
 				i.autocompleteListSuggestion = nil
-				i.Unlock()
+				i.mu.Unlock()
 			} else {
-				i.Unlock()
+				i.mu.Unlock()
 				finish(key)
 			}
 			return
@@ -908,9 +1018,9 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 					newEntry = 0
 				}
 				i.autocompleteList.SetCurrentItem(newEntry)
-				i.Unlock()
+				i.mu.Unlock()
 			} else {
-				i.Unlock()
+				i.mu.Unlock()
 				finish(key)
 			}
 			return
@@ -921,15 +1031,15 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 					newEntry = i.autocompleteList.GetItemCount() - 1
 				}
 				i.autocompleteList.SetCurrentItem(newEntry)
-				i.Unlock()
+				i.mu.Unlock()
 			} else {
-				i.Unlock()
+				i.mu.Unlock()
 				finish(key)
 			}
 			return
 		}
 
-		i.Unlock()
+		i.mu.Unlock()
 	})
 }
 
