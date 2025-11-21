@@ -15,10 +15,11 @@ func main() {
 	box := cui.NewBox()
 	box.SetBackgroundColor(tcell.ColorBlue.TrueColor())
 
-	frame := cui.NewFrame(box)
-	frame.SetBorders(2, 2, 2, 2, 4, 4)
-	frame.AddText("Header left", true, cui.AlignLeft, tcell.ColorWhite.TrueColor())
-	frame.AddText("Header middle", true, cui.AlignCenter, tcell.ColorWhite.TrueColor())
+	frame := cui.NewFrame().
+		SetWidget(box).
+		SetBorders(2, 2, 2, 2, 4, 4).
+		AddText("Header left", true, cui.AlignLeft, tcell.ColorWhite.TrueColor()).
+		AddText("Header middle", true, cui.AlignCenter, tcell.ColorWhite.TrueColor())
 	frame.AddText("Header right", true, cui.AlignRight, tcell.ColorWhite.TrueColor())
 	frame.AddText("Header second middle", true, cui.AlignCenter, tcell.ColorRed.TrueColor())
 	frame.AddText("Footer middle", false, cui.AlignCenter, tcell.ColorGreen.TrueColor())

@@ -10,7 +10,6 @@ import (
 // optional surrounding elements such as a border and a title. It does not have
 // inner text. Widgets embed Box and draw their text over it.
 type Box struct {
-	mu sync.RWMutex
 
 	// The position of the rect.
 	x, y, width, height int
@@ -74,6 +73,8 @@ type Box struct {
 	// event to be forwarded to the primitive's default mouse event handler (at
 	// least one nil if nothing should be forwarded).
 	mouseCapture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)
+
+	mu sync.RWMutex
 }
 
 // NewBox returns a Box without a border.

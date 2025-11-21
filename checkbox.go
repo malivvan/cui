@@ -9,7 +9,7 @@ import (
 // CheckBox implements a simple box for boolean values which can be checked and
 // unchecked.
 type CheckBox struct {
-	*Box
+	box *Box
 
 	// Whether this box is checked.
 	checked bool
@@ -67,7 +67,7 @@ type CheckBox struct {
 // NewCheckBox returns a new input field.
 func NewCheckBox() *CheckBox {
 	return &CheckBox{
-		Box:                         NewBox(),
+		box:                         NewBox(),
 		labelColor:                  Styles.SecondaryTextColor,
 		fieldBackgroundColor:        Styles.MoreContrastBackgroundColor,
 		fieldBackgroundColorFocused: Styles.ContrastBackgroundColor,
@@ -96,74 +96,215 @@ func (c *CheckBox) get(getter func(c *CheckBox)) {
 
 ///////////////////////////////////// <BOX> ////////////////////////////////////
 
+// GetTitle returns the title of this CheckBox.
+func (c *CheckBox) GetTitle() string {
+	return c.box.GetTitle()
+}
+
+// SetTitle sets the title of this CheckBox.
 func (c *CheckBox) SetTitle(title string) *CheckBox {
-	c.Box.SetTitle(title)
+	c.box.SetTitle(title)
 	return c
 }
 
+// GetTitleAlign returns the title alignment of this CheckBox.
+func (c *CheckBox) GetTitleAlign() int {
+	return c.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this CheckBox.
 func (c *CheckBox) SetTitleAlign(align int) *CheckBox {
-	c.Box.SetTitleAlign(align)
+	c.box.SetTitleAlign(align)
 	return c
 }
 
+// GetBorder returns whether this CheckBox has a border.
+func (c *CheckBox) GetBorder() bool {
+	return c.box.GetBorder()
+}
+
+// SetBorder sets whether this CheckBox has a border.
 func (c *CheckBox) SetBorder(show bool) *CheckBox {
-	c.Box.SetBorder(show)
+	c.box.SetBorder(show)
 	return c
 }
 
+// GetBorderColor returns the border color of this CheckBox.
+func (c *CheckBox) GetBorderColor() tcell.Color {
+	return c.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this CheckBox.
 func (c *CheckBox) SetBorderColor(color tcell.Color) *CheckBox {
-	c.Box.SetBorderColor(color)
+	c.box.SetBorderColor(color)
 	return c
 }
 
+// GetBorderAttributes returns the border attributes of this CheckBox.
+func (c *CheckBox) GetBorderAttributes() tcell.AttrMask {
+	return c.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this CheckBox.
 func (c *CheckBox) SetBorderAttributes(attr tcell.AttrMask) *CheckBox {
-	c.Box.SetBorderAttributes(attr)
+	c.box.SetBorderAttributes(attr)
 	return c
 }
 
+// GetBorderColorFocused returns the border color of this CheckBox when focused.
+func (c *CheckBox) GetBorderColorFocused() tcell.Color {
+	return c.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this CheckBox when focused.
 func (c *CheckBox) SetBorderColorFocused(color tcell.Color) *CheckBox {
-	c.Box.SetBorderColorFocused(color)
+	c.box.SetBorderColorFocused(color)
 	return c
 }
 
+// GetTitleColor returns the title color of this CheckBox.
+func (c *CheckBox) GetTitleColor() tcell.Color {
+	return c.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this CheckBox.
 func (c *CheckBox) SetTitleColor(color tcell.Color) *CheckBox {
-	c.Box.SetTitleColor(color)
+	c.box.SetTitleColor(color)
 	return c
 }
 
+// GetDrawFunc returns the custom draw function of this CheckBox.
+func (c *CheckBox) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return c.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this CheckBox.
 func (c *CheckBox) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *CheckBox {
-	c.Box.SetDrawFunc(handler)
+	c.box.SetDrawFunc(handler)
 	return c
 }
 
+// ShowFocus sets whether this CheckBox should show a focus indicator when focused.
 func (c *CheckBox) ShowFocus(showFocus bool) *CheckBox {
-	c.Box.ShowFocus(showFocus)
+	c.box.ShowFocus(showFocus)
 	return c
 }
 
+// GetMouseCapture returns the mouse capture function of this CheckBox.
+func (c *CheckBox) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return c.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this CheckBox.
 func (c *CheckBox) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *CheckBox {
-	c.Box.SetMouseCapture(capture)
+	c.box.SetMouseCapture(capture)
 	return c
 }
 
+// GetBackgroundColor returns the background color of this CheckBox.
+func (c *CheckBox) GetBackgroundColor() tcell.Color {
+	return c.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this CheckBox.
 func (c *CheckBox) SetBackgroundColor(color tcell.Color) *CheckBox {
-	c.Box.SetBackgroundColor(color)
+	c.box.SetBackgroundColor(color)
 	return c
 }
 
+// GetBackgroundTransparent returns whether the background of this CheckBox is transparent.
+func (c *CheckBox) GetBackgroundTransparent() bool {
+	return c.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this CheckBox is transparent.
 func (c *CheckBox) SetBackgroundTransparent(transparent bool) *CheckBox {
-	c.Box.SetBackgroundTransparent(transparent)
+	c.box.SetBackgroundTransparent(transparent)
 	return c
 }
 
+// GetInputCapture returns the input capture function of this CheckBox.
+func (c *CheckBox) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return c.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this CheckBox.
 func (c *CheckBox) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *CheckBox {
-	c.Box.SetInputCapture(capture)
+	c.box.SetInputCapture(capture)
 	return c
 }
 
+// GetPadding returns the padding of this CheckBox.
+func (c *CheckBox) GetPadding() (top, bottom, left, right int) {
+	return c.box.GetPadding()
+}
+
+// SetPadding sets the padding of this CheckBox.
 func (c *CheckBox) SetPadding(top, bottom, left, right int) *CheckBox {
-	c.Box.SetPadding(top, bottom, left, right)
+	c.box.SetPadding(top, bottom, left, right)
 	return c
+}
+
+// InRect returns whether the given screen coordinates are within this CheckBox.
+func (c *CheckBox) InRect(x, y int) bool {
+	return c.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this CheckBox.
+func (c *CheckBox) GetInnerRect() (x, y, width, height int) {
+	return c.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the CheckBox is preserved.
+func (c *CheckBox) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return c.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the CheckBox is preserved.
+func (c *CheckBox) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return c.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this CheckBox.
+func (c *CheckBox) GetRect() (x, y, width, height int) {
+	return c.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this CheckBox.
+func (c *CheckBox) SetRect(x, y, width, height int) {
+	c.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this CheckBox is visible.
+func (c *CheckBox) GetVisible() bool {
+	return c.box.GetVisible()
+}
+
+// SetVisible sets whether this CheckBox is visible.
+func (c *CheckBox) SetVisible(visible bool) {
+	c.box.SetVisible(visible)
+}
+
+// Focus is called when this CheckBox receives focus.
+func (c *CheckBox) Focus(delegate func(p Widget)) {
+	c.box.Focus(delegate)
+}
+
+// HasFocus returns whether this CheckBox has focus.
+func (c *CheckBox) HasFocus() bool {
+	return c.box.HasFocus()
+}
+
+// GetFocusable returns the focusable primitive of this CheckBox.
+func (c *CheckBox) GetFocusable() Focusable {
+	return c.box.GetFocusable()
+}
+
+// Blur is called when this CheckBox loses focus.
+func (c *CheckBox) Blur() {
+	c.box.Blur()
 }
 
 /////////////////////////////////////// <API> ///////////////////////////////////////
@@ -242,7 +383,7 @@ func (c *CheckBox) SetFieldTextColor(color tcell.Color) *CheckBox {
 	return c.set(func(c *CheckBox) { c.fieldTextColor = color })
 }
 
-// SetFieldTextColorFocused sets the text color of the input area when focused.
+// SetFieldTextColorFocused sBoxets the text color of the input area when focused.
 func (c *CheckBox) SetFieldTextColorFocused(color tcell.Color) *CheckBox {
 	return c.set(func(c *CheckBox) { c.fieldTextColorFocused = color })
 }
@@ -290,16 +431,16 @@ func (c *CheckBox) SetFinishedFunc(handler func(key tcell.Key)) *CheckBox {
 
 // Draw draws this primitive onto the screen.
 func (c *CheckBox) Draw(screen tcell.Screen) {
-	if !c.GetVisible() {
+	if !c.box.GetVisible() {
 		return
 	}
 
-	c.Box.Draw(screen)
+	c.box.Draw(screen)
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	hasFocus := c.GetFocusable().HasFocus()
+	hasFocus := c.box.GetFocusable().HasFocus()
 
 	// Select colors
 	labelColor := c.labelColor
@@ -318,7 +459,7 @@ func (c *CheckBox) Draw(screen tcell.Screen) {
 	}
 
 	// Prepare
-	x, y, width, height := c.GetInnerRect()
+	x, y, width, height := c.box.GetInnerRect()
 	rightLimit := x + width
 	if height < 1 || rightLimit <= x {
 		return
@@ -359,7 +500,7 @@ func (c *CheckBox) Draw(screen tcell.Screen) {
 
 // InputHandler returns the handler for this primitive.
 func (c *CheckBox) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
-	return c.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return c.box.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		if HitShortcut(event, Keys.Select, Keys.Select2) {
 			c.mu.Lock()
 			c.checked = !c.checked
@@ -380,10 +521,10 @@ func (c *CheckBox) InputHandler() func(event *tcell.EventKey, setFocus func(p Wi
 
 // MouseHandler returns the mouse handler for this primitive.
 func (c *CheckBox) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
-	return c.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return c.box.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		x, y := event.Position()
-		_, rectY, _, _ := c.GetInnerRect()
-		if !c.InRect(x, y) {
+		_, rectY, _, _ := c.box.GetInnerRect()
+		if !c.box.InRect(x, y) {
 			return false, nil
 		}
 

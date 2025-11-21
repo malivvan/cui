@@ -54,7 +54,7 @@ func NewModal() *Modal {
 		}
 	})
 
-	m.frame = NewFrame(m.form)
+	m.frame = NewFrame().SetWidget(m.form)
 	m.frame.SetBorder(true)
 	m.frame.SetBorders(0, 0, 1, 0, 0, 0)
 	m.frame.SetPadding(1, 1, 1, 1)

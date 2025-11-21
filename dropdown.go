@@ -56,7 +56,7 @@ func (d *DropDownOption) SetReference(reference interface{}) {
 // DropDown implements a selection widget whose options become visible in a
 // drop-down list when activated.
 type DropDown struct {
-	*Box
+	box *Box
 
 	// The options from which the user can choose.
 	options []*DropDownOption
@@ -146,7 +146,7 @@ type DropDown struct {
 	// A flag that determines whether the dropdown symbol is always drawn.
 	alwaysDrawDropDownSymbol bool
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewDropDown returns a new drop-down.
@@ -160,7 +160,7 @@ func NewDropDown() *DropDown {
 	list.SetBackgroundColor(Styles.ContrastBackgroundColor)
 
 	d := &DropDown{
-		Box:                         NewBox(),
+		box:                         NewBox(),
 		currentOption:               -1,
 		list:                        list,
 		labelColor:                  Styles.SecondaryTextColor,
@@ -179,7 +179,7 @@ func NewDropDown() *DropDown {
 	if sym := d.dropDownSelectedSymbol; sym != 0 {
 		list.SetIndicators(" "+string(sym)+" ", "", "   ", "")
 	}
-	d.focus = d
+	d.box.focus = d
 
 	return d
 }
@@ -201,69 +201,227 @@ func (d *DropDown) get(getter func(d *DropDown)) {
 
 ///////////////////////////////////// <BOX> ////////////////////////////////////
 
+// GetTitle returns the title of this DropDown.
+func (d *DropDown) GetTitle() string {
+	return d.box.GetTitle()
+}
+
+// SetTitle sets the title of this DropDown.
 func (d *DropDown) SetTitle(title string) *DropDown {
-	d.Box.SetTitle(title)
+	d.box.SetTitle(title)
 	return d
 }
 
+// GetTitleAlign returns the title alignment of this DropDown.
+func (d *DropDown) GetTitleAlign() int {
+	return d.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this DropDown.
 func (d *DropDown) SetTitleAlign(align int) *DropDown {
-	d.Box.SetTitleAlign(align)
+	d.box.SetTitleAlign(align)
 	return d
 }
 
+// GetBorder returns whether this DropDown has a border.
+func (d *DropDown) GetBorder() bool {
+	return d.box.GetBorder()
+}
+
+// SetBorder sets whether this DropDown has a border.
 func (d *DropDown) SetBorder(show bool) *DropDown {
-	d.Box.SetBorder(show)
+	d.box.SetBorder(show)
 	return d
 }
 
+// GetBorderColor returns the border color of this DropDown.
+func (d *DropDown) GetBorderColor() tcell.Color {
+	return d.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this DropDown.
 func (d *DropDown) SetBorderColor(color tcell.Color) *DropDown {
-	d.Box.SetBorderColor(color)
+	d.box.SetBorderColor(color)
 	return d
 }
 
+// GetBorderAttributes returns the border attributes of this DropDown.
+func (d *DropDown) GetBorderAttributes() tcell.AttrMask {
+	return d.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this DropDown.
 func (d *DropDown) SetBorderAttributes(attr tcell.AttrMask) *DropDown {
-	d.Box.SetBorderAttributes(attr)
+	d.box.SetBorderAttributes(attr)
 	return d
 }
 
+// GetBorderColorFocused returns the border color of this DropDown when focused.
+func (d *DropDown) GetBorderColorFocused() tcell.Color {
+	return d.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this DropDown when focused.
 func (d *DropDown) SetBorderColorFocused(color tcell.Color) *DropDown {
-	d.Box.SetBorderColorFocused(color)
+	d.box.SetBorderColorFocused(color)
 	return d
 }
 
+// GetTitleColor returns the title color of this DropDown.
+func (d *DropDown) GetTitleColor() tcell.Color {
+	return d.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this DropDown.
 func (d *DropDown) SetTitleColor(color tcell.Color) *DropDown {
-	d.Box.SetTitleColor(color)
+	d.box.SetTitleColor(color)
 	return d
 }
 
+// GetDrawFunc returns the custom draw function of this DropDown.
+func (d *DropDown) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return d.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this DropDown.
 func (d *DropDown) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *DropDown {
-	d.Box.SetDrawFunc(handler)
+	d.box.SetDrawFunc(handler)
 	return d
 }
 
+// ShowFocus sets whether this DropDown should show a focus indicator when focused.
 func (d *DropDown) ShowFocus(showFocus bool) *DropDown {
-	d.Box.ShowFocus(showFocus)
+	d.box.ShowFocus(showFocus)
 	return d
 }
 
+// GetMouseCapture returns the mouse capture function of this DropDown.
+func (d *DropDown) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return d.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this DropDown.
 func (d *DropDown) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *DropDown {
-	d.Box.SetMouseCapture(capture)
+	d.box.SetMouseCapture(capture)
 	return d
 }
 
+// GetBackgroundColor returns the background color of this DropDown.
+func (d *DropDown) GetBackgroundColor() tcell.Color {
+	return d.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this DropDown.
+func (d *DropDown) SetBackgroundColor(color tcell.Color) *DropDown {
+	d.box.SetBackgroundColor(color)
+	return d
+}
+
+// GetBackgroundTransparent returns whether the background of this DropDown is transparent.
+func (d *DropDown) GetBackgroundTransparent() bool {
+	return d.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this DropDown is transparent.
 func (d *DropDown) SetBackgroundTransparent(transparent bool) *DropDown {
-	d.Box.SetBackgroundTransparent(transparent)
+	d.box.SetBackgroundTransparent(transparent)
 	return d
 }
 
+// GetInputCapture returns the input capture function of this DropDown.
+func (d *DropDown) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return d.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this DropDown.
 func (d *DropDown) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *DropDown {
-	d.Box.SetInputCapture(capture)
+	d.box.SetInputCapture(capture)
 	return d
 }
 
+// GetPadding returns the padding of this DropDown.
+func (d *DropDown) GetPadding() (top, bottom, left, right int) {
+	return d.box.GetPadding()
+}
+
+// SetPadding sets the padding of this DropDown.
 func (d *DropDown) SetPadding(top, bottom, left, right int) *DropDown {
-	d.Box.SetPadding(top, bottom, left, right)
+	d.box.SetPadding(top, bottom, left, right)
 	return d
+}
+
+// InRect returns whether the given screen coordinates are within this DropDown.
+func (d *DropDown) InRect(x, y int) bool {
+	return d.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this DropDown.
+func (d *DropDown) GetInnerRect() (x, y, width, height int) {
+	return d.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the DropDown is preserved.
+func (d *DropDown) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return d.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the DropDown is preserved.
+func (d *DropDown) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return d.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this DropDown.
+func (d *DropDown) GetRect() (x, y, width, height int) {
+	return d.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this DropDown.
+func (d *DropDown) SetRect(x, y, width, height int) {
+	d.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this DropDown is visible.
+func (d *DropDown) GetVisible() bool {
+	return d.box.GetVisible()
+}
+
+// SetVisible sets whether this DropDown is visible.
+func (d *DropDown) SetVisible(visible bool) {
+	d.box.SetVisible(visible)
+}
+
+// Focus is called by the application when the primitive receives focus.
+func (d *DropDown) Focus(delegate func(p Widget)) {
+	d.box.Focus(delegate)
+	if d.open {
+		delegate(d.list)
+	}
+}
+
+// HasFocus returns whether this primitive has focus.
+func (d *DropDown) HasFocus() bool {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+	return d._hasFocus()
+}
+
+func (d *DropDown) _hasFocus() bool {
+	if d.open {
+		return d.list.HasFocus()
+	}
+	return d.box.hasFocus
+}
+
+// GetFocusable returns the focusable primitive of this DropDown.
+func (d *DropDown) GetFocusable() Focusable {
+	return d.box.GetFocusable()
+}
+
+// Blur is called when this DropDown loses focus.
+func (d *DropDown) Blur() {
+	d.box.Blur()
 }
 
 /////////////////////////////////////// <API> ///////////////////////////////////////
@@ -271,74 +429,62 @@ func (d *DropDown) SetPadding(top, bottom, left, right int) *DropDown {
 // SetDropDownSymbolRune sets the rune to be drawn at the end of the dropdown field
 // to indicate that this field is a dropdown.
 func (d *DropDown) SetDropDownSymbolRune(symbol rune) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-	d.dropDownSymbol = symbol
-	return d
+	return d.set(func(d *DropDown) { d.dropDownSymbol = symbol })
 }
 
 // SetDropDownOpenSymbolRune sets the rune to be drawn at the end of the
 // dropdown field to indicate that the a dropdown is open.
 func (d *DropDown) SetDropDownOpenSymbolRune(symbol rune) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-	d.dropDownOpenSymbol = symbol
-
-	if symbol != 0 {
-		d.list.SetIndicators(" "+string(symbol)+" ", "", "   ", "")
-	} else {
-		d.list.SetIndicators("", "", "", "")
-	}
-	return d
-
+	return d.set(func(d *DropDown) {
+		d.dropDownOpenSymbol = symbol
+		if symbol != 0 {
+			d.list.SetIndicators(" "+string(symbol)+" ", "", "   ", "")
+		} else {
+			d.list.SetIndicators("", "", "", "")
+		}
+	})
 }
 
 // SetDropDownSelectedSymbolRune sets the rune to be drawn at the start of the
 // selected list item.
 func (d *DropDown) SetDropDownSelectedSymbolRune(symbol rune) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-	d.dropDownSelectedSymbol = symbol
-	return d
+	return d.set(func(d *DropDown) { d.dropDownSelectedSymbol = symbol })
 }
 
-// SetAlwaysDrawDropDownSymbol sets a flad that determines whether the drop
-// down symbol is always drawn. The symbol is normally only drawn when focused.
+// SetAlwaysDrawDropDownSymbol sets a flat that determines whether the dropdown
+// symbol is always drawn. The symbol is normally only drawn when focused.
 func (d *DropDown) SetAlwaysDrawDropDownSymbol(alwaysDraw bool) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-	d.alwaysDrawDropDownSymbol = alwaysDraw
-	return d
+	return d.set(func(d *DropDown) { d.alwaysDrawDropDownSymbol = alwaysDraw })
 }
 
 // SetCurrentOption sets the index of the currently selected option. This may
 // be a negative value to indicate that no option is currently selected. Calling
 // this function will also trigger the "selected" callback (if there is one).
 func (d *DropDown) SetCurrentOption(index int) *DropDown {
-	d.Lock()
+	d.mu.Lock()
 	if index >= 0 && index < len(d.options) {
 		d.currentOption = index
 		d.list.SetCurrentItem(index)
 		if d.selected != nil {
-			d.Unlock()
+			d.mu.Unlock()
 			d.selected(index, d.options[index])
-			d.Lock()
+			d.mu.Lock()
 		}
 		if d.options[index].selected != nil {
-			d.Unlock()
+			d.mu.Unlock()
 			d.options[index].selected(index, d.options[index])
-			d.Lock()
+			d.mu.Lock()
 		}
 	} else {
 		d.currentOption = -1
 		d.list.SetCurrentItem(0) // Set to 0 because -1 means "last item".
 		if d.selected != nil {
-			d.Unlock()
+			d.mu.Unlock()
 			d.selected(-1, nil)
-			d.Lock()
+			d.mu.Lock()
 		}
 	}
-	d.Unlock()
+	d.mu.Unlock()
 
 	return d
 }
@@ -346,8 +492,8 @@ func (d *DropDown) SetCurrentOption(index int) *DropDown {
 // GetCurrentOption returns the index of the currently selected option as well
 // as the option itself. If no option was selected, -1 and nil is returned.
 func (d *DropDown) GetCurrentOption() (int, *DropDownOption) {
-	d.RLock()
-	defer d.RUnlock()
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 
 	var option *DropDownOption
 	if d.currentOption >= 0 && d.currentOption < len(d.options) {
@@ -362,167 +508,98 @@ func (d *DropDown) GetCurrentOption() (int, *DropDownOption) {
 // displayed when no option is currently selected. Per default, all of these
 // strings are empty.
 func (d *DropDown) SetTextOptions(prefix, suffix, currentPrefix, currentSuffix, noSelection string) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.currentOptionPrefix = currentPrefix
-	d.currentOptionSuffix = currentSuffix
-	d.noSelection = noSelection
-	d.optionPrefix = prefix
-	d.optionSuffix = suffix
-	for index := 0; index < d.list.GetItemCount(); index++ {
-		d.list.SetItemText(index, prefix+d.options[index].text+suffix, "")
-	}
-
-	return d
+	return d.set(func(d *DropDown) {
+		d.currentOptionPrefix = currentPrefix
+		d.currentOptionSuffix = currentSuffix
+		d.noSelection = noSelection
+		d.optionPrefix = prefix
+		d.optionSuffix = suffix
+		for index := 0; index < d.list.GetItemCount(); index++ {
+			d.list.SetItemText(index, prefix+d.options[index].text+suffix, "")
+		}
+	})
 }
 
 // SetLabel sets the text to be displayed before the input area.
 func (d *DropDown) SetLabel(label string) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.label = label
-	return d
+	return d.set(func(d *DropDown) { d.label = label })
 }
 
 // GetLabel returns the text to be displayed before the input area.
-func (d *DropDown) GetLabel() string {
-	d.RLock()
-	defer d.RUnlock()
-
-	return d.label
+func (d *DropDown) GetLabel() (label string) {
+	d.get(func(d *DropDown) { label = d.label })
+	return
 }
 
 // SetLabelWidth sets the screen width of the label. A value of 0 will cause the
 // primitive to use the width of the label string.
 func (d *DropDown) SetLabelWidth(width int) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.labelWidth = width
-	return d
+	return d.set(func(d *DropDown) { d.labelWidth = width })
 }
 
 // SetLabelColor sets the color of the label.
 func (d *DropDown) SetLabelColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.labelColor = color
-	return d
+	return d.set(func(d *DropDown) { d.labelColor = color })
 }
 
 // SetLabelColorFocused sets the color of the label when focused.
 func (d *DropDown) SetLabelColorFocused(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.labelColorFocused = color
-	return d
+	return d.set(func(d *DropDown) { d.labelColorFocused = color })
 }
 
 // SetFieldBackgroundColor sets the background color of the options area.
 func (d *DropDown) SetFieldBackgroundColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.fieldBackgroundColor = color
-	return d
+	return d.set(func(d *DropDown) { d.fieldBackgroundColor = color })
 }
 
 // SetFieldBackgroundColorFocused sets the background color of the options area when focused.
 func (d *DropDown) SetFieldBackgroundColorFocused(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.fieldBackgroundColorFocused = color
-	return d
+	return d.set(func(d *DropDown) { d.fieldBackgroundColorFocused = color })
 }
 
 // SetFieldTextColor sets the text color of the options area.
 func (d *DropDown) SetFieldTextColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.fieldTextColor = color
-	return d
+	return d.set(func(d *DropDown) { d.fieldTextColor = color })
 }
 
 // SetFieldTextColorFocused sets the text color of the options area when focused.
 func (d *DropDown) SetFieldTextColorFocused(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.fieldTextColorFocused = color
-	return d
+	return d.set(func(d *DropDown) { d.fieldTextColorFocused = color })
 }
 
 // SetDropDownTextColor sets text color of the drop-down list.
 func (d *DropDown) SetDropDownTextColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.list.SetMainTextColor(color)
-	return d
+	return d.set(func(d *DropDown) { d.list.SetMainTextColor(color) })
 }
 
 // SetDropDownBackgroundColor sets the background color of the drop-down list.
 func (d *DropDown) SetDropDownBackgroundColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.list.SetBackgroundColor(color)
-	return d
+	return d.set(func(d *DropDown) { d.list.SetBackgroundColor(color) })
 }
 
 // SetDropDownSelectedTextColor sets the text color of the selected option in
 // the drop-down list.
 func (d *DropDown) SetDropDownSelectedTextColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.list.SetSelectedTextColor(color)
-	return d
+	return d.set(func(d *DropDown) { d.list.SetSelectedTextColor(color) })
 }
 
 // SetDropDownSelectedBackgroundColor sets the background color of the selected
 // option in the drop-down list.
 func (d *DropDown) SetDropDownSelectedBackgroundColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.list.SetSelectedBackgroundColor(color)
-	return d
+	return d.set(func(d *DropDown) { d.list.SetSelectedBackgroundColor(color) })
 }
 
 // SetPrefixTextColor sets the color of the prefix string. The prefix string is
 // shown when the user starts typing text, which directly selects the first
 // option that starts with the typed string.
 func (d *DropDown) SetPrefixTextColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.prefixTextColor = color
-	return d
-}
-
-func (d *DropDown) SetBackgroundColor(color tcell.Color) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.Box.SetBackgroundColor(color)
-	return d
+	return d.set(func(d *DropDown) { d.prefixTextColor = color })
 }
 
 // SetFieldWidth sets the screen width of the options area. A value of 0 means
 // extend to as long as the longest option text.
 func (d *DropDown) SetFieldWidth(width int) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.fieldWidth = width
-	return d
+	return d.set(func(d *DropDown) { d.fieldWidth = width })
 }
 
 // GetFieldHeight returns the height of the field.
@@ -531,10 +608,9 @@ func (d *DropDown) GetFieldHeight() int {
 }
 
 // GetFieldWidth returns this primitive's field screen width.
-func (d *DropDown) GetFieldWidth() int {
-	d.RLock()
-	defer d.RUnlock()
-	return d.getFieldWidth()
+func (d *DropDown) GetFieldWidth() (w int) {
+	d.get(func(d *DropDown) { w = d.getFieldWidth() })
+	return
 }
 
 func (d *DropDown) getFieldWidth() int {
@@ -567,10 +643,7 @@ func (d *DropDown) AddOptionsSimple(options ...string) *DropDown {
 
 // AddOptions adds new selectable options to this drop-down.
 func (d *DropDown) AddOptions(options ...*DropDownOption) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-	d.addOptions(options...)
-	return d
+	return d.set(func(d *DropDown) { d.addOptions(options...) })
 }
 
 func (d *DropDown) addOptions(options ...*DropDownOption) {
@@ -598,14 +671,12 @@ func (d *DropDown) SetOptionsSimple(selected func(index int, option *DropDownOpt
 // It will be called with the option's index and the option itself.
 // The "selected" parameter may be nil.
 func (d *DropDown) SetOptions(selected func(index int, option *DropDownOption), options ...*DropDownOption) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.list.Clear()
-	d.options = nil
-	d.addOptions(options...)
-	d.selected = selected
-	return d
+	return d.set(func(d *DropDown) {
+		d.list.Clear()
+		d.options = nil
+		d.addOptions(options...)
+		d.selected = selected
+	})
 }
 
 // SetChangedFunc sets a handler which is called when the user changes the
@@ -613,9 +684,7 @@ func (d *DropDown) SetOptions(selected func(index int, option *DropDownOption), 
 // index and the option itself. If "no option" was selected, these values are
 // -1 and nil.
 func (d *DropDown) SetChangedFunc(handler func(index int, option *DropDownOption)) *DropDown {
-	d.list.SetChangedFunc(func(index int, item *ListItem) {
-		handler(index, d.options[index])
-	})
+	d.list.SetChangedFunc(func(index int, item *ListItem) { handler(index, d.options[index]) })
 	return d
 }
 
@@ -625,11 +694,7 @@ func (d *DropDown) SetChangedFunc(handler func(index int, option *DropDownOption
 // selected option's index and the option itself. If "no option" was selected, these values
 // are -1 and nil.
 func (d *DropDown) SetSelectedFunc(handler func(index int, option *DropDownOption)) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.selected = handler
-	return d
+	return d.set(func(d *DropDown) { d.selected = handler })
 }
 
 // SetDoneFunc sets a handler which is called when the user is done selecting
@@ -640,54 +705,23 @@ func (d *DropDown) SetSelectedFunc(handler func(index int, option *DropDownOptio
 //   - KeyTab: Move to the next field.
 //   - KeyBacktab: Move to the previous field.
 func (d *DropDown) SetDoneFunc(handler func(key tcell.Key)) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.done = handler
-	return d
+	return d.set(func(d *DropDown) { d.done = handler })
 }
 
 // SetFinishedFunc sets a callback invoked when the user leaves this form item.
 func (d *DropDown) SetFinishedFunc(handler func(key tcell.Key)) *DropDown {
-	d.Lock()
-	defer d.Unlock()
-
-	d.finished = handler
-	return d
-}
-
-// Focus is called by the application when the primitive receives focus.
-func (d *DropDown) Focus(delegate func(p Widget)) {
-	d.Box.Focus(delegate)
-	if d.open {
-		delegate(d.list)
-	}
-}
-
-// HasFocus returns whether or not this primitive has focus.
-func (d *DropDown) HasFocus() bool {
-	d.RLock()
-	defer d.RUnlock()
-
-	return d._hasFocus()
-}
-
-func (d *DropDown) _hasFocus() bool {
-	if d.open {
-		return d.list.HasFocus()
-	}
-	return d.hasFocus
+	return d.set(func(d *DropDown) { d.finished = handler })
 }
 
 ////////////////////////////////////// <WIDGET> ///////////////////////////////////////
 
 // Draw draws this primitive onto the screen.
 func (d *DropDown) Draw(screen tcell.Screen) {
-	d.Box.Draw(screen)
+	d.box.Draw(screen)
 	hasFocus := d.GetFocusable().HasFocus()
 
-	d.Lock()
-	defer d.Unlock()
+	d.mu.Lock()
+	defer d.mu.Unlock()
 
 	// Select colors
 	labelColor := d.labelColor
@@ -828,8 +862,8 @@ func (d *DropDown) InputHandler() func(event *tcell.EventKey, setFocus func(p Wi
 		// Process key event.
 		switch key := event.Key(); key {
 		case tcell.KeyEnter, tcell.KeyRune, tcell.KeyDown:
-			d.Lock()
-			defer d.Unlock()
+			d.mu.Lock()
+			defer d.mu.Unlock()
 
 			d.prefix = ""
 

@@ -380,7 +380,7 @@ func (t *TabbedPanels) Draw(screen tcell.Screen) {
 		return
 	}
 
-	t.Box.Draw(screen)
+	t.box.Draw(screen)
 
 	_, _, t.width, _ = t.GetInnerRect()
 	if t.width != t.lastWidth {

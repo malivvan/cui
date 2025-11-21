@@ -226,6 +226,21 @@ func NewList() *List {
 	return l
 }
 
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (l *List) set(setter func(l *List)) *List {
+	l.mu.Lock()
+	setter(l)
+	l.mu.Unlock()
+	return l
+}
+
+func (l *List) get(getter func(l *List)) {
+	l.mu.RLock()
+	getter(l)
+	l.mu.RUnlock()
+}
+
 // SetCurrentItem sets the currently selected item by its index, starting at 0
 // for the first item. If a negative index is provided, items are referred to
 // from the back (-1 = last item, -2 = second-to-last item, and so on). Out of
@@ -502,11 +517,8 @@ func (l *List) SetWrapAround(wrapAround bool) {
 //
 // This function is also called when the first item is added or when
 // SetCurrentItem() is called.
-func (l *List) SetChangedFunc(handler func(index int, item *ListItem)) {
-	l.Lock()
-	defer l.Unlock()
-
-	l.changed = handler
+func (l *List) SetChangedFunc(handler func(index int, item *ListItem)) *List {
+	return l.set(func(l *List) { l.changed = handler })
 }
 
 // SetSelectedFunc sets the function which is called when the user selects a

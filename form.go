@@ -17,7 +17,7 @@ var DefaultFormFieldWidth = 10
 // CheckBox. These elements can be optionally followed by one or more buttons
 // for which you can define form-wide actions (e.g. Save, Clear, Cancel).
 type Form struct {
-	*Box
+	box *Box
 
 	// The items of the form (one row per item).
 	items []Widget
@@ -88,7 +88,7 @@ func NewForm() *Form {
 	box.SetPadding(1, 1, 1, 1)
 
 	f := &Form{
-		Box:                          box,
+		box:                          box,
 		itemPadding:                  1,
 		labelColor:                   Styles.SecondaryTextColor,
 		fieldBackgroundColor:         Styles.MoreContrastBackgroundColor,
@@ -102,61 +102,294 @@ func NewForm() *Form {
 		labelColorFocused:            ColorUnset,
 	}
 
-	f.focus = f
+	f.box.focus = f
 	return f
 }
 
-// <BOX>
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
 
-// SetPadding sets the padding of the Form.
-func (f *Form) SetPadding(top, bottom, left, right int) *Form {
-	f.Box.SetPadding(top, bottom, left, right)
+func (f *Form) set(setter func(f *Form)) *Form {
+	f.mu.Lock()
+	setter(f)
+	f.mu.Unlock()
 	return f
 }
 
-// SetBorder sets whether the Form has a border.
-func (f *Form) SetBorder(show bool) *Form {
-	f.Box.SetBorder(show)
-	return f
+func (f *Form) get(getter func(f *Form)) {
+	f.mu.RLock()
+	getter(f)
+	f.mu.RUnlock()
 }
 
-// SetBorderColor sets the border color of the Form.
-func (f *Form) SetBorderColor(color tcell.Color) *Form {
-	f.Box.SetBorderColor(color)
-	return f
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Form.
+func (f *Form) GetTitle() string {
+	return f.box.GetTitle()
 }
 
-// SetBorderColorFocused sets the border color of the Form when focused.
-func (f *Form) SetBorderColorFocused(color tcell.Color) *Form {
-	f.Box.SetBorderColorFocused(color)
-	return f
-}
-
-// SetBorderAttributes sets the border attributes of the Form.
-func (f *Form) SetBorderAttributes(attr tcell.AttrMask) *Form {
-	f.Box.SetBorderAttributes(attr)
-	return f
-}
-
-// SetTitle sets the title of the Form.
+// SetTitle sets the title of this Form.
 func (f *Form) SetTitle(title string) *Form {
-	f.Box.SetTitle(title)
+	f.box.SetTitle(title)
 	return f
 }
 
-// SetTitleColor sets the title color of the Form.
-func (f *Form) SetTitleColor(color tcell.Color) *Form {
-	f.Box.SetTitleColor(color)
-	return f
+// GetTitleAlign returns the title alignment of this Form.
+func (f *Form) GetTitleAlign() int {
+	return f.box.GetTitleAlign()
 }
 
-// SetTitleAlign sets the title alignment of the Form.
+// SetTitleAlign sets the title alignment of this Form.
 func (f *Form) SetTitleAlign(align int) *Form {
-	f.Box.SetTitleAlign(align)
+	f.box.SetTitleAlign(align)
 	return f
 }
 
-// </BOX>
+// GetBorder returns whether this Form has a border.
+func (f *Form) GetBorder() bool {
+	return f.box.GetBorder()
+}
+
+// SetBorder sets whether this Form has a border.
+func (f *Form) SetBorder(show bool) *Form {
+	f.box.SetBorder(show)
+	return f
+}
+
+// GetBorderColor returns the border color of this Form.
+func (f *Form) GetBorderColor() tcell.Color {
+	return f.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Form.
+func (f *Form) SetBorderColor(color tcell.Color) *Form {
+	f.box.SetBorderColor(color)
+	return f
+}
+
+// GetBorderAttributes returns the border attributes of this Form.
+func (f *Form) GetBorderAttributes() tcell.AttrMask {
+	return f.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Form.
+func (f *Form) SetBorderAttributes(attr tcell.AttrMask) *Form {
+	f.box.SetBorderAttributes(attr)
+	return f
+}
+
+// GetBorderColorFocused returns the border color of this Form when focusef.
+func (f *Form) GetBorderColorFocused() tcell.Color {
+	return f.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Form when focusef.
+func (f *Form) SetBorderColorFocused(color tcell.Color) *Form {
+	f.box.SetBorderColorFocused(color)
+	return f
+}
+
+// GetTitleColor returns the title color of this Form.
+func (f *Form) GetTitleColor() tcell.Color {
+	return f.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Form.
+func (f *Form) SetTitleColor(color tcell.Color) *Form {
+	f.box.SetTitleColor(color)
+	return f
+}
+
+// GetDrawFunc returns the custom draw function of this Form.
+func (f *Form) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return f.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Form.
+func (f *Form) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Form {
+	f.box.SetDrawFunc(handler)
+	return f
+}
+
+// ShowFocus sets whether this Form should show a focus indicator when focusef.
+func (f *Form) ShowFocus(showFocus bool) *Form {
+	f.box.ShowFocus(showFocus)
+	return f
+}
+
+// GetMouseCapture returns the mouse capture function of this Form.
+func (f *Form) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return f.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Form.
+func (f *Form) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Form {
+	f.box.SetMouseCapture(capture)
+	return f
+}
+
+// GetBackgroundColor returns the background color of this Form.
+func (f *Form) GetBackgroundColor() tcell.Color {
+	return f.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this Form.
+func (f *Form) SetBackgroundColor(color tcell.Color) *Form {
+	f.box.SetBackgroundColor(color)
+	return f
+}
+
+// GetBackgroundTransparent returns whether the background of this Form is transparent.
+func (f *Form) GetBackgroundTransparent() bool {
+	return f.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Form is transparent.
+func (f *Form) SetBackgroundTransparent(transparent bool) *Form {
+	f.box.SetBackgroundTransparent(transparent)
+	return f
+}
+
+// GetInputCapture returns the input capture function of this Form.
+func (f *Form) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return f.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Form.
+func (f *Form) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Form {
+	f.box.SetInputCapture(capture)
+	return f
+}
+
+// GetPadding returns the padding of this Form.
+func (f *Form) GetPadding() (top, bottom, left, right int) {
+	return f.box.GetPadding()
+}
+
+// SetPadding sets the padding of this Form.
+func (f *Form) SetPadding(top, bottom, left, right int) *Form {
+	f.box.SetPadding(top, bottom, left, right)
+	return f
+}
+
+// InRect returns whether the given screen coordinates are within this Form.
+func (f *Form) InRect(x, y int) bool {
+	return f.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Form.
+func (f *Form) GetInnerRect() (x, y, width, height int) {
+	return f.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Form is preservef.
+func (f *Form) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return f.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Form is preservef.
+func (f *Form) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return f.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Form.
+func (f *Form) GetRect() (x, y, width, height int) {
+	return f.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Form.
+func (f *Form) SetRect(x, y, width, height int) {
+	f.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Form is visible.
+func (f *Form) GetVisible() bool {
+	return f.box.GetVisible()
+}
+
+// SetVisible sets whether this Form is visible.
+func (f *Form) SetVisible(visible bool) {
+	f.box.SetVisible(visible)
+}
+
+// Focus is called by the application when the primitive receives focus.
+func (f *Form) Focus(delegate func(p Widget)) {
+	f.mu.Lock()
+	if len(f.items)+len(f.buttons) == 0 {
+		f.box.hasFocus = true
+		f.mu.Unlock()
+		return
+	}
+	f.box.hasFocus = false
+
+	// Hand on the focus to one of our child elements.
+	if f.focusedElement < 0 || f.focusedElement >= len(f.items)+len(f.buttons) {
+		f.focusedElement = 0
+	}
+
+	if f.focusedElement < len(f.items) {
+		// We're selecting an item.
+		item := f.items[f.focusedElement]
+
+		attributes := f.getAttributes()
+		attributes.FinishedFunc = f.formItemInputHandler(delegate)
+
+		f.mu.Unlock()
+
+		attributes.Apply(item)
+		delegate(item)
+	} else {
+		// We're selecting a button.
+		button := f.buttons[f.focusedElement-len(f.items)]
+		button.SetBlurFunc(f.formItemInputHandler(delegate))
+
+		f.mu.Unlock()
+
+		delegate(button)
+	}
+}
+
+// HasFocus returns whether this primitive has focus.
+func (f *Form) HasFocus() bool {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	if f.box.hasFocus {
+		return true
+	}
+	return f.focusIndex() >= 0
+}
+
+// focusIndex returns the index of the currently focused item, counting form
+// items first, then buttons. A negative value indicates that no contained item
+// has focus.
+func (f *Form) focusIndex() int {
+	for index, item := range f.items {
+		if item.GetVisible() && item.GetFocusable().HasFocus() {
+			return index
+		}
+	}
+	for index, button := range f.buttons {
+		if button.GetVisible() && button.box.focus.HasFocus() {
+			return len(f.items) + index
+		}
+	}
+	return -1
+}
+
+// GetFocusable returns the focusable primitive of this Form.
+func (f *Form) GetFocusable() Focusable {
+	return f.box.GetFocusable()
+}
+
+// Blur is called when this Form loses focus.
+func (f *Form) Blur() {
+	f.box.Blur()
+}
+
+/////////////////////////////////////// <API> ///////////////////////////////////////
 
 // SetItemPadding sets the number of empty rows between form items for vertical
 // layouts and the number of empty cells between form items for horizontal
@@ -195,14 +428,6 @@ func (f *Form) SetLabelWidth(width int) *Form {
 	defer f.mu.Unlock()
 
 	f.labelWidth = width
-	return f
-}
-
-func (f *Form) SetBackgroundColor(color tcell.Color) *Form {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-
-	f.backgroundColor = color
 	return f
 }
 
@@ -434,13 +659,7 @@ func (f *Form) AddSlider(label string, current, max, increment int, changed func
 // AddButton adds a new button to the form. The "selected" function is called
 // when the user selects this button. It may be nil.
 func (f *Form) AddButton(label string, selected func()) *Form {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-
-	button := NewButton(label)
-	button.SetSelectedFunc(selected)
-	f.buttons = append(f.buttons, button)
-	return f
+	return f.set(func(f *Form) { f.buttons = append(f.buttons, NewButton().SetLabel(label).SetSelectedFunc(selected)) })
 }
 
 // GetButton returns the button at the specified 0-based index. Note that
@@ -654,7 +873,7 @@ func (f *Form) GetAttributes() *FormItemAttributes {
 
 func (f *Form) getAttributes() *FormItemAttributes {
 	attrs := &FormItemAttributes{
-		BackgroundColor:      f.backgroundColor,
+		BackgroundColor:      f.box.backgroundColor,
 		LabelColor:           f.labelColor,
 		FieldBackgroundColor: f.fieldBackgroundColor,
 		FieldTextColor:       f.fieldTextColor,
@@ -683,7 +902,7 @@ func (f *Form) Draw(screen tcell.Screen) {
 		return
 	}
 
-	f.Box.Draw(screen)
+	f.box.Draw(screen)
 
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -962,69 +1181,9 @@ func (f *Form) formItemInputHandler(delegate func(p Widget)) func(key tcell.Key)
 	}
 }
 
-// Focus is called by the application when the primitive receives focus.
-func (f *Form) Focus(delegate func(p Widget)) {
-	f.mu.Lock()
-	if len(f.items)+len(f.buttons) == 0 {
-		f.hasFocus = true
-		f.mu.Unlock()
-		return
-	}
-	f.hasFocus = false
-
-	// Hand on the focus to one of our child elements.
-	if f.focusedElement < 0 || f.focusedElement >= len(f.items)+len(f.buttons) {
-		f.focusedElement = 0
-	}
-
-	if f.focusedElement < len(f.items) {
-		// We're selecting an item.
-		item := f.items[f.focusedElement]
-
-		attributes := f.getAttributes()
-		attributes.FinishedFunc = f.formItemInputHandler(delegate)
-
-		f.mu.Unlock()
-
-		attributes.Apply(item)
-		delegate(item)
-	} else {
-		// We're selecting a button.
-		button := f.buttons[f.focusedElement-len(f.items)]
-		button.SetBlurFunc(f.formItemInputHandler(delegate))
-
-		f.mu.Unlock()
-
-		delegate(button)
-	}
-}
-
-// HasFocus returns whether this primitive has focus.
-func (f *Form) HasFocus() bool {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-
-	if f.hasFocus {
-		return true
-	}
-	return f.focusIndex() >= 0
-}
-
-// focusIndex returns the index of the currently focused item, counting form
-// items first, then buttons. A negative value indicates that no contained item
-// has focus.
-func (f *Form) focusIndex() int {
-	for index, item := range f.items {
-		if item.GetVisible() && item.GetFocusable().HasFocus() {
-			return index
-		}
-	}
-	for index, button := range f.buttons {
-		if button.GetVisible() && button.focus.HasFocus() {
-			return len(f.items) + index
-		}
-	}
-	return -1
+// InputHandler returns the input handler for this primitive.
+func (f *Form) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return f.box.InputHandler()
 }
 
 // MouseHandler returns the mouse handler for this primitive.
