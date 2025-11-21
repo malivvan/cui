@@ -666,7 +666,7 @@ func (f *Form) AddButton(label string, selected func()) *Form {
 // buttons have been specially prepared for this form and modifying some of
 // their attributes may have unintended side effects.
 func (f *Form) GetButton(index int) *Button {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	return f.buttons[index]
@@ -684,7 +684,7 @@ func (f *Form) RemoveButton(index int) *Form {
 
 // GetButtonCount returns the number of buttons in this form.
 func (f *Form) GetButtonCount() int {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	return len(f.buttons)
@@ -694,7 +694,7 @@ func (f *Form) GetButtonCount() int {
 // with 0 for the button that was added first. If no such label was found, -1
 // is returned.
 func (f *Form) GetButtonIndex(label string) int {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	for index, button := range f.buttons {
@@ -754,7 +754,7 @@ func (f *Form) AddFormItem(item Widget) *Form {
 // GetFormItemCount returns the number of items in the form (not including the
 // buttons).
 func (f *Form) GetFormItemCount() int {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	return len(f.items)
@@ -777,7 +777,7 @@ func (f *Form) IndexOfFormItem(item Widget) int {
 // 0. Elements are referenced in the order they were added. Buttons are not included.
 // If index is out of bounds it returns nil.
 func (f *Form) GetFormItem(index int) Widget {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 	if index > len(f.items)-1 || index < 0 {
 		return nil
@@ -800,7 +800,7 @@ func (f *Form) RemoveFormItem(index int) *Form {
 // no such element is found, nil is returned. Buttons are not searched and will
 // therefore not be returned.
 func (f *Form) GetFormItemByLabel(label string) Widget {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	for _, item := range f.items {
@@ -815,7 +815,7 @@ func (f *Form) GetFormItemByLabel(label string) Widget {
 // label. If no such element is found, -1 is returned. Buttons are not searched
 // and will therefore not be returned.
 func (f *Form) GetFormItemIndex(label string) int {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	for index, item := range f.items {
@@ -829,7 +829,7 @@ func (f *Form) GetFormItemIndex(label string) int {
 // GetFocusedItemIndex returns the indices of the form element or button which
 // currently has focus. If they don't, -1 is returned respectively.
 func (f *Form) GetFocusedItemIndex() (formItem, button int) {
-	f.mu.Lock()
+	f.mu.RLock()
 	defer f.mu.RUnlock()
 
 	index := f.focusIndex()

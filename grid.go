@@ -1,7 +1,6 @@
 package cui
 
 import (
-	"math"
 	"sync"
 
 	"github.com/gdamore/tcell/v2"
@@ -13,9 +12,9 @@ type gridItem struct {
 	Row, Column                 int    // The top-left grid cell where the item is placed.
 	Width, Height               int    // The number of rows and columns the item occupies.
 	MinGridWidth, MinGridHeight int    // The minimum grid width/height for which this item is visible.
-	Focus                       bool   // Whether or not this item attracts the layout's focus.
+	Focus                       bool   // Whether this item attracts the layout's focus.
 
-	visible    bool // Whether or not this item was visible the last time the grid was drawn.
+	visible    bool // Whether this item was visible the last time the grid was drawn.
 	x, y, w, h int  // The last position of the item relative to the top-left corner of the grid. Undefined if visible is false.
 }
 
@@ -28,7 +27,7 @@ type gridItem struct {
 // and "l" keys) while the grid has focus and none of its contained primitives
 // do.
 type Grid struct {
-	*Box
+	box *Box
 
 	// The items to be positioned.
 	items []*gridItem
@@ -56,7 +55,7 @@ type Grid struct {
 	// The color of the borders around grid items.
 	bordersColor tcell.Color
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewGrid returns a new grid-based layout container with no initial primitives.
@@ -68,12 +67,263 @@ type Grid struct {
 //	grid.SetBackgroundTransparent(false)
 func NewGrid() *Grid {
 	g := &Grid{
-		Box:          NewBox(),
+		box:          NewBox(),
 		bordersColor: Styles.GraphicsColor,
 	}
 	g.SetBackgroundTransparent(true)
-	g.focus = g
+	g.box.focus = g
 	return g
+}
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (g *Grid) set(setter func(g *Grid)) *Grid {
+	g.mu.Lock()
+	setter(g)
+	g.mu.Unlock()
+	return g
+}
+
+func (g *Grid) get(getter func(g *Grid)) {
+	g.mu.RLock()
+	getter(g)
+	g.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Grid.
+func (g *Grid) GetTitle() string {
+	return g.box.GetTitle()
+}
+
+// SetTitle sets the title of this Grid.
+func (g *Grid) SetTitle(title string) *Grid {
+	g.box.SetTitle(title)
+	return g
+}
+
+// GetTitleAlign returns the title alignment of this Grid.
+func (g *Grid) GetTitleAlign() int {
+	return g.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this Grid.
+func (g *Grid) SetTitleAlign(align int) *Grid {
+	g.box.SetTitleAlign(align)
+	return g
+}
+
+// GetBorder returns whether this Grid has a border.
+func (g *Grid) GetBorder() bool {
+	return g.box.GetBorder()
+}
+
+// SetBorder sets whether this Grid has a border.
+func (g *Grid) SetBorder(show bool) *Grid {
+	g.box.SetBorder(show)
+	return g
+}
+
+// GetBorderColor returns the border color of this Grid.
+func (g *Grid) GetBorderColor() tcell.Color {
+	return g.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Grid.
+func (g *Grid) SetBorderColor(color tcell.Color) *Grid {
+	g.box.SetBorderColor(color)
+	return g
+}
+
+// GetBorderAttributes returns the border attributes of this Grid.
+func (g *Grid) GetBorderAttributes() tcell.AttrMask {
+	return g.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Grid.
+func (g *Grid) SetBorderAttributes(attr tcell.AttrMask) *Grid {
+	g.box.SetBorderAttributes(attr)
+	return g
+}
+
+// GetBorderColorFocused returns the border color of this Grid when focuseg.
+func (g *Grid) GetBorderColorFocused() tcell.Color {
+	return g.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Grid when focuseg.
+func (g *Grid) SetBorderColorFocused(color tcell.Color) *Grid {
+	g.box.SetBorderColorFocused(color)
+	return g
+}
+
+// GetTitleColor returns the title color of this Grid.
+func (g *Grid) GetTitleColor() tcell.Color {
+	return g.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Grid.
+func (g *Grid) SetTitleColor(color tcell.Color) *Grid {
+	g.box.SetTitleColor(color)
+	return g
+}
+
+// GetDrawFunc returns the custom draw function of this Grid.
+func (g *Grid) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return g.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Grid.
+func (g *Grid) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Grid {
+	g.box.SetDrawFunc(handler)
+	return g
+}
+
+// ShowFocus sets whether this Grid should show a focus indicator when focuseg.
+func (g *Grid) ShowFocus(showFocus bool) *Grid {
+	g.box.ShowFocus(showFocus)
+	return g
+}
+
+// GetMouseCapture returns the mouse capture function of this Grid.
+func (g *Grid) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return g.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Grid.
+func (g *Grid) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Grid {
+	g.box.SetMouseCapture(capture)
+	return g
+}
+
+// GetBackgroundColor returns the background color of this Grid.
+func (g *Grid) GetBackgroundColor() tcell.Color {
+	return g.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this Grid.
+func (g *Grid) SetBackgroundColor(color tcell.Color) *Grid {
+	g.box.SetBackgroundColor(color)
+	return g
+}
+
+// GetBackgroundTransparent returns whether the background of this Grid is transparent.
+func (g *Grid) GetBackgroundTransparent() bool {
+	return g.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Grid is transparent.
+func (g *Grid) SetBackgroundTransparent(transparent bool) *Grid {
+	g.box.SetBackgroundTransparent(transparent)
+	return g
+}
+
+// GetInputCapture returns the input capture function of this Grid.
+func (g *Grid) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return g.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Grid.
+func (g *Grid) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Grid {
+	g.box.SetInputCapture(capture)
+	return g
+}
+
+// GetPadding returns the padding of this Grid.
+func (g *Grid) GetPadding() (top, bottom, left, right int) {
+	return g.box.GetPadding()
+}
+
+// SetPadding sets the padding of this Grid.
+func (g *Grid) SetPadding(top, bottom, left, right int) *Grid {
+	g.box.SetPadding(top, bottom, left, right)
+	return g
+}
+
+// InRect returns whether the given screen coordinates are within this Grid.
+func (g *Grid) InRect(x, y int) bool {
+	return g.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Grid.
+func (g *Grid) GetInnerRect() (x, y, width, height int) {
+	return g.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Grid is preserveg.
+func (g *Grid) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return g.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Grid is preserveg.
+func (g *Grid) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return g.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Grid.
+func (g *Grid) GetRect() (x, y, width, height int) {
+	return g.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Grid.
+func (g *Grid) SetRect(x, y, width, height int) {
+	g.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Grid is visible.
+func (g *Grid) GetVisible() bool {
+	return g.box.GetVisible()
+}
+
+// SetVisible sets whether this Grid is visible.
+func (g *Grid) SetVisible(visible bool) {
+	g.box.SetVisible(visible)
+}
+
+// Focus is called when this primitive receives focus.
+func (g *Grid) Focus(delegate func(p Widget)) {
+	g.mu.Lock()
+	items := g.items
+	g.mu.Unlock()
+
+	for _, item := range items {
+		if item.Focus {
+			delegate(item.Item)
+			return
+		}
+	}
+
+	g.mu.Lock()
+	g.box.hasFocus = true
+	g.mu.Unlock()
+}
+
+// Blur is called when this primitive loses focus.
+func (g *Grid) Blur() {
+	g.mu.Lock()
+	g.box.hasFocus = false
+	g.mu.Unlock()
+}
+
+// HasFocus returns whether or not this primitive has focus.
+func (g *Grid) HasFocus() (hasFocus bool) {
+	g.get(func(g *Grid) {
+		for _, item := range g.items {
+			if item.visible && item.Item.GetFocusable().HasFocus() {
+				hasFocus = true
+				return
+			}
+		}
+	})
+	return
+}
+
+// GetFocusable returns the focusable primitive of this Grid.
+func (g *Grid) GetFocusable() Focusable {
+	return g.box.GetFocusable()
 }
 
 // SetColumns defines how the columns of the grid are distributed. Each value
@@ -105,11 +355,8 @@ func NewGrid() *Grid {
 //
 // The resulting widths would be: 30, 15, 15, 15, 20, 15, and 15 cells, a total
 // of 125 cells, 25 cells wider than the available grid width.
-func (g *Grid) SetColumns(columns ...int) {
-	g.Lock()
-	defer g.Unlock()
-
-	g.columns = columns
+func (g *Grid) SetColumns(columns ...int) *Grid {
+	return g.set(func(g *Grid) { g.columns = columns })
 }
 
 // SetRows defines how the rows of the grid are distributed. These values behave
@@ -118,70 +365,51 @@ func (g *Grid) SetColumns(columns ...int) {
 //
 // The provided values correspond to row heights, the first value defining
 // the height of the topmost row.
-func (g *Grid) SetRows(rows ...int) {
-	g.Lock()
-	defer g.Unlock()
-
-	g.rows = rows
+func (g *Grid) SetRows(rows ...int) *Grid {
+	return g.set(func(g *Grid) { g.rows = rows })
 }
 
 // SetSize is a shortcut for SetRows() and SetColumns() where all row and column
 // values are set to the given size values. See SetColumns() for details on sizes.
-func (g *Grid) SetSize(numRows, numColumns, rowSize, columnSize int) {
-	g.Lock()
-	defer g.Unlock()
-
-	g.rows = make([]int, numRows)
-	for index := range g.rows {
-		g.rows[index] = rowSize
-	}
-	g.columns = make([]int, numColumns)
-	for index := range g.columns {
-		g.columns[index] = columnSize
-	}
+func (g *Grid) SetSize(numRows, numColumns, rowSize, columnSize int) *Grid {
+	return g.set(func(g *Grid) {
+		g.rows = make([]int, numRows)
+		for index := range g.rows {
+			g.rows[index] = rowSize
+		}
+		g.columns = make([]int, numColumns)
+		for index := range g.columns {
+			g.columns[index] = columnSize
+		}
+	})
 }
 
 // SetMinSize sets an absolute minimum width for rows and an absolute minimum
 // height for columns. Panics if negative values are provided.
-func (g *Grid) SetMinSize(row, column int) {
-	g.Lock()
-	defer g.Unlock()
-
+func (g *Grid) SetMinSize(row, column int) *Grid {
 	if row < 0 || column < 0 {
 		panic("Invalid minimum row/column size")
 	}
-	g.minHeight, g.minWidth = row, column
+	return g.set(func(g *Grid) { g.minHeight, g.minWidth = row, column })
 }
 
 // SetGap sets the size of the gaps between neighboring primitives on the grid.
 // If borders are drawn (see SetBorders()), these values are ignored and a gap
 // of 1 is assumed. Panics if negative values are provided.
-func (g *Grid) SetGap(row, column int) {
-	g.Lock()
-	defer g.Unlock()
-
-	if row < 0 || column < 0 {
-		panic("Invalid gap size")
-	}
-	g.gapRows, g.gapColumns = row, column
+func (g *Grid) SetGap(row, column int) *Grid {
+	return g.set(func(g *Grid) { g.gapRows, g.gapColumns = row, column })
 }
 
 // SetBorders sets whether or not borders are drawn around grid items. Setting
 // this value to true will cause the gap values (see SetGap()) to be ignored and
 // automatically assumed to be 1 where the border graphics are drawn.
-func (g *Grid) SetBorders(borders bool) {
-	g.Lock()
-	defer g.Unlock()
-
-	g.borders = borders
+func (g *Grid) SetBorders(borders bool) *Grid {
+	return g.set(func(g *Grid) { g.borders = borders })
 }
 
 // SetBordersColor sets the color of the item borders.
-func (g *Grid) SetBordersColor(color tcell.Color) {
-	g.Lock()
-	defer g.Unlock()
-
-	g.bordersColor = color
+func (g *Grid) SetBordersColor(color tcell.Color) *Grid {
+	return g.set(func(g *Grid) { g.bordersColor = color })
 }
 
 // AddItem adds a primitive and its position to the grid. The top-left corner
@@ -210,41 +438,36 @@ func (g *Grid) SetBordersColor(color tcell.Color) {
 // If the item's focus is set to true, it will receive focus when the grid
 // receives focus. If there are multiple items with a true focus flag, the last
 // visible one that was added will receive focus.
-func (g *Grid) AddItem(p Widget, row, column, rowSpan, colSpan, minGridHeight, minGridWidth int, focus bool) {
-	g.Lock()
-	defer g.Unlock()
-
-	g.items = append(g.items, &gridItem{
-		Item:          p,
-		Row:           row,
-		Column:        column,
-		Height:        rowSpan,
-		Width:         colSpan,
-		MinGridHeight: minGridHeight,
-		MinGridWidth:  minGridWidth,
-		Focus:         focus,
+func (g *Grid) AddItem(p Widget, row, column, rowSpan, colSpan, minGridHeight, minGridWidth int, focus bool) *Grid {
+	return g.set(func(g *Grid) {
+		g.items = append(g.items, &gridItem{
+			Item:          p,
+			Row:           row,
+			Column:        column,
+			Height:        rowSpan,
+			Width:         colSpan,
+			MinGridHeight: minGridHeight,
+			MinGridWidth:  minGridWidth,
+			Focus:         focus,
+		})
 	})
 }
 
 // RemoveItem removes all items for the given primitive from the grid, keeping
 // the order of the remaining items intact.
-func (g *Grid) RemoveItem(p Widget) {
-	g.Lock()
-	defer g.Unlock()
-
-	for index := len(g.items) - 1; index >= 0; index-- {
-		if g.items[index].Item == p {
-			g.items = append(g.items[:index], g.items[index+1:]...)
+func (g *Grid) RemoveItem(p Widget) *Grid {
+	return g.set(func(g *Grid) {
+		for index := len(g.items) - 1; index >= 0; index-- {
+			if g.items[index].Item == p {
+				g.items = append(g.items[:index], g.items[index+1:]...)
+			}
 		}
-	}
+	})
 }
 
 // Clear removes all items from the grid.
-func (g *Grid) Clear() {
-	g.Lock()
-	defer g.Unlock()
-
-	g.items = nil
+func (g *Grid) Clear() *Grid {
+	return g.set(func(g *Grid) { g.items = nil })
 }
 
 // SetOffset sets the number of rows and columns which are skipped before
@@ -252,81 +475,15 @@ func (g *Grid) Clear() {
 // completely move off the screen, these values may be adjusted the next time
 // the grid is drawn. The actual position of the grid may also be adjusted such
 // that contained primitives that have focus remain visible.
-func (g *Grid) SetOffset(rows, columns int) {
-	g.Lock()
-	defer g.Unlock()
-
-	g.rowOffset, g.columnOffset = rows, columns
+func (g *Grid) SetOffset(rows, columns int) *Grid {
+	return g.set(func(g *Grid) { g.rowOffset, g.columnOffset = rows, columns })
 }
 
 // GetOffset returns the current row and column offset (see SetOffset() for
 // details).
 func (g *Grid) GetOffset() (rows, columns int) {
-	g.RLock()
-	defer g.RUnlock()
-
-	return g.rowOffset, g.columnOffset
-}
-
-// Focus is called when this primitive receives focus.
-func (g *Grid) Focus(delegate func(p Widget)) {
-	g.Lock()
-	items := g.items
-	g.Unlock()
-
-	for _, item := range items {
-		if item.Focus {
-			delegate(item.Item)
-			return
-		}
-	}
-
-	g.Lock()
-	g.hasFocus = true
-	g.Unlock()
-}
-
-// Blur is called when this primitive loses focus.
-func (g *Grid) Blur() {
-	g.Lock()
-	defer g.Unlock()
-
-	g.hasFocus = false
-}
-
-// HasFocus returns whether or not this primitive has focus.
-func (g *Grid) HasFocus() bool {
-	g.RLock()
-	defer g.RUnlock()
-
-	for _, item := range g.items {
-		if item.visible && item.Item.GetFocusable().HasFocus() {
-			return true
-		}
-	}
-	return g.hasFocus
-}
-
-// InputHandler returns the handler for this primitive.
-func (g *Grid) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
-	return g.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
-		g.Lock()
-		defer g.Unlock()
-
-		if HitShortcut(event, Keys.MoveFirst, Keys.MoveFirst2) {
-			g.rowOffset, g.columnOffset = 0, 0
-		} else if HitShortcut(event, Keys.MoveLast, Keys.MoveLast2) {
-			g.rowOffset = math.MaxInt32
-		} else if HitShortcut(event, Keys.MoveUp, Keys.MoveUp2, Keys.MovePreviousField) {
-			g.rowOffset--
-		} else if HitShortcut(event, Keys.MoveDown, Keys.MoveDown2, Keys.MoveNextField) {
-			g.rowOffset++
-		} else if HitShortcut(event, Keys.MoveLeft, Keys.MoveLeft2) {
-			g.columnOffset--
-		} else if HitShortcut(event, Keys.MoveRight, Keys.MoveRight2) {
-			g.columnOffset++
-		}
-	})
+	g.get(func(g *Grid) { rows, columns = g.rowOffset, g.columnOffset })
+	return
 }
 
 // Draw draws this primitive onto the screen.
@@ -335,10 +492,10 @@ func (g *Grid) Draw(screen tcell.Screen) {
 		return
 	}
 
-	g.Box.Draw(screen)
+	g.box.Draw(screen)
 
-	g.Lock()
-	defer g.Unlock()
+	g.mu.Lock()
+	defer g.mu.Unlock()
 
 	x, y, width, height := g.GetInnerRect()
 	screenWidth, screenHeight := screen.Size()
@@ -693,6 +850,11 @@ func (g *Grid) Draw(screen tcell.Screen) {
 			}
 		}
 	}
+}
+
+// InputHandler returns the input handler for this primitive.
+func (g *Grid) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return g.box.InputHandler()
 }
 
 // MouseHandler returns the mouse handler for this primitive.

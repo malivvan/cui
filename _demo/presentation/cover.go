@@ -37,7 +37,7 @@ func Cover(nextSlide func()) (title string, info string, content cui.Widget) {
 	fmt.Fprint(logoBox, logo)
 
 	// Create a frame for the subtitle and navigation infos.
-	frame := cui.NewFrame(cui.NewBox())
+	frame := cui.NewFrame().SetWidget(cui.NewBox())
 	frame.SetBorders(0, 0, 0, 0, 0, 0)
 	frame.AddText(subtitle, true, cui.AlignCenter, tcell.ColorDarkMagenta.TrueColor())
 

@@ -10,7 +10,7 @@ var (
 	_ widget[*Flex]     = (*Flex)(nil)
 	_ widget[*Form]     = (*Form)(nil)
 	_ widget[*Frame]    = (*Frame)(nil)
-	//_ widget[*Grid]          = (*Grid)(nil)
+	_ widget[*Grid]     = (*Grid)(nil)
 	//_ widget[*Image]         = (*Image)(nil)
 	//_ widget[*InputField]    = (*InputField)(nil)
 	//_ widget[*Layout]        = (*Layout)(nil)
