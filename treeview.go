@@ -901,8 +901,8 @@ func (t *TreeView) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		selectNode := func() {
 			t.mu.Lock()
 			currentNode := t.currentNode
@@ -956,8 +956,8 @@ func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (t *TreeView) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (t *TreeView) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		x, y := event.Position()
 		if !t.InRect(x, y) {
 			return false, nil

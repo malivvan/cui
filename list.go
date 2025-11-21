@@ -712,7 +712,7 @@ func (l *List) Clear() {
 }
 
 // Focus is called by the application when the primitive receives focus.
-func (l *List) Focus(delegate func(p Primitive)) {
+func (l *List) Focus(delegate func(p Widget)) {
 	l.Box.Focus(delegate)
 	if l.ContextMenu.open {
 		delegate(l.ContextMenu.list)
@@ -1114,8 +1114,8 @@ func (l *List) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (l *List) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return l.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (l *List) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return l.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		l.Lock()
 
 		if HitShortcut(event, Keys.Cancel) {
@@ -1257,8 +1257,8 @@ func (l *List) indexAtPoint(x, y int) int {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (l *List) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return l.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (l *List) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return l.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		l.Lock()
 
 		// Pass events to context menu.

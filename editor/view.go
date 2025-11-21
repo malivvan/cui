@@ -122,8 +122,8 @@ func (v *View) SetRect(x, y, width, height int) {
 }
 
 // InputHandler returns a handler which received key events when this view has focus,
-func (v *View) InputHandler() func(event *tcell.EventKey, _ func(p cui.Primitive)) {
-	return v.WrapInputHandler(func(event *tcell.EventKey, _ func(p cui.Primitive)) {
+func (v *View) InputHandler() func(event *tcell.EventKey, _ func(p cui.Widget)) {
+	return v.WrapInputHandler(func(event *tcell.EventKey, _ func(p cui.Widget)) {
 		// if down or up arrow is pressed, we need to relocate the view
 		// show overlay on ctrl+space
 		if event.Key() == tcell.KeyCtrlSpace {
@@ -143,8 +143,8 @@ func (v *View) InputHandler() func(event *tcell.EventKey, _ func(p cui.Primitive
 	})
 }
 
-func (v *View) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
-	return v.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
+func (v *View) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
+	return v.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
 		if v.InRect(event.Position()) {
 			if action == cui.MouseLeftClick {
 				setFocus(v)

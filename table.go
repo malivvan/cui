@@ -1288,8 +1288,8 @@ ColumnLoop:
 }
 
 // InputHandler returns the handler for this primitive.
-func (t *Table) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (t *Table) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		t.mu.Lock()
 		defer t.mu.Unlock()
 
@@ -1448,8 +1448,8 @@ func (t *Table) InputHandler() func(event *tcell.EventKey, setFocus func(p Primi
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (t *Table) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (t *Table) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		x, y := event.Position()
 		if !t.InRect(x, y) {
 			return false, nil

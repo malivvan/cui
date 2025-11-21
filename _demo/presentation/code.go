@@ -11,7 +11,7 @@ const codeWidth = 56
 
 // Code returns a primitive which displays the given primitive (with the given
 // size) on the left side and its source code on the right side.
-func Code(p cui.Primitive, width, height int, code string) cui.Primitive {
+func Code(p cui.Widget, width, height int, code string) cui.Widget {
 	// Set up code view.
 	codeView := cui.NewTextView()
 	codeView.SetWrap(false)

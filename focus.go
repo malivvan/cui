@@ -10,7 +10,7 @@ type Focusable interface {
 }
 
 type focusElement struct {
-	primitive Primitive
+	primitive Widget
 	disabled  bool
 }
 
@@ -21,13 +21,13 @@ type FocusManager struct {
 	focused    int
 	wrapAround bool
 
-	setFocus func(p Primitive)
+	setFocus func(p Widget)
 
 	sync.RWMutex
 }
 
 // NewFocusManager returns a new FocusManager object.
-func NewFocusManager(setFocus func(p Primitive)) *FocusManager {
+func NewFocusManager(setFocus func(p Widget)) *FocusManager {
 	return &FocusManager{setFocus: setFocus}
 }
 
@@ -44,7 +44,7 @@ func (f *FocusManager) SetWrapAround(wrapAround bool) {
 }
 
 // Add adds an element to the focus handler.
-func (f *FocusManager) Add(p ...Primitive) {
+func (f *FocusManager) Add(p ...Widget) {
 	f.Lock()
 	defer f.Unlock()
 
@@ -54,7 +54,7 @@ func (f *FocusManager) Add(p ...Primitive) {
 }
 
 // AddAt adds an element to the focus handler at the specified index.
-func (f *FocusManager) AddAt(index int, p Primitive) {
+func (f *FocusManager) AddAt(index int, p Widget) {
 	f.Lock()
 	defer f.Unlock()
 
@@ -73,7 +73,7 @@ func (f *FocusManager) AddAt(index int, p Primitive) {
 }
 
 // Focus focuses the provided element.
-func (f *FocusManager) Focus(p Primitive) {
+func (f *FocusManager) Focus(p Widget) {
 	f.Lock()
 	defer f.Unlock()
 
@@ -124,7 +124,7 @@ func (f *FocusManager) GetFocusIndex() int {
 }
 
 // GetFocusedPrimitive returns the currently focused primitive.
-func (f *FocusManager) GetFocusedPrimitive() Primitive {
+func (f *FocusManager) GetFocusedPrimitive() Widget {
 	f.Lock()
 	defer f.Unlock()
 

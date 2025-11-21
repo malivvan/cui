@@ -17,7 +17,7 @@ const (
 )
 
 type LayoutItem struct {
-	Primitive
+	Widget
 
 	Size int
 }
@@ -235,12 +235,12 @@ func (l *Layout) Draw(screen tcell.Screen) {
 
 		for number, item := range l.items {
 			if item.Size == AutoSize {
-				item.Primitive.SetRect(x, y, autoSize, height)
-				item.Primitive.Draw(newClipRegion(screen, x, y, autoSize, height))
+				item.Widget.SetRect(x, y, autoSize, height)
+				item.Widget.Draw(newClipRegion(screen, x, y, autoSize, height))
 				x += autoSize
 			} else {
-				item.Primitive.SetRect(x, y, item.Size, height)
-				item.Primitive.Draw(newClipRegion(screen, x, y, item.Size, height))
+				item.Widget.SetRect(x, y, item.Size, height)
+				item.Widget.Draw(newClipRegion(screen, x, y, item.Size, height))
 				x += item.Size
 			}
 
@@ -265,12 +265,12 @@ func (l *Layout) Draw(screen tcell.Screen) {
 
 		for number, item := range l.items {
 			if item.Size == AutoSize {
-				item.Primitive.SetRect(x, y, width, autoSize)
-				item.Primitive.Draw(newClipRegion(screen, x, y, width, autoSize))
+				item.Widget.SetRect(x, y, width, autoSize)
+				item.Widget.Draw(newClipRegion(screen, x, y, width, autoSize))
 				y += autoSize
 			} else {
-				item.Primitive.SetRect(x, y, width, item.Size)
-				item.Primitive.Draw(newClipRegion(screen, x, y, width, item.Size))
+				item.Widget.SetRect(x, y, width, item.Size)
+				item.Widget.Draw(newClipRegion(screen, x, y, width, item.Size))
 				y += item.Size
 			}
 
@@ -311,11 +311,11 @@ func (l *Layout) SetRect(x, y, width, height int) {
 	l.rebuildSplitters()
 }
 
-func (l *Layout) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return l.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (l *Layout) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return l.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		for _, item := range l.items {
-			if item.Primitive.HasFocus() {
-				if handler := item.Primitive.InputHandler(); handler != nil {
+			if item.Widget.HasFocus() {
+				if handler := item.Widget.InputHandler(); handler != nil {
 					handler(event, setFocus)
 					return
 				}
@@ -329,8 +329,8 @@ func (l *Layout) InputHandler() func(event *tcell.EventKey, setFocus func(p Prim
 // on to the provided (default) input handler.
 //
 // This is only meant to be used by subclassing primitives.
-func (l *Layout) WrapInputHandler(inputHandler func(*tcell.EventKey, func(p Primitive))) func(*tcell.EventKey, func(p Primitive)) {
-	return func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (l *Layout) WrapInputHandler(inputHandler func(*tcell.EventKey, func(p Widget))) func(*tcell.EventKey, func(p Widget)) {
+	return func(event *tcell.EventKey, setFocus func(p Widget)) {
 		if l.inputCapture != nil {
 			event = l.inputCapture(event)
 		}
@@ -340,14 +340,14 @@ func (l *Layout) WrapInputHandler(inputHandler func(*tcell.EventKey, func(p Prim
 	}
 }
 
-func (l *Layout) Focus(delegate func(p Primitive)) {
+func (l *Layout) Focus(delegate func(p Widget)) {
 	l.l.Lock()
 
 	if l.focusedSplitterNumber == -1 {
 		for _, item := range l.items {
-			if item.Primitive != nil {
+			if item.Widget != nil {
 				l.l.Unlock()
-				delegate(item.Primitive)
+				delegate(item.Widget)
 				return
 			}
 		}
@@ -360,7 +360,7 @@ func (l *Layout) HasFocus() bool {
 	defer l.l.RUnlock()
 
 	for _, item := range l.items {
-		if item.Primitive != nil && item.Primitive.HasFocus() {
+		if item.Widget != nil && item.Widget.HasFocus() {
 			return true
 		}
 	}
@@ -372,8 +372,8 @@ func (l *Layout) GetFocusable() Focusable {
 	defer l.l.RUnlock()
 
 	for _, item := range l.items {
-		if item.Primitive != nil && item.Primitive.HasFocus() {
-			return item.Primitive
+		if item.Widget != nil && item.Widget.HasFocus() {
+			return item.Widget
 		}
 	}
 	return nil
@@ -399,8 +399,8 @@ func (l *Layout) Blur() {
 
 	l.focusedSplitterNumber = -1
 	for _, item := range l.items {
-		if item.Primitive != nil && item.Primitive.HasFocus() {
-			item.Primitive.Blur()
+		if item.Widget != nil && item.Widget.HasFocus() {
+			item.Widget.Blur()
 		}
 	}
 }
@@ -416,16 +416,16 @@ func (l *Layout) InRect(x, y int) bool {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (l *Layout) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return l.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (l *Layout) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return l.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !l.InRect(event.Position()) {
 			return false, nil
 		}
 
 		// Pass mouse events along to the first child item that takes it.
 		for _, item := range l.items {
-			if item.Primitive != nil {
-				consumed, capture = item.Primitive.MouseHandler()(action, event, setFocus)
+			if item.Widget != nil {
+				consumed, capture = item.Widget.MouseHandler()(action, event, setFocus)
 				if consumed {
 					l.focusedSplitterNumber = -1
 					return
@@ -471,8 +471,8 @@ func (l *Layout) MouseHandler() func(action MouseAction, event *tcell.EventMouse
 					l.dragY = y
 
 					for _, item := range l.items {
-						if item.Primitive != nil {
-							item.Primitive.Blur()
+						if item.Widget != nil {
+							item.Widget.Blur()
 						}
 					}
 
@@ -495,8 +495,8 @@ func (l *Layout) MouseHandler() func(action MouseAction, event *tcell.EventMouse
 // them on to the provided (default) event handler.
 //
 // This is only meant to be used by subclassing primitives.
-func (l *Layout) WrapMouseHandler(mouseHandler func(MouseAction, *tcell.EventMouse, func(p Primitive)) (bool, Primitive)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (l *Layout) WrapMouseHandler(mouseHandler func(MouseAction, *tcell.EventMouse, func(p Widget)) (bool, Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if l.mouseCapture != nil {
 			action, event = l.mouseCapture(action, event)
 		}
@@ -507,13 +507,13 @@ func (l *Layout) WrapMouseHandler(mouseHandler func(MouseAction, *tcell.EventMou
 	}
 }
 
-func (l *Layout) AddItem(p Primitive, size int) *Layout {
+func (l *Layout) AddItem(p Widget, size int) *Layout {
 	l.l.Lock()
 	defer l.l.Unlock()
 
 	l.items = append(l.items, &LayoutItem{
-		Primitive: p,
-		Size:      size,
+		Widget: p,
+		Size:   size,
 	})
 
 	l.draggedSplitter = nil

@@ -8,7 +8,7 @@ import (
 )
 
 // End shows the final slide.
-func End(nextSlide func()) (title string, info string, content cui.Primitive) {
+func End(nextSlide func()) (title string, info string, content cui.Widget) {
 	textView := cui.NewTextView()
 	textView.SetDoneFunc(func(key tcell.Key) {
 		nextSlide()

@@ -7,16 +7,14 @@ func main() {
 	app := cui.New()
 	defer app.HandlePanic()
 
-	app.EnableMouse(true)
-
-	button := cui.NewButton("Hit Enter to close")
+	button := cui.NewButton().
+		SetLabel("Hit Enter to close").
+		SetSelectedFunc(func() {
+			app.Stop()
+		})
 	button.SetRect(0, 0, 22, 3)
-	button.SetSelectedFunc(func() {
-		app.Stop()
-	})
 
-	app.SetRoot(button, false)
-	if err := app.Run(); err != nil {
+	if err := app.EnableMouse(true).SetRoot(button, false).Run(); err != nil {
 		panic(err)
 	}
 }

@@ -4,7 +4,7 @@ import "github.com/malivvan/cui"
 
 // Center returns a new primitive which shows the provided primitive in its
 // center, given the provided primitive's size.
-func Center(width, height int, p cui.Primitive) cui.Primitive {
+func Center(width, height int, p cui.Widget) cui.Widget {
 	subFlex := cui.NewFlex()
 	subFlex.SetDirection(cui.FlexRow)
 	subFlex.AddItem(cui.NewBox(), 0, 1, false)

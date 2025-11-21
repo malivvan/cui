@@ -59,7 +59,7 @@ func (g *UtilModeGauge) SetLabelColor(color tcell.Color) {
 }
 
 // Focus is called when this primitive receives focus.
-func (g *UtilModeGauge) Focus(delegate func(p cui.Primitive)) { //nolint:revive
+func (g *UtilModeGauge) Focus(delegate func(p cui.Widget)) { //nolint:revive
 	delegate(g)
 }
 

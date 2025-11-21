@@ -14,10 +14,10 @@ const (
 
 // flexItem holds layout options for one item.
 type flexItem struct {
-	Item       Primitive // The item to be positioned. May be nil for an empty item.
-	FixedSize  int       // The item's fixed size which may not be changed, 0 if it has no fixed size.
-	Proportion int       // The item's proportion.
-	Focus      bool      // Whether this item attracts the layout's focus.
+	Item       Widget // The item to be positioned. May be nil for an empty item.
+	FixedSize  int    // The item's fixed size which may not be changed, 0 if it has no fixed size.
+	Proportion int    // The item's proportion.
+	Focus      bool   // Whether this item attracts the layout's focus.
 }
 
 // Flex is a basic implementation of the Flexbox layout. The contained
@@ -37,7 +37,7 @@ type Flex struct {
 	// instead its box dimensions.
 	fullScreen bool
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewFlex returns a new flexbox layout container with no primitives and its
@@ -59,21 +59,106 @@ func NewFlex() *Flex {
 	return f
 }
 
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (f *Flex) set(setter func(f *Flex)) *Flex {
+	f.mu.Lock()
+	setter(f)
+	f.mu.Unlock()
+	return f
+}
+
+func (f *Flex) get(getter func(f *Flex)) {
+	f.mu.RLock()
+	getter(f)
+	f.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+func (f *Flex) SetTitle(title string) *Flex {
+	f.Box.SetTitle(title)
+	return f
+}
+
+func (f *Flex) SetTitleAlign(align int) *Flex {
+	f.Box.SetTitleAlign(align)
+	return f
+}
+
+func (f *Flex) SetBorder(show bool) *Flex {
+	f.Box.SetBorder(show)
+	return f
+}
+
+func (f *Flex) SetBorderColor(color tcell.Color) *Flex {
+	f.Box.SetBorderColor(color)
+	return f
+}
+
+func (f *Flex) SetBorderAttributes(attr tcell.AttrMask) *Flex {
+	f.Box.SetBorderAttributes(attr)
+	return f
+}
+
+func (f *Flex) SetBorderColorFocused(color tcell.Color) *Flex {
+	f.Box.SetBorderColorFocused(color)
+	return f
+}
+
+func (f *Flex) SetTitleColor(color tcell.Color) *Flex {
+	f.Box.SetTitleColor(color)
+	return f
+}
+
+func (f *Flex) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Flex {
+	f.Box.SetDrawFunc(handler)
+	return f
+}
+
+func (f *Flex) ShowFocus(showFocus bool) *Flex {
+	f.Box.ShowFocus(showFocus)
+	return f
+}
+
+func (f *Flex) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Flex {
+	f.Box.SetMouseCapture(capture)
+	return f
+}
+
+func (f *Flex) SetBackgroundColor(color tcell.Color) *Flex {
+	f.Box.SetBackgroundColor(color)
+	return f
+}
+
+func (f *Flex) SetBackgroundTransparent(transparent bool) *Flex {
+	f.Box.SetBackgroundTransparent(transparent)
+	return f
+}
+
+func (f *Flex) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Flex {
+	f.Box.SetInputCapture(capture)
+	return f
+}
+
+func (f *Flex) SetPadding(top, bottom, left, right int) *Flex {
+	f.Box.SetPadding(top, bottom, left, right)
+	return f
+}
+
+/////////////////////////////////////// <API> ///////////////////////////////////////
+
 // GetDirection returns the direction in which the contained primitives are
 // distributed. This can be either FlexColumn (default) or FlexRow.
-func (f *Flex) GetDirection() int {
-	f.RLock()
-	defer f.RUnlock()
-	return f.direction
+func (f *Flex) GetDirection() (direction int) {
+	f.get(func(f *Flex) { direction = f.direction })
+	return
 }
 
 // SetDirection sets the direction in which the contained primitives are
 // distributed. This can be either FlexColumn (default) or FlexRow.
-func (f *Flex) SetDirection(direction int) {
-	f.Lock()
-	defer f.Unlock()
-
-	f.direction = direction
+func (f *Flex) SetDirection(direction int) *Flex {
+	return f.set(func(f *Flex) { f.direction = direction })
 }
 
 // SetFullScreen sets the flag which, when true, causes the flex layout to use
@@ -105,7 +190,7 @@ func (f *Flex) Clear() {
 // true, the first one will receive focus.
 //
 // A nil value for the primitive represents empty space.
-func (f *Flex) AddItem(item Primitive, fixedSize, proportion int, focus bool) {
+func (f *Flex) AddItem(item Widget, fixedSize, proportion int, focus bool) {
 	f.Lock()
 	defer f.Unlock()
 
@@ -119,7 +204,7 @@ func (f *Flex) AddItem(item Primitive, fixedSize, proportion int, focus bool) {
 
 // AddItemAtIndex adds an item to the flex at a given index.
 // For more information see AddItem.
-func (f *Flex) AddItemAtIndex(index int, item Primitive, fixedSize, proportion int, focus bool) {
+func (f *Flex) AddItemAtIndex(index int, item Widget, fixedSize, proportion int, focus bool) {
 	f.Lock()
 	defer f.Unlock()
 	newItem := &flexItem{Item: item, FixedSize: fixedSize, Proportion: proportion, Focus: focus}
@@ -133,7 +218,7 @@ func (f *Flex) AddItemAtIndex(index int, item Primitive, fixedSize, proportion i
 
 // RemoveItem removes all items for the given primitive from the container,
 // keeping the order of the remaining items intact.
-func (f *Flex) RemoveItem(p Primitive) {
+func (f *Flex) RemoveItem(p Widget) {
 	f.Lock()
 	defer f.Unlock()
 
@@ -147,7 +232,7 @@ func (f *Flex) RemoveItem(p Primitive) {
 // ResizeItem sets a new size for the item(s) with the given primitive. If there
 // are multiple Flex items with the same primitive, they will all receive the
 // same size. For details regarding the size parameters, see AddItem().
-func (f *Flex) ResizeItem(p Primitive, fixedSize, proportion int) {
+func (f *Flex) ResizeItem(p Widget, fixedSize, proportion int) {
 	f.Lock()
 	defer f.Unlock()
 
@@ -229,7 +314,7 @@ func (f *Flex) Draw(screen tcell.Screen) {
 }
 
 // Focus is called when this primitive receives focus.
-func (f *Flex) Focus(delegate func(p Primitive)) {
+func (f *Flex) Focus(delegate func(p Widget)) {
 	f.Lock()
 
 	for _, item := range f.items {
@@ -257,8 +342,8 @@ func (f *Flex) HasFocus() bool {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (f *Flex) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return f.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (f *Flex) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return f.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !f.InRect(event.Position()) {
 			return false, nil
 		}

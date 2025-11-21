@@ -248,7 +248,7 @@ const tableSelectCell = `[green]func[white] [yellow]main[white]() {
 }`
 
 // Table demonstrates the Table.
-func Table(nextSlide func()) (title string, info string, content cui.Primitive) {
+func Table(nextSlide func()) (title string, info string, content cui.Widget) {
 	table := cui.NewTable()
 	table.SetFixed(1, 1)
 	for row, line := range strings.Split(tableData, "\n") {

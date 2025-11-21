@@ -11,7 +11,7 @@ import (
 type Window struct {
 	*Box
 
-	primitive Primitive
+	primitive Widget
 
 	fullscreen bool
 
@@ -25,7 +25,7 @@ type Window struct {
 }
 
 // NewWindow returns a new window around the given primitive.
-func NewWindow(primitive Primitive) *Window {
+func NewWindow(primitive Widget) *Window {
 	w := &Window{
 		Box:       NewBox(),
 		primitive: primitive,
@@ -57,7 +57,7 @@ func (w *Window) SetFullscreen(fullscreen bool) *Window {
 }
 
 // Focus is called when this primitive receives focus.
-func (w *Window) Focus(delegate func(p Primitive)) {
+func (w *Window) Focus(delegate func(p Widget)) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
@@ -106,13 +106,13 @@ func (w *Window) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (w *Window) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (w *Window) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
 	return w.primitive.InputHandler()
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (w *Window) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return w.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (w *Window) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return w.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !w.InRect(event.Position()) {
 			return false, nil
 		}

@@ -19,7 +19,7 @@ const logo = `
 const subtitle = "Terminal-based user interface toolkit"
 
 // Cover returns the cover page.
-func Cover(nextSlide func()) (title string, info string, content cui.Primitive) {
+func Cover(nextSlide func()) (title string, info string, content cui.Widget) {
 	// What's the size of the logo?
 	lines := strings.Split(logo, "\n")
 	logoWidth := 0

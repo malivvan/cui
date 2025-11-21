@@ -9,11 +9,11 @@ import (
 
 // gridItem represents one primitive and its possible position on a grid.
 type gridItem struct {
-	Item                        Primitive // The item to be positioned. May be nil for an empty item.
-	Row, Column                 int       // The top-left grid cell where the item is placed.
-	Width, Height               int       // The number of rows and columns the item occupies.
-	MinGridWidth, MinGridHeight int       // The minimum grid width/height for which this item is visible.
-	Focus                       bool      // Whether or not this item attracts the layout's focus.
+	Item                        Widget // The item to be positioned. May be nil for an empty item.
+	Row, Column                 int    // The top-left grid cell where the item is placed.
+	Width, Height               int    // The number of rows and columns the item occupies.
+	MinGridWidth, MinGridHeight int    // The minimum grid width/height for which this item is visible.
+	Focus                       bool   // Whether or not this item attracts the layout's focus.
 
 	visible    bool // Whether or not this item was visible the last time the grid was drawn.
 	x, y, w, h int  // The last position of the item relative to the top-left corner of the grid. Undefined if visible is false.
@@ -210,7 +210,7 @@ func (g *Grid) SetBordersColor(color tcell.Color) {
 // If the item's focus is set to true, it will receive focus when the grid
 // receives focus. If there are multiple items with a true focus flag, the last
 // visible one that was added will receive focus.
-func (g *Grid) AddItem(p Primitive, row, column, rowSpan, colSpan, minGridHeight, minGridWidth int, focus bool) {
+func (g *Grid) AddItem(p Widget, row, column, rowSpan, colSpan, minGridHeight, minGridWidth int, focus bool) {
 	g.Lock()
 	defer g.Unlock()
 
@@ -228,7 +228,7 @@ func (g *Grid) AddItem(p Primitive, row, column, rowSpan, colSpan, minGridHeight
 
 // RemoveItem removes all items for the given primitive from the grid, keeping
 // the order of the remaining items intact.
-func (g *Grid) RemoveItem(p Primitive) {
+func (g *Grid) RemoveItem(p Widget) {
 	g.Lock()
 	defer g.Unlock()
 
@@ -269,7 +269,7 @@ func (g *Grid) GetOffset() (rows, columns int) {
 }
 
 // Focus is called when this primitive receives focus.
-func (g *Grid) Focus(delegate func(p Primitive)) {
+func (g *Grid) Focus(delegate func(p Widget)) {
 	g.Lock()
 	items := g.items
 	g.Unlock()
@@ -308,8 +308,8 @@ func (g *Grid) HasFocus() bool {
 }
 
 // InputHandler returns the handler for this primitive.
-func (g *Grid) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return g.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (g *Grid) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return g.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		g.Lock()
 		defer g.Unlock()
 
@@ -344,7 +344,7 @@ func (g *Grid) Draw(screen tcell.Screen) {
 	screenWidth, screenHeight := screen.Size()
 
 	// Make a list of items which apply.
-	items := make(map[Primitive]*gridItem)
+	items := make(map[Widget]*gridItem)
 	for _, item := range g.items {
 		item.visible = false
 		if item.Width <= 0 || item.Height <= 0 || width < item.MinGridWidth || height < item.MinGridHeight {
@@ -696,8 +696,8 @@ func (g *Grid) Draw(screen tcell.Screen) {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (g *Grid) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return g.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (g *Grid) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return g.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !g.InRect(event.Position()) {
 			return false, nil
 		}

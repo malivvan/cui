@@ -20,7 +20,7 @@ type Frame struct {
 	*Box
 
 	// The contained primitive.
-	primitive Primitive
+	primitive Widget
 
 	// The lines of text to be displayed.
 	text []*frameText
@@ -33,7 +33,7 @@ type Frame struct {
 
 // NewFrame returns a new frame around the given primitive. The primitive's
 // size will be changed to fit within this frame.
-func NewFrame(primitive Primitive) *Frame {
+func NewFrame(primitive Widget) *Frame {
 	box := NewBox()
 
 	f := &Frame{
@@ -158,7 +158,7 @@ func (f *Frame) Draw(screen tcell.Screen) {
 }
 
 // Focus is called when this primitive receives focus.
-func (f *Frame) Focus(delegate func(p Primitive)) {
+func (f *Frame) Focus(delegate func(p Widget)) {
 	f.Lock()
 	primitive := f.primitive
 	defer f.Unlock()
@@ -179,8 +179,8 @@ func (f *Frame) HasFocus() bool {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (f *Frame) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return f.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (f *Frame) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return f.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !f.InRect(event.Position()) {
 			return false, nil
 		}

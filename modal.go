@@ -196,7 +196,7 @@ func (m *Modal) SetFocus(index int) {
 }
 
 // Focus is called when this primitive receives focus.
-func (m *Modal) Focus(delegate func(p Primitive)) {
+func (m *Modal) Focus(delegate func(p Widget)) {
 	delegate(m.form)
 }
 
@@ -249,8 +249,8 @@ func (m *Modal) Draw(screen tcell.Screen) {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (m *Modal) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return m.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (m *Modal) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return m.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		// Pass mouse events on to the form.
 		consumed, capture = m.form.MouseHandler()(action, event, setFocus)
 		if !consumed && action == MouseLeftClick && m.InRect(event.Position()) {

@@ -6,12 +6,12 @@ import (
 	"github.com/malivvan/cui"
 )
 
-type formItemLabelWidthSetter[T cui.Primitive] interface{ SetLabelWidth(int) T }
+type formItemLabelWidthSetter[T cui.Widget] interface{ SetLabelWidth(int) T }
 
 // setFormItemLabelWidth sets the screen width of the label. A value of 0 will cause the
 // primitive to use the width of the label string.
-func setFormItemLabelWidth[T cui.Primitive](widget T, width int) bool {
-	if setter, ok := cui.Primitive(widget).(formItemLabelWidthSetter[T]); ok {
+func setFormItemLabelWidth[T cui.Widget](widget T, width int) bool {
+	if setter, ok := cui.Widget(widget).(formItemLabelWidthSetter[T]); ok {
 		setter.SetLabelWidth(width)
 		return true
 	}

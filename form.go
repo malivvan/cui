@@ -20,7 +20,7 @@ type Form struct {
 	*Box
 
 	// The items of the form (one row per item).
-	items []Primitive
+	items []Widget
 
 	// The buttons of the form.
 	buttons []*Button
@@ -520,7 +520,7 @@ func (f *Form) ClearButtons() *Form {
 //   - The background color
 //   - The field text color
 //   - The field background color
-func (f *Form) AddFormItem(item Primitive) *Form {
+func (f *Form) AddFormItem(item Widget) *Form {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -542,9 +542,10 @@ func (f *Form) GetFormItemCount() int {
 }
 
 // IndexOfFormItem returns the index of the given FormItem.
-func (f *Form) IndexOfFormItem(item Primitive) int {
-	f.l.RLock()
-	defer f.l.RUnlock()
+func (f *Form) IndexOfFormItem(item Widget) int {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+
 	for index, formItem := range f.items {
 		if item == formItem {
 			return index
@@ -556,7 +557,7 @@ func (f *Form) IndexOfFormItem(item Primitive) int {
 // GetFormItem returns the form item at the given position, starting with index
 // 0. Elements are referenced in the order they were added. Buttons are not included.
 // If index is out of bounds it returns nil.
-func (f *Form) GetFormItem(index int) Primitive {
+func (f *Form) GetFormItem(index int) Widget {
 	f.mu.Lock()
 	defer f.mu.RUnlock()
 	if index > len(f.items)-1 || index < 0 {
@@ -579,7 +580,7 @@ func (f *Form) RemoveFormItem(index int) *Form {
 // GetFormItemByLabel returns the first form element with the given label. If
 // no such element is found, nil is returned. Buttons are not searched and will
 // therefore not be returned.
-func (f *Form) GetFormItemByLabel(label string) Primitive {
+func (f *Form) GetFormItemByLabel(label string) Widget {
 	f.mu.Lock()
 	defer f.mu.RUnlock()
 
@@ -926,7 +927,7 @@ func (f *Form) updateFocusedElement(decreasing bool) {
 
 }
 
-func (f *Form) formItemInputHandler(delegate func(p Primitive)) func(key tcell.Key) {
+func (f *Form) formItemInputHandler(delegate func(p Widget)) func(key tcell.Key) {
 	return func(key tcell.Key) {
 		f.mu.Lock()
 
@@ -962,7 +963,7 @@ func (f *Form) formItemInputHandler(delegate func(p Primitive)) func(key tcell.K
 }
 
 // Focus is called by the application when the primitive receives focus.
-func (f *Form) Focus(delegate func(p Primitive)) {
+func (f *Form) Focus(delegate func(p Widget)) {
 	f.mu.Lock()
 	if len(f.items)+len(f.buttons) == 0 {
 		f.hasFocus = true
@@ -1027,8 +1028,8 @@ func (f *Form) focusIndex() int {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (f *Form) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return f.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (f *Form) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return f.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !f.InRect(event.Position()) {
 			return false, nil
 		}
@@ -1079,7 +1080,7 @@ type FormItemAttributes struct {
 	FinishedFunc func(key tcell.Key)
 }
 
-func (attrs *FormItemAttributes) Apply(item Primitive) {
+func (attrs *FormItemAttributes) Apply(item Widget) {
 	switch item.(type) {
 	case *InputField:
 		attrs.applyToInputField(item.(*InputField))
@@ -1146,8 +1147,8 @@ func (attrs *FormItemAttributes) applyToCheckBox(item *CheckBox) {
 }
 
 // getFormItemLabel returns the item's label text.
-func getFormItemLabel[T Primitive](widget T) string {
-	if getter, ok := Primitive(widget).(interface{ GetLabel() string }); ok {
+func getFormItemLabel[T Widget](widget T) string {
+	if getter, ok := Widget(widget).(interface{ GetLabel() string }); ok {
 		return getter.GetLabel()
 	}
 	return ""
@@ -1155,8 +1156,8 @@ func getFormItemLabel[T Primitive](widget T) string {
 
 // getFormItemFieldWidth sets the screen width of the label. A value of 0 will cause the
 // primitive to use the width of the label string.
-func getFormItemFieldWidth[T Primitive](widget T) int {
-	if getter, ok := Primitive(widget).(interface{ GetFieldWidth() int }); ok {
+func getFormItemFieldWidth[T Widget](widget T) int {
+	if getter, ok := Widget(widget).(interface{ GetFieldWidth() int }); ok {
 		return getter.GetFieldWidth()
 	}
 	return 0
@@ -1165,8 +1166,8 @@ func getFormItemFieldWidth[T Primitive](widget T) int {
 // getFormItemFieldHeight returns the width of the form item's field (the area which is
 // manipulated by the user) in number of screen cells. A value of 0 indicates the field
 // width is flexible and may use as much space as required.
-func getFormItemFieldHeight[T Primitive](widget T) int {
-	if getter, ok := Primitive(widget).(interface{ GetFieldHeight() int }); ok {
+func getFormItemFieldHeight[T Widget](widget T) int {
+	if getter, ok := Widget(widget).(interface{ GetFieldHeight() int }); ok {
 		return getter.GetFieldHeight()
 	}
 	return 0

@@ -3,7 +3,7 @@ package main
 import "github.com/malivvan/cui"
 
 // Introduction returns a cui.List with the highlights of the cview package.
-func Introduction(nextSlide func()) (title string, info string, content cui.Primitive) {
+func Introduction(nextSlide func()) (title string, info string, content cui.Widget) {
 	list := cui.NewList()
 
 	listText := [][]string{

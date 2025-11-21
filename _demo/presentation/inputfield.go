@@ -30,7 +30,7 @@ const inputField = `[green]package[white] main
 }`
 
 // InputField demonstrates the InputField.
-func InputField(nextSlide func()) (title string, info string, content cui.Primitive) {
+func InputField(nextSlide func()) (title string, info string, content cui.Widget) {
 	input := cui.NewInputField()
 	input.SetLabel("Enter a number: ")
 	input.SetAcceptanceFunc(cui.InputFieldInteger)

@@ -51,7 +51,7 @@ func NewBarChart() *BarChart {
 }
 
 // Focus is called when this primitive receives focus.
-func (c *BarChart) Focus(delegate func(p cui.Primitive)) {
+func (c *BarChart) Focus(delegate func(p cui.Widget)) {
 	delegate(c.Box)
 }
 

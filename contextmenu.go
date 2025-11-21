@@ -5,7 +5,7 @@ import "sync"
 // ContextMenu is a menu that appears upon user interaction, such as
 // right-clicking or pressing Alt+Enter.
 type ContextMenu struct {
-	parent   Primitive
+	parent   Widget
 	item     int
 	open     bool
 	drag     bool
@@ -17,7 +17,7 @@ type ContextMenu struct {
 }
 
 // NewContextMenu returns a new context menu.
-func NewContextMenu(parent Primitive) *ContextMenu {
+func NewContextMenu(parent Widget) *ContextMenu {
 	return &ContextMenu{
 		parent: parent,
 	}
@@ -105,7 +105,7 @@ func (c *ContextMenu) SetContextSelectedFunc(handler func(index int, text string
 
 // ShowContextMenu shows the context menu. Provide -1 for both to position on
 // the selected item, or specify a 	position.
-func (c *ContextMenu) ShowContextMenu(item int, x int, y int, setFocus func(Primitive)) *ContextMenu {
+func (c *ContextMenu) ShowContextMenu(item int, x int, y int, setFocus func(Widget)) *ContextMenu {
 	c.l.Lock()
 	defer c.l.Unlock()
 
@@ -114,7 +114,7 @@ func (c *ContextMenu) ShowContextMenu(item int, x int, y int, setFocus func(Prim
 }
 
 // HideContextMenu hides the context menu.
-func (c *ContextMenu) HideContextMenu(setFocus func(Primitive)) *ContextMenu {
+func (c *ContextMenu) HideContextMenu(setFocus func(Widget)) *ContextMenu {
 	c.l.Lock()
 	defer c.l.Unlock()
 
@@ -130,7 +130,7 @@ func (c *ContextMenu) ContextMenuVisible() bool {
 	return c.open
 }
 
-func (c *ContextMenu) show(item int, x int, y int, setFocus func(Primitive)) {
+func (c *ContextMenu) show(item int, x int, y int, setFocus func(Widget)) {
 	c.initializeList()
 
 	if len(c.list.items) == 0 {
@@ -173,7 +173,7 @@ func (c *ContextMenu) show(item int, x int, y int, setFocus func(Primitive)) {
 	setFocus(c.list)
 }
 
-func (c *ContextMenu) hide(setFocus func(Primitive)) {
+func (c *ContextMenu) hide(setFocus func(Widget)) {
 	c.initializeList()
 
 	c.open = false

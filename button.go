@@ -32,17 +32,16 @@ type Button struct {
 	// An optional rune which is drawn after the label when the button is focused.
 	cursorRune rune
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewButton returns a new input field.
-func NewButton(label string) *Button {
+func NewButton() *Button {
 	box := NewBox()
 	box.SetRect(0, 0, TaggedStringWidth(label)+4, 1)
 	box.SetBackgroundColor(Styles.MoreContrastBackgroundColor)
 	return &Button{
 		Box:                    box,
-		label:                  []byte(label),
 		labelColor:             Styles.PrimaryTextColor,
 		labelColorFocused:      Styles.PrimaryTextColor,
 		cursorRune:             Styles.ButtonCursorRune,
@@ -50,68 +49,139 @@ func NewButton(label string) *Button {
 	}
 }
 
-// SetLabel sets the button text.
-func (b *Button) SetLabel(label string) *Button {
-	b.Lock()
-	defer b.Unlock()
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
 
-	b.label = []byte(label)
+func (b *Button) set(setter func(b *Button)) *Button {
+	b.mu.Lock()
+	setter(b)
+	b.mu.Unlock()
 	return b
 }
 
-// GetLabel returns the button text.
-func (b *Button) GetLabel() string {
-	b.RLock()
-	defer b.RUnlock()
+func (b *Button) get(getter func(b *Button)) {
+	b.mu.RLock()
+	getter(b)
+	b.mu.RUnlock()
+}
 
-	return string(b.label)
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// SetTitle sets the title of the Button.
+func (b *Button) SetTitle(title string) *Button {
+	b.Box.SetTitle(title)
+	return b
+}
+
+// SetTitleColor sets the title color of the Button.
+func (b *Button) SetTitleColor(color tcell.Color) *Button {
+	b.Box.SetTitleColor(color)
+	return b
+}
+
+// SetTitleAlign sets the title alignment of the Button.
+func (b *Button) SetTitleAlign(align int) *Button {
+	b.Box.SetTitleAlign(align)
+	return b
+}
+
+// SetPadding sets the padding of the Button.
+func (b *Button) SetPadding(top, bottom, left, right int) *Button {
+	b.Box.SetPadding(top, bottom, left, right)
+	return b
+}
+
+// SetBorder sets whether the Button has a border.
+func (b *Button) SetBorder(show bool) *Button {
+	b.Box.SetBorder(show)
+	return b
+}
+
+// SetBorderColor sets the border color of the Button.
+func (b *Button) SetBorderColor(color tcell.Color) *Button {
+	b.Box.SetBorderColor(color)
+	return b
+}
+
+// SetBorderColorFocused sets the border color of the Button when focused.
+func (b *Button) SetBorderColorFocused(color tcell.Color) *Button {
+	b.Box.SetBorderColorFocused(color)
+	return b
+}
+
+// SetBorderAttributes sets the border attributes of the Button.
+func (b *Button) SetBorderAttributes(attr tcell.AttrMask) *Button {
+	b.Box.SetBorderAttributes(attr)
+	return b
+}
+
+func (b *Button) SetBackgroundColor(color tcell.Color) *Button {
+	b.Box.SetBackgroundColor(color)
+	return b
+}
+
+func (b *Button) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Button {
+	b.Box.SetDrawFunc(handler)
+	return b
+}
+
+func (b *Button) ShowFocus(showFocus bool) *Button {
+	b.Box.ShowFocus(showFocus)
+	return b
+}
+
+func (b *Button) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Button {
+	b.Box.SetMouseCapture(capture)
+	return b
+}
+
+func (b *Button) SetBackgroundTransparent(transparent bool) *Button {
+	b.Box.SetBackgroundTransparent(transparent)
+	return b
+}
+
+func (b *Button) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Button {
+	b.Box.SetInputCapture(capture)
+	return b
+}
+
+////////////////////////////////// <API> ////////////////////////////////////
+
+// SetLabel sets the button text.
+func (b *Button) SetLabel(label string) *Button {
+	return b.set(func(b *Button) { b.label = []byte(label) })
+}
+
+// GetLabel returns the button text.
+func (b *Button) GetLabel() (label string) {
+	b.get(func(b *Button) { label = string(b.label) })
+	return
 }
 
 // SetLabelColor sets the color of the button text.
 func (b *Button) SetLabelColor(color tcell.Color) *Button {
-	b.Lock()
-	defer b.Unlock()
-
-	b.labelColor = color
-	return b
+	return b.set(func(b *Button) { b.labelColor = color })
 }
 
 // SetLabelColorFocused sets the color of the button text when the button is
 // in focus.
 func (b *Button) SetLabelColorFocused(color tcell.Color) *Button {
-	b.Lock()
-	defer b.Unlock()
-
-	b.labelColorFocused = color
-	return b
+	return b.set(func(b *Button) { b.labelColorFocused = color })
 }
 
 // SetCursorRune sets the rune to show within the button when it is focused.
 func (b *Button) SetCursorRune(rune rune) *Button {
-	b.Lock()
-	defer b.Unlock()
-
-	b.cursorRune = rune
-	return b
+	return b.set(func(b *Button) { b.cursorRune = rune })
 }
 
 // SetBackgroundColorFocused sets the background color of the button text when
 // the button is in focus.
 func (b *Button) SetBackgroundColorFocused(color tcell.Color) *Button {
-	b.Lock()
-	defer b.Unlock()
-
-	b.backgroundColorFocused = color
-	return b
+	return b.set(func(b *Button) { b.backgroundColorFocused = color })
 }
 
 // SetSelectedFunc sets a handler which is called when the button was selected.
 func (b *Button) SetSelectedFunc(handler func()) *Button {
-	b.Lock()
-	defer b.Unlock()
-
-	b.selected = handler
-	return b
+	return b.set(func(b *Button) { b.selected = handler })
 }
 
 // SetBlurFunc sets a handler which is called when the user leaves the button.
@@ -122,12 +192,11 @@ func (b *Button) SetSelectedFunc(handler func()) *Button {
 //   - KeyTab: Move to the next field.
 //   - KeyBacktab: Move to the previous field.
 func (b *Button) SetBlurFunc(handler func(key tcell.Key)) *Button {
-	b.Lock()
-	defer b.Unlock()
-
-	b.blur = handler
-	return b
+	return b.set(func(b *Button) { b.blur = handler })
 }
+
+// ////////////////////////////////// <WIDGET> ////////////////////////////////////
+var _ Widget = (*Button)(nil)
 
 // Draw draws this primitive onto the screen.
 func (b *Button) Draw(screen tcell.Screen) {
@@ -135,8 +204,8 @@ func (b *Button) Draw(screen tcell.Screen) {
 		return
 	}
 
-	b.Lock()
-	defer b.Unlock()
+	b.mu.Lock()
+	defer b.mu.Unlock()
 
 	// Draw the box.
 	borderColor := b.borderColor
@@ -148,9 +217,9 @@ func (b *Button) Draw(screen tcell.Screen) {
 			b.borderColor = borderColor
 		}()
 	}
-	b.Unlock()
+	b.mu.Unlock()
 	b.Box.Draw(screen)
-	b.Lock()
+	b.mu.Lock()
 	b.backgroundColor = backgroundColor
 
 	// Draw label.
@@ -177,8 +246,8 @@ func (b *Button) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (b *Button) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return b.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (b *Button) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return b.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		// Process key event.
 		if HitShortcut(event, Keys.Select, Keys.Select2) {
 			if b.selected != nil {
@@ -193,8 +262,8 @@ func (b *Button) InputHandler() func(event *tcell.EventKey, setFocus func(p Prim
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (b *Button) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return b.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (b *Button) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return b.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !b.InRect(event.Position()) {
 			return false, nil
 		}

@@ -5,7 +5,7 @@ import (
 )
 
 // newTestApp returns a new application connected to a simulation screen.
-func newTestApp(root Primitive) (*App, error) {
+func newTestApp(root Widget) (*App, error) {
 	// Initialize simulation screen
 	sc := tcell.NewSimulationScreen("UTF-8")
 	sc.SetSize(80, 24)

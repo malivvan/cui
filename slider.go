@@ -283,8 +283,8 @@ func (s *Slider) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (s *Slider) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return s.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (s *Slider) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return s.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		if HitShortcut(event, Keys.Cancel, Keys.MovePreviousField, Keys.MoveNextField) {
 			if s.done != nil {
 				s.done(event.Key())
@@ -314,8 +314,8 @@ func (s *Slider) InputHandler() func(event *tcell.EventKey, setFocus func(p Prim
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (s *Slider) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return s.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (s *Slider) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return s.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		x, y := event.Position()
 		if !s.InRect(x, y) {
 			s.dragging = false

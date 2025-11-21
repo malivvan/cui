@@ -98,7 +98,7 @@ func (d *MessageDialog) SetMessage(message string) {
 }
 
 // Focus is called when this primitive receives focus.
-func (d *MessageDialog) Focus(delegate func(p cui.Primitive)) {
+func (d *MessageDialog) Focus(delegate func(p cui.Widget)) {
 	delegate(d.form)
 }
 
@@ -130,8 +130,8 @@ func (d *MessageDialog) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns input handler function for this primitive.
-func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
+func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
 		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp { //nolint:lll
 			if textHandler := d.textview.InputHandler(); textHandler != nil {
 				textHandler(event, setFocus)
@@ -149,8 +149,8 @@ func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (d *MessageDialog) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) { //nolint:lll
-	return d.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) { //nolint:lll,nonamedreturns
+func (d *MessageDialog) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) { //nolint:lll
+	return d.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) { //nolint:lll,nonamedreturns
 		// Pass mouse events on to the form.
 		consumed, capture = d.form.MouseHandler()(action, event, setFocus)
 		if !consumed && action == cui.MouseLeftClick && d.InRect(event.Position()) {

@@ -23,13 +23,13 @@ func (s *Spinner) SetVisible(v bool) {
 
 }
 
-func (s *Spinner) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
-	return func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
+func (s *Spinner) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
+	return func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
 		// No input handling for spinner
 	}
 }
 
-func (s *Spinner) Focus(delegate func(p cui.Primitive)) {
+func (s *Spinner) Focus(delegate func(p cui.Widget)) {
 	// Spinner does not take focus, but we implement this method to satisfy the Focusable interface.
 	// If you want to use the spinner in a focusable context, you can delegate focus to another primitive.
 	delegate(s)
@@ -39,8 +39,8 @@ func (s *Spinner) GetFocusable() cui.Focusable {
 	return s
 }
 
-func (s *Spinner) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
-	return func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
+func (s *Spinner) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
+	return func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
 		// No mouse handling for spinner
 		return false, nil
 	}

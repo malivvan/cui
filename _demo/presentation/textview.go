@@ -30,7 +30,7 @@ const textView1 = `[green]func[white] [yellow]main[white]() {
 }`
 
 // TextView1 demonstrates the basic text view.
-func TextView1(nextSlide func()) (title string, info string, content cui.Primitive) {
+func TextView1(nextSlide func()) (title string, info string, content cui.Widget) {
 	textView := cui.NewTextView()
 	textView.SetVerticalAlign(cui.AlignBottom)
 	textView.SetTextColor(tcell.ColorYellow.TrueColor())
@@ -109,7 +109,7 @@ const textView2 = `[green]package[white] main
 }`
 
 // TextView2 demonstrates the extended text view.
-func TextView2(nextSlide func()) (title string, info string, content cui.Primitive) {
+func TextView2(nextSlide func()) (title string, info string, content cui.Widget) {
 	codeView := cui.NewTextView()
 	codeView.SetWrap(false)
 	fmt.Fprint(codeView, textView2)

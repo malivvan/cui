@@ -61,7 +61,7 @@ func (a *ansi) Write(text []byte) (int, error) {
 				a.csiIntermediate.Reset()
 				a.state = ansiControlSequence
 			case 'c': // Reset.
-				fmt.Fprint(a.buffer, "[-:-:-]")
+				_, _ = fmt.Fprint(a.buffer, "[-:-:-]")
 				a.state = ansiText
 			case 'P', ']', 'X', '^', '_': // Substrings and commands.
 				a.state = ansiSubstring
@@ -87,7 +87,7 @@ func (a *ansi) Write(text []byte) (int, error) {
 					if count == 0 {
 						count = 1
 					}
-					fmt.Fprint(a.buffer, strings.Repeat("\n", count))
+					_, _ = fmt.Fprint(a.buffer, strings.Repeat("\n", count))
 				case 'm': // Select Graphic Rendition.
 					var background, foreground string
 					params := a.csiParameter.String()
@@ -223,7 +223,7 @@ func (a *ansi) Write(text []byte) (int, error) {
 						colon = ":"
 					}
 					if len(foreground) > 0 || len(background) > 0 || len(a.attributes) > 0 {
-						fmt.Fprintf(a.buffer, "[%s:%s%s%s]", foreground, background, colon, a.attributes)
+						_, _ = fmt.Fprintf(a.buffer, "[%s:%s%s%s]", foreground, background, colon, a.attributes)
 					}
 				}
 				a.state = ansiText
@@ -264,6 +264,6 @@ func (a *ansi) Write(text []byte) (int, error) {
 func TranslateANSI(text string) string {
 	var buffer bytes.Buffer
 	writer := ANSIWriter(&buffer)
-	writer.Write([]byte(text))
+	_, _ = writer.Write([]byte(text))
 	return buffer.String()
 }

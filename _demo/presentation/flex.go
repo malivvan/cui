@@ -13,7 +13,7 @@ func demoBox(title string) *cui.Box {
 }
 
 // Flex demonstrates flexbox layout.
-func Flex(nextSlide func()) (title string, info string, content cui.Primitive) {
+func Flex(nextSlide func()) (title string, info string, content cui.Widget) {
 	modalShown := false
 	panels := cui.NewPanels()
 

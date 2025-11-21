@@ -118,7 +118,7 @@ var rootNode = &node{
 	}}
 
 // TreeView demonstrates the tree view.
-func TreeView(nextSlide func()) (title string, info string, content cui.Primitive) {
+func TreeView(nextSlide func()) (title string, info string, content cui.Widget) {
 	treeNextSlide = nextSlide
 	tree.SetBorder(true)
 	tree.SetTitle("TreeView")

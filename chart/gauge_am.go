@@ -40,7 +40,7 @@ func (g *ActivityModeGauge) Draw(screen tcell.Screen) {
 }
 
 // Focus is called when this primitive receives focus.
-func (g *ActivityModeGauge) Focus(delegate func(p cui.Primitive)) { //nolint:revive
+func (g *ActivityModeGauge) Focus(delegate func(p cui.Widget)) { //nolint:revive
 }
 
 // HasFocus returns whether or not this primitive has focus.

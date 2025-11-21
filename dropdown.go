@@ -143,7 +143,7 @@ type DropDown struct {
 	// The symbol used to draw the selected item when opened.
 	dropDownSelectedSymbol rune
 
-	// A flag that determines whether the drop down symbol is always drawn.
+	// A flag that determines whether the dropdown symbol is always drawn.
 	alwaysDrawDropDownSymbol bool
 
 	sync.RWMutex
@@ -183,6 +183,90 @@ func NewDropDown() *DropDown {
 
 	return d
 }
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (d *DropDown) set(setter func(d *DropDown)) *DropDown {
+	d.mu.Lock()
+	setter(d)
+	d.mu.Unlock()
+	return d
+}
+
+func (d *DropDown) get(getter func(d *DropDown)) {
+	d.mu.RLock()
+	getter(d)
+	d.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+func (d *DropDown) SetTitle(title string) *DropDown {
+	d.Box.SetTitle(title)
+	return d
+}
+
+func (d *DropDown) SetTitleAlign(align int) *DropDown {
+	d.Box.SetTitleAlign(align)
+	return d
+}
+
+func (d *DropDown) SetBorder(show bool) *DropDown {
+	d.Box.SetBorder(show)
+	return d
+}
+
+func (d *DropDown) SetBorderColor(color tcell.Color) *DropDown {
+	d.Box.SetBorderColor(color)
+	return d
+}
+
+func (d *DropDown) SetBorderAttributes(attr tcell.AttrMask) *DropDown {
+	d.Box.SetBorderAttributes(attr)
+	return d
+}
+
+func (d *DropDown) SetBorderColorFocused(color tcell.Color) *DropDown {
+	d.Box.SetBorderColorFocused(color)
+	return d
+}
+
+func (d *DropDown) SetTitleColor(color tcell.Color) *DropDown {
+	d.Box.SetTitleColor(color)
+	return d
+}
+
+func (d *DropDown) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *DropDown {
+	d.Box.SetDrawFunc(handler)
+	return d
+}
+
+func (d *DropDown) ShowFocus(showFocus bool) *DropDown {
+	d.Box.ShowFocus(showFocus)
+	return d
+}
+
+func (d *DropDown) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *DropDown {
+	d.Box.SetMouseCapture(capture)
+	return d
+}
+
+func (d *DropDown) SetBackgroundTransparent(transparent bool) *DropDown {
+	d.Box.SetBackgroundTransparent(transparent)
+	return d
+}
+
+func (d *DropDown) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *DropDown {
+	d.Box.SetInputCapture(capture)
+	return d
+}
+
+func (d *DropDown) SetPadding(top, bottom, left, right int) *DropDown {
+	d.Box.SetPadding(top, bottom, left, right)
+	return d
+}
+
+/////////////////////////////////////// <API> ///////////////////////////////////////
 
 // SetDropDownSymbolRune sets the rune to be drawn at the end of the dropdown field
 // to indicate that this field is a dropdown.
@@ -572,6 +656,31 @@ func (d *DropDown) SetFinishedFunc(handler func(key tcell.Key)) *DropDown {
 	return d
 }
 
+// Focus is called by the application when the primitive receives focus.
+func (d *DropDown) Focus(delegate func(p Widget)) {
+	d.Box.Focus(delegate)
+	if d.open {
+		delegate(d.list)
+	}
+}
+
+// HasFocus returns whether or not this primitive has focus.
+func (d *DropDown) HasFocus() bool {
+	d.RLock()
+	defer d.RUnlock()
+
+	return d._hasFocus()
+}
+
+func (d *DropDown) _hasFocus() bool {
+	if d.open {
+		return d.list.HasFocus()
+	}
+	return d.hasFocus
+}
+
+////////////////////////////////////// <WIDGET> ///////////////////////////////////////
+
 // Draw draws this primitive onto the screen.
 func (d *DropDown) Draw(screen tcell.Screen) {
 	d.Box.Draw(screen)
@@ -714,8 +823,8 @@ func (d *DropDown) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (d *DropDown) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (d *DropDown) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		// Process key event.
 		switch key := event.Key(); key {
 		case tcell.KeyEnter, tcell.KeyRune, tcell.KeyDown:
@@ -759,7 +868,7 @@ func (d *DropDown) evalPrefix() {
 }
 
 // openList hands control over to the embedded List primitive.
-func (d *DropDown) openList(setFocus func(Primitive)) {
+func (d *DropDown) openList(setFocus func(Widget)) {
 	d.open = true
 	optionBefore := d.currentOption
 
@@ -811,39 +920,16 @@ func (d *DropDown) openList(setFocus func(Primitive)) {
 
 // closeList closes the embedded List element by hiding it and removing focus
 // from it.
-func (d *DropDown) closeList(setFocus func(Primitive)) {
+func (d *DropDown) closeList(setFocus func(Widget)) {
 	d.open = false
 	if d.list.HasFocus() {
 		setFocus(d)
 	}
 }
 
-// Focus is called by the application when the primitive receives focus.
-func (d *DropDown) Focus(delegate func(p Primitive)) {
-	d.Box.Focus(delegate)
-	if d.open {
-		delegate(d.list)
-	}
-}
-
-// HasFocus returns whether or not this primitive has focus.
-func (d *DropDown) HasFocus() bool {
-	d.RLock()
-	defer d.RUnlock()
-
-	return d._hasFocus()
-}
-
-func (d *DropDown) _hasFocus() bool {
-	if d.open {
-		return d.list.HasFocus()
-	}
-	return d.hasFocus
-}
-
 // MouseHandler returns the mouse handler for this primitive.
-func (d *DropDown) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return d.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (d *DropDown) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return d.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		// Was the mouse event in the drop-down box itself (or on its label)?
 		x, y := event.Position()
 		_, rectY, _, _ := d.GetInnerRect()

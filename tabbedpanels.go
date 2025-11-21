@@ -28,7 +28,7 @@ type TabbedPanels struct {
 
 	width, lastWidth int
 
-	setFocus func(Primitive)
+	setFocus func(Widget)
 
 	mu sync.RWMutex
 }
@@ -78,7 +78,7 @@ func (t *TabbedPanels) SetChangedFunc(handler func()) *TabbedPanels {
 
 // AddTab adds a new tab. Tab names should consist only of letters, numbers
 // and spaces.
-func (t *TabbedPanels) AddTab(name, label string, item Primitive) *TabbedPanels {
+func (t *TabbedPanels) AddTab(name, label string, item Widget) *TabbedPanels {
 	t.mu.Lock()
 	t.tabLabels[name] = label
 	t.mu.Unlock()
@@ -392,8 +392,8 @@ func (t *TabbedPanels) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (t *TabbedPanels) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (t *TabbedPanels) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		if t.setFocus == nil {
 			t.setFocus = setFocus
 		}
@@ -402,8 +402,8 @@ func (t *TabbedPanels) InputHandler() func(event *tcell.EventKey, setFocus func(
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (t *TabbedPanels) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (t *TabbedPanels) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if t.setFocus == nil {
 			t.setFocus = setFocus
 		}

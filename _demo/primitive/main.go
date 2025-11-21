@@ -42,8 +42,8 @@ func (r *RadioButtons) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (r *RadioButtons) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
-	return r.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
+func (r *RadioButtons) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
+	return r.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
 		switch event.Key() {
 		case tcell.KeyUp:
 			r.currentOption--

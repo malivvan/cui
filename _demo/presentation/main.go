@@ -36,7 +36,7 @@ const (
 // Slide is a function which returns the slide's title, any applicable
 // information and its main primitive, its. It receives a "nextSlide" function
 // which can be called to advance the presentation to the next slide.
-type Slide func(nextSlide func()) (title string, info string, content cui.Primitive)
+type Slide func(nextSlide func()) (title string, info string, content cui.Widget)
 
 // The application.
 var app = cui.New()

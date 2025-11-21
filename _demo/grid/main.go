@@ -11,7 +11,7 @@ func main() {
 
 	app.EnableMouse(true)
 
-	newPrimitive := func(text string) cui.Primitive {
+	newPrimitive := func(text string) cui.Widget {
 		tv := cui.NewTextView()
 		tv.SetTextAlign(cui.AlignCenter)
 		tv.SetText(text)

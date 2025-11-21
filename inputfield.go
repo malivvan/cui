@@ -743,8 +743,8 @@ func (i *InputField) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return i.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return i.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		i.Lock()
 
 		// Trigger changed events.
@@ -934,8 +934,8 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (i *InputField) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return i.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (i *InputField) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return i.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		x, y := event.Position()
 		_, rectY, _, _ := i.GetInnerRect()
 		if !i.InRect(x, y) {

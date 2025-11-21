@@ -6,11 +6,11 @@ import (
 )
 
 // Grid demonstrates the grid layout.
-func Grid(nextSlide func()) (title string, info string, content cui.Primitive) {
+func Grid(nextSlide func()) (title string, info string, content cui.Widget) {
 	modalShown := false
 	panels := cui.NewPanels()
 
-	newPrimitive := func(text string) cui.Primitive {
+	newPrimitive := func(text string) cui.Widget {
 		tv := cui.NewTextView()
 		tv.SetTextAlign(cui.AlignCenter)
 		tv.SetText(text)

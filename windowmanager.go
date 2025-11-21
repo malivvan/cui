@@ -44,7 +44,7 @@ func (wm *WindowManager) Clear() {
 }
 
 // Focus is called when this primitive receives focus.
-func (wm *WindowManager) Focus(delegate func(p Primitive)) {
+func (wm *WindowManager) Focus(delegate func(p Widget)) {
 	wm.mu.Lock()
 	defer wm.mu.Unlock()
 
@@ -127,8 +127,8 @@ func (wm *WindowManager) Draw(screen tcell.Screen) {
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (wm *WindowManager) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return wm.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (wm *WindowManager) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return wm.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		if !wm.InRect(event.Position()) {
 			return false, nil
 		}

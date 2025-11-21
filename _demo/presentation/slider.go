@@ -32,7 +32,7 @@ const sliderCode = `[green]package[white] main
 }`
 
 // Slider demonstrates the Slider.
-func Slider(nextSlide func()) (title string, info string, content cui.Primitive) {
+func Slider(nextSlide func()) (title string, info string, content cui.Widget) {
 	slider := cui.NewSlider()
 	slider.SetLabel("Volume:   0%")
 	slider.SetChangedFunc(func(value int) {

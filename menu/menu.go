@@ -122,8 +122,8 @@ func (subMenu *SubMenu) Draw(screen tcell.Screen) {
 	}
 }
 
-func (subMenu *SubMenu) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
-	return subMenu.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
+func (subMenu *SubMenu) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
+	return subMenu.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
 		if subMenu.childMenu != nil {
 			consumed, capture = subMenu.childMenu.MouseHandler()(action, event, setFocus)
 
@@ -220,8 +220,8 @@ func (menuBar *MenuBar) Draw(screen tcell.Screen) {
 	}
 }
 
-func (menuBar *MenuBar) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
-	return menuBar.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
+func (menuBar *MenuBar) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
+	return menuBar.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
 		switch event.Key() {
 		case tcell.KeyLeft:
 			menuBar.currentOption--
@@ -237,8 +237,8 @@ func (menuBar *MenuBar) InputHandler() func(event *tcell.EventKey, setFocus func
 	})
 }
 
-func (menuBar *MenuBar) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
-	return menuBar.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
+func (menuBar *MenuBar) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
+	return menuBar.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
 		if menuBar.subMenu != nil {
 			consumed, capture = menuBar.subMenu.MouseHandler()(action, event, setFocus)
 			if consumed {
@@ -268,7 +268,7 @@ func (menuBar *MenuBar) MouseHandler() func(action cui.MouseAction, event *tcell
 	})
 }
 
-func (menuBar *MenuBar) Focus(delegate func(p cui.Primitive)) {
+func (menuBar *MenuBar) Focus(delegate func(p cui.Widget)) {
 	//if menuBar.subMenu != nil {
 	//	delegate(menuBar.subMenu)
 	//} else {

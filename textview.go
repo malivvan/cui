@@ -754,7 +754,7 @@ func (t *TextView) GetRegionText(regionID string) string {
 }
 
 // Focus is called when this primitive receives focus.
-func (t *TextView) Focus(delegate func(p Primitive)) {
+func (t *TextView) Focus(delegate func(p Widget)) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -1346,8 +1346,8 @@ func (t *TextView) Draw(screen tcell.Screen) {
 }
 
 // InputHandler returns the handler for this primitive.
-func (t *TextView) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
-	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
+func (t *TextView) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Widget)) {
 		key := event.Key()
 
 		if HitShortcut(event, Keys.Cancel, Keys.Select, Keys.Select2, Keys.MovePreviousField, Keys.MoveNextField) {
@@ -1390,8 +1390,8 @@ func (t *TextView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (t *TextView) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
-	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive) {
+func (t *TextView) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		x, y := event.Position()
 		if !t.InRect(x, y) {
 			return false, nil

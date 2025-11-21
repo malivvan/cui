@@ -29,7 +29,7 @@ const form = `[green]package[white] main
 }`
 
 // Form demonstrates forms.
-func Form(nextSlide func()) (title string, info string, content cui.Primitive) {
+func Form(nextSlide func()) (title string, info string, content cui.Widget) {
 	f := cui.NewForm()
 	f.AddInputField("First name:", "", 20, nil, nil)
 	f.AddInputField("Last name:", "", 20, nil, nil)

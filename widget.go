@@ -2,8 +2,8 @@ package cui
 
 import "github.com/gdamore/tcell/v2"
 
-// Primitive is the top-most interface for all graphical primitives.
-type Primitive interface {
+// Widget is the top-most interface for all graphical primitives.
+type Widget interface {
 	// Draw draws this primitive onto the screen. Implementers can call the
 	// screen's ShowCursor() function but should only do so when they have focus.
 	// (They will need to keep track of this themselves.)
@@ -12,7 +12,7 @@ type Primitive interface {
 	// GetRect returns the current position of the primitive, x, y, width, and
 	// height.
 	GetRect() (int, int, int, int)
-
+	
 	// SetRect sets a new position of the primitive.
 	SetRect(x, y, width, height int)
 
@@ -38,11 +38,11 @@ type Primitive interface {
 	// The Box class provides functionality to intercept keyboard input. If you
 	// subclass from Box, it is recommended that you wrap your handler using
 	// Box.WrapInputHandler() so you inherit that functionality.
-	InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive))
+	InputHandler() func(event *tcell.EventKey, setFocus func(p Widget))
 
 	// Focus is called by the application when the primitive receives focus.
 	// Implementers may call delegate() to pass the focus on to another primitive.
-	Focus(delegate func(p Primitive))
+	Focus(delegate func(p Widget))
 
 	// HasFocus determines if the primitive has focus. This function must return
 	// true also if one of this primitive's child elements has focus.
@@ -63,5 +63,5 @@ type Primitive interface {
 	// The Box class provides functionality to intercept mouse events. If you
 	// subclass from Box, it is recommended that you wrap your handler using
 	// Box.WrapMouseHandler() so you inherit that functionality.
-	MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Primitive)) (consumed bool, capture Primitive)
+	MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)
 }

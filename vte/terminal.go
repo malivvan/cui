@@ -78,14 +78,14 @@ func (t *Terminal) HandleEvent(ev tcell.Event) {
 	}
 }
 
-func (t *Terminal) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
-	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Primitive)) {
+func (t *Terminal) InputHandler() func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
+	return t.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p cui.Widget)) {
 		t.term.HandleEvent(event)
 	})
 }
 
-func (t *Terminal) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
-	return t.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Primitive)) (consumed bool, capture cui.Primitive) {
+func (t *Terminal) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
+	return t.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
 		if action == cui.MouseLeftClick && t.InRect(event.Position()) {
 			setFocus(t)
 			return t.term.HandleEvent(event), nil
