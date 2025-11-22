@@ -11,8 +11,8 @@ import (
 // TabbedPanels is a tabbed container for other primitives. The tab switcher
 // may be positioned vertically or horizontally, before or after the content.
 type TabbedPanels struct {
-	*Flex
-	Switcher *TextView
+	flex     *Flex
+	switcher *TextView
 	panels   *Panels
 
 	tabLabels  map[string]string
@@ -36,15 +36,15 @@ type TabbedPanels struct {
 // NewTabbedPanels returns a new TabbedPanels object.
 func NewTabbedPanels() *TabbedPanels {
 	t := &TabbedPanels{
-		Flex:       NewFlex(),
-		Switcher:   NewTextView(),
+		flex:       NewFlex(),
+		switcher:   NewTextView(),
 		panels:     NewPanels(),
 		dividerMid: string(BoxDrawingsDoubleVertical),
 		dividerEnd: string(BoxDrawingsLightVertical),
 		tabLabels:  make(map[string]string),
 	}
 
-	s := t.Switcher
+	s := t.switcher
 	s.SetDynamicColors(true)
 	s.SetHighlightForegroundColor(Styles.InverseTextColor)
 	s.SetHighlightBackgroundColor(Styles.PrimaryTextColor)
@@ -68,6 +68,170 @@ func NewTabbedPanels() *TabbedPanels {
 
 	return t
 }
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (t *TabbedPanels) set(setter func(t *TabbedPanels)) *TabbedPanels {
+	t.mu.Lock()
+	setter(t)
+	t.mu.Unlock()
+	return t
+}
+
+func (t *TabbedPanels) get(getter func(t *TabbedPanels)) {
+	t.mu.RLock()
+	getter(t)
+	t.mu.RUnlock()
+}
+
+///////////////////////////////////// <FLEX> ////////////////////////////////////
+
+func (t *TabbedPanels) GetTitle() string {
+	return t.flex.GetTitle()
+}
+func (t *TabbedPanels) SetTitle(title string) *TabbedPanels {
+	t.flex.SetTitle(title)
+	return t
+}
+
+func (t *TabbedPanels) GetTitleColor() tcell.Color {
+	return t.flex.GetTitleColor()
+}
+func (t *TabbedPanels) SetTitleColor(color tcell.Color) *TabbedPanels {
+	t.flex.SetTitleColor(color)
+	return t
+}
+
+func (t *TabbedPanels) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return t.flex.GetDrawFunc()
+}
+
+func (t *TabbedPanels) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *TabbedPanels {
+	t.flex.SetDrawFunc(handler)
+	return t
+}
+
+func (t *TabbedPanels) HasFocus() bool {
+	return t.flex.HasFocus()
+}
+func (t *TabbedPanels) ShowFocus(showFocus bool) *TabbedPanels {
+	t.flex.ShowFocus(showFocus)
+	return t
+}
+
+func (t *TabbedPanels) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return t.flex.GetMouseCapture()
+}
+
+func (t *TabbedPanels) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *TabbedPanels {
+	t.flex.SetMouseCapture(capture)
+	return t
+}
+
+func (t *TabbedPanels) GetBorder() (border bool) {
+	return t.flex.GetBorder()
+}
+func (t *TabbedPanels) SetBorder(show bool) *TabbedPanels {
+	t.flex.SetBorder(show)
+	return t
+}
+
+func (t *TabbedPanels) GetBorderColorFocused() (color tcell.Color) {
+	return t.flex.GetBorderColorFocused()
+}
+func (t *TabbedPanels) SetBorderColorFocused(color tcell.Color) *TabbedPanels {
+	t.flex.SetBorderColorFocused(color)
+	return t
+}
+func (t *TabbedPanels) GetTitleAlign() (align int) {
+	return t.flex.GetTitleAlign()
+}
+func (t *TabbedPanels) SetTitleAlign(align int) *TabbedPanels {
+	t.flex.SetTitleAlign(align)
+	return t
+}
+
+func (t *TabbedPanels) GetBorderAttributes() (attr tcell.AttrMask) {
+	return t.flex.GetBorderAttributes()
+}
+func (t *TabbedPanels) SetBorderAttributes(attr tcell.AttrMask) *TabbedPanels {
+	t.flex.SetBorderAttributes(attr)
+	return t
+}
+
+func (t *TabbedPanels) GetBorderColor() (color tcell.Color) {
+	return t.flex.GetBorderColor()
+}
+func (t *TabbedPanels) SetBorderColor(color tcell.Color) *TabbedPanels {
+	t.flex.SetBorderColor(color)
+	return t
+}
+
+func (t *TabbedPanels) GetBackgroundTransparent() (transparent bool) {
+	return t.flex.GetBackgroundTransparent()
+}
+
+func (t *TabbedPanels) SetBackgroundTransparent(transparent bool) *TabbedPanels {
+	t.flex.SetBackgroundTransparent(transparent)
+	return t
+}
+
+func (t *TabbedPanels) GetPadding() (top, bottom, left, right int) {
+	return t.flex.GetPadding()
+}
+func (t *TabbedPanels) SetPadding(top, bottom, left, right int) *TabbedPanels {
+	t.flex.SetPadding(top, bottom, left, right)
+	return t
+}
+
+func (t *TabbedPanels) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return t.flex.GetInputCapture()
+}
+
+func (t *TabbedPanels) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *TabbedPanels {
+	t.flex.SetInputCapture(capture)
+	return t
+}
+
+func (t *TabbedPanels) WrapMouseHandler(mouseHandler func(MouseAction, *tcell.EventMouse, func(p Widget)) (bool, Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.flex.WrapMouseHandler(mouseHandler)
+}
+func (t *TabbedPanels) WrapInputHandler(inputHandler func(*tcell.EventKey, func(p Widget))) func(*tcell.EventKey, func(p Widget)) {
+	return t.flex.WrapInputHandler(inputHandler)
+}
+func (t *TabbedPanels) GetInnerRect() (innerX, innerY, innerW, innerH int) {
+	return t.flex.GetInnerRect()
+}
+func (t *TabbedPanels) InRect(x, y int) bool {
+	return t.flex.InRect(x, y)
+}
+
+func (t *TabbedPanels) GetRect() (x, y, width, height int) {
+	return t.flex.GetRect()
+}
+func (t *TabbedPanels) SetRect(x, y, width, height int) {
+	t.flex.SetRect(x, y, width, height)
+}
+
+func (t *TabbedPanels) GetVisible() bool {
+	return t.flex.GetVisible()
+}
+func (t *TabbedPanels) SetVisible(visible bool) {
+	t.flex.SetVisible(visible)
+}
+
+func (t *TabbedPanels) Focus(delegate func(p Widget)) {
+	t.flex.Focus(delegate)
+}
+
+func (t *TabbedPanels) GetFocusable() Focusable {
+	return t.flex.GetFocusable()
+}
+func (t *TabbedPanels) Blur() {
+	t.flex.Blur()
+}
+
+/////////////////////////////////////// <API> ///////////////////////////////////////
 
 // SetChangedFunc sets a handler which is called whenever a tab is added,
 // selected, reordered or removed.
@@ -125,7 +289,7 @@ func (t *TabbedPanels) SetCurrentTab(name string) *TabbedPanels {
 
 	t.mu.Unlock()
 
-	h := t.Switcher.GetHighlights()
+	h := t.switcher.GetHighlights()
 	var found bool
 	for _, hl := range h {
 		if hl == name {
@@ -134,9 +298,9 @@ func (t *TabbedPanels) SetCurrentTab(name string) *TabbedPanels {
 		}
 	}
 	if !found {
-		t.Switcher.Highlight(t.currentTab)
+		t.switcher.Highlight(t.currentTab)
 	}
-	t.Switcher.ScrollToHighlight()
+	t.switcher.ScrollToHighlight()
 	return t
 }
 
@@ -174,26 +338,26 @@ func (t *TabbedPanels) GetBackgroundColor() tcell.Color {
 
 // SetTabTextColor sets the color of the tab text.
 func (t *TabbedPanels) SetTabTextColor(color tcell.Color) *TabbedPanels {
-	t.Switcher.SetTextColor(color)
+	t.switcher.SetTextColor(color)
 	return t
 }
 
 // SetTabTextColorFocused sets the color of the tab text when the tab is in focus.
 func (t *TabbedPanels) SetTabTextColorFocused(color tcell.Color) *TabbedPanels {
-	t.Switcher.SetHighlightForegroundColor(color)
+	t.switcher.SetHighlightForegroundColor(color)
 	return t
 }
 
 // SetTabBackgroundColor sets the background color of the tab.
 func (t *TabbedPanels) SetTabBackgroundColor(color tcell.Color) *TabbedPanels {
-	t.Switcher.SetBackgroundColor(color)
+	t.switcher.SetBackgroundColor(color)
 	return t
 }
 
 // SetTabBackgroundColorFocused sets the background color of the tab when the
 // tab is in focus.
 func (t *TabbedPanels) SetTabBackgroundColorFocused(color tcell.Color) *TabbedPanels {
-	t.Switcher.SetHighlightBackgroundColor(color)
+	t.switcher.SetHighlightBackgroundColor(color)
 	return t
 }
 
@@ -246,31 +410,31 @@ func (t *TabbedPanels) SetTabSwitcherAfterContent(after bool) *TabbedPanels {
 }
 
 func (t *TabbedPanels) rebuild() {
-	f := t.Flex
+	f := t.flex
 	if t.switcherVertical {
 		f.SetDirection(FlexColumn)
 	} else {
 		f.SetDirection(FlexRow)
 	}
 	f.RemoveItem(t.panels)
-	f.RemoveItem(t.Switcher)
+	f.RemoveItem(t.switcher)
 	if t.switcherAfterContent {
 		f.AddItem(t.panels, 0, 1, true)
-		f.AddItem(t.Switcher, 1, 1, false)
+		f.AddItem(t.switcher, 1, 1, false)
 	} else {
-		f.AddItem(t.Switcher, 1, 1, false)
+		f.AddItem(t.switcher, 1, 1, false)
 		f.AddItem(t.panels, 0, 1, true)
 	}
 
 	t.updateTabLabels()
 
-	t.Switcher.SetMaxLines(t.switcherHeight)
+	t.switcher.SetMaxLines(t.switcherHeight)
 }
 
 func (t *TabbedPanels) updateTabLabels() {
 	if len(t.panels.panels) == 0 {
-		t.Switcher.SetText("")
-		t.Flex.ResizeItem(t.Switcher, 0, 0)
+		t.switcher.SetText("")
+		t.flex.ResizeItem(t.switcher, 0, 0)
 		return
 	}
 
@@ -315,7 +479,7 @@ func (t *TabbedPanels) updateTabLabels() {
 			b.WriteString(t.dividerMid)
 		}
 	}
-	t.Switcher.SetText(b.String())
+	t.switcher.SetText(b.String())
 
 	var reqLines int
 	if t.switcherVertical {
@@ -324,13 +488,13 @@ func (t *TabbedPanels) updateTabLabels() {
 		if t.switcherHeight > 0 {
 			reqLines = t.switcherHeight
 		} else {
-			reqLines = len(WordWrap(t.Switcher.GetText(true), t.width))
+			reqLines = len(WordWrap(t.switcher.GetText(true), t.width))
 			if reqLines < 1 {
 				reqLines = 1
 			}
 		}
 	}
-	t.Flex.ResizeItem(t.Switcher, reqLines, 1)
+	t.flex.ResizeItem(t.switcher, reqLines, 1)
 }
 
 func (t *TabbedPanels) updateVisibleTabs() {
@@ -380,7 +544,7 @@ func (t *TabbedPanels) Draw(screen tcell.Screen) {
 		return
 	}
 
-	t.box.Draw(screen)
+	t.flex.box.Draw(screen)
 
 	_, _, t.width, _ = t.GetInnerRect()
 	if t.width != t.lastWidth {
@@ -388,7 +552,7 @@ func (t *TabbedPanels) Draw(screen tcell.Screen) {
 	}
 	t.lastWidth = t.width
 
-	t.Flex.Draw(screen)
+	t.flex.Draw(screen)
 }
 
 // InputHandler returns the handler for this primitive.
@@ -397,7 +561,7 @@ func (t *TabbedPanels) InputHandler() func(event *tcell.EventKey, setFocus func(
 		if t.setFocus == nil {
 			t.setFocus = setFocus
 		}
-		t.Flex.InputHandler()(event, setFocus)
+		t.flex.InputHandler()(event, setFocus)
 	})
 }
 
@@ -413,14 +577,14 @@ func (t *TabbedPanels) MouseHandler() func(action MouseAction, event *tcell.Even
 			return false, nil
 		}
 
-		if t.Switcher.InRect(x, y) {
+		if t.switcher.InRect(x, y) {
 			if t.setFocus != nil {
 				defer t.setFocus(t.panels)
 			}
-			defer t.Switcher.MouseHandler()(action, event, setFocus)
+			defer t.switcher.MouseHandler()(action, event, setFocus)
 			return true, nil
 		}
 
-		return t.Flex.MouseHandler()(action, event, setFocus)
+		return t.flex.MouseHandler()(action, event, setFocus)
 	})
 }
