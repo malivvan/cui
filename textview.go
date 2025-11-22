@@ -98,7 +98,7 @@ type textViewRegion struct {
 // The ScrollToHighlight() function can be used to jump to the currently
 // highlighted region once when the text view is drawn the next time.
 type TextView struct {
-	*Box
+	box *Box
 
 	// The text buffer.
 	buffer [][]byte
@@ -222,7 +222,7 @@ type TextView struct {
 // NewTextView returns a new text view.
 func NewTextView() *TextView {
 	return &TextView{
-		Box:                 NewBox(),
+		box:                 NewBox(),
 		highlights:          make(map[string]struct{}),
 		lineOffset:          -1,
 		reindex:             true,
@@ -237,6 +237,245 @@ func NewTextView() *TextView {
 		highlightBackground: Styles.PrimaryTextColor,
 	}
 }
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (t *TextView) set(setter func(t *TextView)) *TextView {
+	t.mu.Lock()
+	setter(t)
+	t.mu.Unlock()
+	return t
+}
+
+func (t *TextView) get(getter func(t *TextView)) {
+	t.mu.RLock()
+	getter(t)
+	t.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this TextView.
+func (t *TextView) GetTitle() string {
+	return t.box.GetTitle()
+}
+
+// SetTitle sets the title of this TextView.
+func (t *TextView) SetTitle(title string) *TextView {
+	t.box.SetTitle(title)
+	return t
+}
+
+// GetTitleAlign returns the title alignment of this TextView.
+func (t *TextView) GetTitleAlign() int {
+	return t.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this TextView.
+func (t *TextView) SetTitleAlign(align int) *TextView {
+	t.box.SetTitleAlign(align)
+	return t
+}
+
+// GetBorder returns whether this TextView has a border.
+func (t *TextView) GetBorder() bool {
+	return t.box.GetBorder()
+}
+
+// SetBorder sets whether this TextView has a border.
+func (t *TextView) SetBorder(show bool) *TextView {
+	t.box.SetBorder(show)
+	return t
+}
+
+// GetBorderColor returns the border color of this TextView.
+func (t *TextView) GetBorderColor() tcell.Color {
+	return t.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this TextView.
+func (t *TextView) SetBorderColor(color tcell.Color) *TextView {
+	t.box.SetBorderColor(color)
+	return t
+}
+
+// GetBorderAttributes returns the border attributes of this TextView.
+func (t *TextView) GetBorderAttributes() tcell.AttrMask {
+	return t.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this TextView.
+func (t *TextView) SetBorderAttributes(attr tcell.AttrMask) *TextView {
+	t.box.SetBorderAttributes(attr)
+	return t
+}
+
+// GetBorderColorFocused returns the border color of this TextView when focused.
+func (t *TextView) GetBorderColorFocused() tcell.Color {
+	return t.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this TextView when focused.
+func (t *TextView) SetBorderColorFocused(color tcell.Color) *TextView {
+	t.box.SetBorderColorFocused(color)
+	return t
+}
+
+// GetTitleColor returns the title color of this TextView.
+func (t *TextView) GetTitleColor() tcell.Color {
+	return t.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this TextView.
+func (t *TextView) SetTitleColor(color tcell.Color) *TextView {
+	t.box.SetTitleColor(color)
+	return t
+}
+
+// GetDrawFunc returns the custom draw function of this TextView.
+func (t *TextView) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return t.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this TextView.
+func (t *TextView) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *TextView {
+	t.box.SetDrawFunc(handler)
+	return t
+}
+
+// ShowFocus sets whether this TextView should show a focus indicator when focused.
+func (t *TextView) ShowFocus(showFocus bool) *TextView {
+	t.box.ShowFocus(showFocus)
+	return t
+}
+
+// GetMouseCapture returns the mouse capture function of this TextView.
+func (t *TextView) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return t.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this TextView.
+func (t *TextView) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *TextView {
+	t.box.SetMouseCapture(capture)
+	return t
+}
+
+// GetBackgroundColor returns the background color of this TextView.
+func (t *TextView) GetBackgroundColor() tcell.Color {
+	return t.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this TextView.
+func (t *TextView) SetBackgroundColor(color tcell.Color) *TextView {
+	t.box.SetBackgroundColor(color)
+	return t
+}
+
+// GetBackgroundTransparent returns whether the background of this TextView is transparent.
+func (t *TextView) GetBackgroundTransparent() bool {
+	return t.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this TextView is transparent.
+func (t *TextView) SetBackgroundTransparent(transparent bool) *TextView {
+	t.box.SetBackgroundTransparent(transparent)
+	return t
+}
+
+// GetInputCapture returns the input capture function of this TextView.
+func (t *TextView) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return t.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this TextView.
+func (t *TextView) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *TextView {
+	t.box.SetInputCapture(capture)
+	return t
+}
+
+// GetPadding returns the padding of this TextView.
+func (t *TextView) GetPadding() (top, bottom, left, right int) {
+	return t.box.GetPadding()
+}
+
+// SetPadding sets the padding of this TextView.
+func (t *TextView) SetPadding(top, bottom, left, right int) *TextView {
+	t.box.SetPadding(top, bottom, left, right)
+	return t
+}
+
+// InRect returns whether the given screen coordinates are within this TextView.
+func (t *TextView) InRect(x, y int) bool {
+	return t.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this TextView.
+func (t *TextView) GetInnerRect() (x, y, width, height int) {
+	return t.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the TextView is preserved.
+func (t *TextView) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return t.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the TextView is preserved.
+func (t *TextView) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this TextView.
+func (t *TextView) GetRect() (x, y, width, height int) {
+	return t.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this TextView.
+func (t *TextView) SetRect(x, y, width, height int) {
+	t.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this TextView is visible.
+func (t *TextView) GetVisible() bool {
+	return t.box.GetVisible()
+}
+
+// SetVisible sets whether this TextView is visible.
+func (t *TextView) SetVisible(visible bool) {
+	t.box.SetVisible(visible)
+}
+
+// Focus is called when this primitive receives focus.
+func (t *TextView) Focus(delegate func(p Widget)) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	// Implemented here with locking because this is used by layout primitives.
+	t.box.hasFocus = true
+}
+
+// HasFocus returns whether or not this primitive has focus.
+func (t *TextView) HasFocus() bool {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
+	// Implemented here with locking because this may be used in the "changed"
+	// callback.
+	return t.box.hasFocus
+}
+
+// GetFocusable returns the focusable primitive of this TextView.
+func (t *TextView) GetFocusable() Focusable {
+	return t.box.GetFocusable()
+}
+
+// Blur is called when this TextView loses focus.
+func (t *TextView) Blur() {
+	t.box.Blur()
+}
+
+////////////////////////////////// <API> ////////////////////////////////////
 
 // SetScrollable sets the flag that decides whether or not the text view is
 // scrollable. If true, text is kept in a buffer and can be navigated. If false,
@@ -753,25 +992,6 @@ func (t *TextView) GetRegionText(regionID string) string {
 	return escapePattern.ReplaceAllString(buffer.String(), `[$1$2]`)
 }
 
-// Focus is called when this primitive receives focus.
-func (t *TextView) Focus(delegate func(p Widget)) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	// Implemented here with locking because this is used by layout primitives.
-	t.hasFocus = true
-}
-
-// HasFocus returns whether or not this primitive has focus.
-func (t *TextView) HasFocus() bool {
-	t.mu.RLock()
-	defer t.mu.RUnlock()
-
-	// Implemented here with locking because this may be used in the "changed"
-	// callback.
-	return t.hasFocus
-}
-
 // Write lets us implement the io.Writer interface. Tab characters will be
 // replaced with TabSize space characters. A "\n" or "\r\n" will be interpreted
 // as a new line.
@@ -1052,7 +1272,7 @@ func (t *TextView) Draw(screen tcell.Screen) {
 		return
 	}
 
-	t.Box.Draw(screen)
+	t.box.Draw(screen)
 
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -1095,7 +1315,7 @@ func (t *TextView) Draw(screen tcell.Screen) {
 		}
 
 		for printed := 0; printed < height; printed++ {
-			RenderScrollBar(screen, t.scrollBarVisibility, x+width, y+printed, height, items, cursor, printed, t.hasFocus, t.scrollBarColor)
+			RenderScrollBar(screen, t.scrollBarVisibility, x+width, y+printed, height, items, cursor, printed, t.box.hasFocus, t.scrollBarColor)
 		}
 	}()
 
@@ -1178,7 +1398,7 @@ func (t *TextView) Draw(screen tcell.Screen) {
 	}
 
 	// Draw the buffer.
-	defaultStyle := tcell.StyleDefault.Foreground(t.textColor).Background(t.backgroundColor)
+	defaultStyle := tcell.StyleDefault.Foreground(t.textColor).Background(t.box.backgroundColor)
 	for line := t.lineOffset; line < len(t.index); line++ {
 		// Are we done?
 		if line-t.lineOffset >= height {

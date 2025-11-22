@@ -313,7 +313,7 @@ func (n *TreeNode) SetIndent(indent int) *TreeNode {
 // using SetPrefixes() for different levels, for example to display hierarchical
 // bullet point lists.
 type TreeView struct {
-	*Box
+	box *Box
 
 	// The root node.
 	root *TreeNode
@@ -373,13 +373,243 @@ type TreeView struct {
 // NewTreeView returns a new tree view.
 func NewTreeView() *TreeView {
 	return &TreeView{
-		Box:                 NewBox(),
+		box:                 NewBox(),
 		scrollBarVisibility: ScrollBarAuto,
 		graphics:            true,
 		graphicsColor:       Styles.GraphicsColor,
 		scrollBarColor:      Styles.ScrollBarColor,
 	}
 }
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (t *TreeView) set(setter func(t *TreeView)) *TreeView {
+	t.mu.Lock()
+	setter(t)
+	t.mu.Unlock()
+	return t
+}
+
+func (t *TreeView) get(getter func(t *TreeView)) {
+	t.mu.RLock()
+	getter(t)
+	t.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this TreeView.
+func (t *TreeView) GetTitle() string {
+	return t.box.GetTitle()
+}
+
+// SetTitle sets the title of this TreeView.
+func (t *TreeView) SetTitle(title string) *TreeView {
+	t.box.SetTitle(title)
+	return t
+}
+
+// GetTitleAlign returns the title alignment of this TreeView.
+func (t *TreeView) GetTitleAlign() int {
+	return t.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this TreeView.
+func (t *TreeView) SetTitleAlign(align int) *TreeView {
+	t.box.SetTitleAlign(align)
+	return t
+}
+
+// GetBorder returns whether this TreeView has a border.
+func (t *TreeView) GetBorder() bool {
+	return t.box.GetBorder()
+}
+
+// SetBorder sets whether this TreeView has a border.
+func (t *TreeView) SetBorder(show bool) *TreeView {
+	t.box.SetBorder(show)
+	return t
+}
+
+// GetBorderColor returns the border color of this TreeView.
+func (t *TreeView) GetBorderColor() tcell.Color {
+	return t.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this TreeView.
+func (t *TreeView) SetBorderColor(color tcell.Color) *TreeView {
+	t.box.SetBorderColor(color)
+	return t
+}
+
+// GetBorderAttributes returns the border attributes of this TreeView.
+func (t *TreeView) GetBorderAttributes() tcell.AttrMask {
+	return t.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this TreeView.
+func (t *TreeView) SetBorderAttributes(attr tcell.AttrMask) *TreeView {
+	t.box.SetBorderAttributes(attr)
+	return t
+}
+
+// GetBorderColorFocused returns the border color of this TreeView when focused.
+func (t *TreeView) GetBorderColorFocused() tcell.Color {
+	return t.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this TreeView when focused.
+func (t *TreeView) SetBorderColorFocused(color tcell.Color) *TreeView {
+	t.box.SetBorderColorFocused(color)
+	return t
+}
+
+// GetTitleColor returns the title color of this TreeView.
+func (t *TreeView) GetTitleColor() tcell.Color {
+	return t.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this TreeView.
+func (t *TreeView) SetTitleColor(color tcell.Color) *TreeView {
+	t.box.SetTitleColor(color)
+	return t
+}
+
+// GetDrawFunc returns the custom draw function of this TreeView.
+func (t *TreeView) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return t.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this TreeView.
+func (t *TreeView) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *TreeView {
+	t.box.SetDrawFunc(handler)
+	return t
+}
+
+// ShowFocus sets whether this TreeView should show a focus indicator when focused.
+func (t *TreeView) ShowFocus(showFocus bool) *TreeView {
+	t.box.ShowFocus(showFocus)
+	return t
+}
+
+// GetMouseCapture returns the mouse capture function of this TreeView.
+func (t *TreeView) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return t.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this TreeView.
+func (t *TreeView) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *TreeView {
+	t.box.SetMouseCapture(capture)
+	return t
+}
+
+// GetBackgroundColor returns the background color of this TreeView.
+func (t *TreeView) GetBackgroundColor() tcell.Color {
+	return t.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this TreeView.
+func (t *TreeView) SetBackgroundColor(color tcell.Color) *TreeView {
+	t.box.SetBackgroundColor(color)
+	return t
+}
+
+// GetBackgroundTransparent returns whether the background of this TreeView is transparent.
+func (t *TreeView) GetBackgroundTransparent() bool {
+	return t.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this TreeView is transparent.
+func (t *TreeView) SetBackgroundTransparent(transparent bool) *TreeView {
+	t.box.SetBackgroundTransparent(transparent)
+	return t
+}
+
+// GetInputCapture returns the input capture function of this TreeView.
+func (t *TreeView) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return t.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this TreeView.
+func (t *TreeView) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *TreeView {
+	t.box.SetInputCapture(capture)
+	return t
+}
+
+// GetPadding returns the padding of this TreeView.
+func (t *TreeView) GetPadding() (top, bottom, left, right int) {
+	return t.box.GetPadding()
+}
+
+// SetPadding sets the padding of this TreeView.
+func (t *TreeView) SetPadding(top, bottom, left, right int) *TreeView {
+	t.box.SetPadding(top, bottom, left, right)
+	return t
+}
+
+// InRect returns whether the given screen coordinates are within this TreeView.
+func (t *TreeView) InRect(x, y int) bool {
+	return t.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this TreeView.
+func (t *TreeView) GetInnerRect() (x, y, width, height int) {
+	return t.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the TreeView is preserved.
+func (t *TreeView) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return t.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the TreeView is preserved.
+func (t *TreeView) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this TreeView.
+func (t *TreeView) GetRect() (x, y, width, height int) {
+	return t.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this TreeView.
+func (t *TreeView) SetRect(x, y, width, height int) {
+	t.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this TreeView is visible.
+func (t *TreeView) GetVisible() bool {
+	return t.box.GetVisible()
+}
+
+// SetVisible sets whether this TreeView is visible.
+func (t *TreeView) SetVisible(visible bool) {
+	t.box.SetVisible(visible)
+}
+
+// Focus is called when this TreeView receives focus.
+func (t *TreeView) Focus(delegate func(p Widget)) {
+	t.box.Focus(delegate)
+}
+
+// HasFocus returns whether this TreeView has focus.
+func (t *TreeView) HasFocus() bool {
+	return t.box.HasFocus()
+}
+
+// GetFocusable returns the focusable primitive of this TreeView.
+func (t *TreeView) GetFocusable() Focusable {
+	return t.box.GetFocusable()
+}
+
+// Blur is called when this TreeView loses focus.
+func (t *TreeView) Blur() {
+	t.box.Blur()
+}
+
+////////////////////////////////// <API> ////////////////////////////////////
 
 // SetRoot sets the root node of the tree.
 func (t *TreeView) SetRoot(root *TreeNode) *TreeView {
@@ -776,7 +1006,7 @@ func (t *TreeView) Draw(screen tcell.Screen) {
 		return
 	}
 
-	t.Box.Draw(screen)
+	t.box.Draw(screen)
 
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -819,7 +1049,7 @@ func (t *TreeView) Draw(screen tcell.Screen) {
 
 	// Draw the tree.
 	posY := y
-	lineStyle := tcell.StyleDefault.Background(t.backgroundColor).Foreground(t.graphicsColor)
+	lineStyle := tcell.StyleDefault.Background(t.box.backgroundColor).Foreground(t.graphicsColor)
 	for index, node := range t.nodes {
 		// Skip invisible parts.
 		if posY >= y+height {
@@ -879,7 +1109,7 @@ func (t *TreeView) Draw(screen tcell.Screen) {
 				style := tcell.StyleDefault.Foreground(node.color)
 				if node == t.currentNode {
 					backgroundColor := node.color
-					foregroundColor := t.backgroundColor
+					foregroundColor := t.box.backgroundColor
 					if t.selectedTextColor != nil {
 						foregroundColor = *t.selectedTextColor
 					}
@@ -893,7 +1123,7 @@ func (t *TreeView) Draw(screen tcell.Screen) {
 		}
 
 		// Draw scroll bar.
-		RenderScrollBar(screen, t.scrollBarVisibility, x+(width-1), posY, height, rows, cursor, posY-y, t.hasFocus, t.scrollBarColor)
+		RenderScrollBar(screen, t.scrollBarVisibility, x+(width-1), posY, height, rows, cursor, posY-y, t.box.hasFocus, t.scrollBarColor)
 
 		// Advance.
 		posY++

@@ -23,10 +23,10 @@ func Window(nextSlide func()) (title string, info string, content cui.Widget) {
 	loremIpsum := cui.NewTextView()
 	loremIpsum.SetText(loremIpsumText)
 
-	w1 := cui.NewWindow(list)
+	w1 := cui.NewWindow().SetWidget(list)
 	w1.SetRect(2, 2, 10, 7)
 
-	w2 := cui.NewWindow(loremIpsum)
+	w2 := cui.NewWindow().SetWidget(loremIpsum)
 	w2.SetRect(7, 4, 12, 12)
 
 	w1.SetTitle("List")
