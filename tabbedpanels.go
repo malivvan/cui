@@ -163,13 +163,13 @@ func (t *TabbedPanels) SetTabLabel(name, label string) *TabbedPanels {
 
 // SetBackgroundColor sets the background color of the tabbed panels.
 func (t *TabbedPanels) SetBackgroundColor(color tcell.Color) *TabbedPanels {
-	t.panels.Box.SetBackgroundColor(color)
+	t.panels.box.SetBackgroundColor(color)
 	return t
 }
 
 // GetBackgroundColor returns the background color of the tabbed panels.
 func (t *TabbedPanels) GetBackgroundColor() tcell.Color {
-	return t.panels.Box.GetBackgroundColor()
+	return t.panels.box.GetBackgroundColor()
 }
 
 // SetTabTextColor sets the color of the tab text.

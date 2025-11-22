@@ -10,15 +10,15 @@ import (
 type panel struct {
 	Name    string // The panel's name.
 	Item    Widget // The panel's primitive.
-	Resize  bool   // Whether or not to resize the panel when it is drawn.
-	Visible bool   // Whether or not this panel is visible.
+	Resize  bool   // Whether to resize the panel when it is drawn.
+	Visible bool   // Whether this panel is visible.
 }
 
 // Panels is a container for other primitives often used as the application's
 // root primitive. It allows to easily switch the visibility of the contained
 // primitives.
 type Panels struct {
-	*Box
+	box *Box
 
 	// The contained panels. (Visible) panels are drawn from back to front.
 	panels []*panel
@@ -31,31 +31,284 @@ type Panels struct {
 	// panels changes.
 	changed func()
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewPanels returns a new Panels object.
 func NewPanels() *Panels {
 	p := &Panels{
-		Box: NewBox(),
+		box: NewBox(),
 	}
-	p.focus = p
+	p.box.focus = p
 	return p
+}
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (p *Panels) set(setter func(p *Panels)) *Panels {
+	p.mu.Lock()
+	setter(p)
+	p.mu.Unlock()
+	return p
+}
+
+func (p *Panels) get(getter func(p *Panels)) {
+	p.mu.RLock()
+	getter(p)
+	p.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Panels.
+func (p *Panels) GetTitle() string {
+	return p.box.GetTitle()
+}
+
+// SetTitle sets the title of this Panels.
+func (p *Panels) SetTitle(title string) *Panels {
+	p.box.SetTitle(title)
+	return p
+}
+
+// GetTitleAlign returns the title alignment of this Panels.
+func (p *Panels) GetTitleAlign() int {
+	return p.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this Panels.
+func (p *Panels) SetTitleAlign(align int) *Panels {
+	p.box.SetTitleAlign(align)
+	return p
+}
+
+// GetBorder returns whether this Panels has a border.
+func (p *Panels) GetBorder() bool {
+	return p.box.GetBorder()
+}
+
+// SetBorder sets whether this Panels has a border.
+func (p *Panels) SetBorder(show bool) *Panels {
+	p.box.SetBorder(show)
+	return p
+}
+
+// GetBorderColor returns the border color of this Panels.
+func (p *Panels) GetBorderColor() tcell.Color {
+	return p.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Panels.
+func (p *Panels) SetBorderColor(color tcell.Color) *Panels {
+	p.box.SetBorderColor(color)
+	return p
+}
+
+// GetBorderAttributes returns the border attributes of this Panels.
+func (p *Panels) GetBorderAttributes() tcell.AttrMask {
+	return p.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Panels.
+func (p *Panels) SetBorderAttributes(attr tcell.AttrMask) *Panels {
+	p.box.SetBorderAttributes(attr)
+	return p
+}
+
+// GetBorderColorFocused returns the border color of this Panels when focusel.
+func (p *Panels) GetBorderColorFocused() tcell.Color {
+	return p.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Panels when focusel.
+func (p *Panels) SetBorderColorFocused(color tcell.Color) *Panels {
+	p.box.SetBorderColorFocused(color)
+	return p
+}
+
+// GetTitleColor returns the title color of this Panels.
+func (p *Panels) GetTitleColor() tcell.Color {
+	return p.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Panels.
+func (p *Panels) SetTitleColor(color tcell.Color) *Panels {
+	p.box.SetTitleColor(color)
+	return p
+}
+
+// GetDrawFunc returns the custom draw function of this Panels.
+func (p *Panels) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return p.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Panels.
+func (p *Panels) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Panels {
+	p.box.SetDrawFunc(handler)
+	return p
+}
+
+// ShowFocus sets whether this Panels should show a focus indicator when focusel.
+func (p *Panels) ShowFocus(showFocus bool) *Panels {
+	p.box.ShowFocus(showFocus)
+	return p
+}
+
+// GetMouseCapture returns the mouse capture function of this Panels.
+func (p *Panels) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return p.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Panels.
+func (p *Panels) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Panels {
+	p.box.SetMouseCapture(capture)
+	return p
+}
+
+// GetBackgroundColor returns the background color of this Panels.
+func (p *Panels) GetBackgroundColor() tcell.Color {
+	return p.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this Panels.
+func (p *Panels) SetBackgroundColor(color tcell.Color) *Panels {
+	p.box.SetBackgroundColor(color)
+	return p
+}
+
+// GetBackgroundTransparent returns whether the background of this Panels is transparent.
+func (p *Panels) GetBackgroundTransparent() bool {
+	return p.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Panels is transparent.
+func (p *Panels) SetBackgroundTransparent(transparent bool) *Panels {
+	p.box.SetBackgroundTransparent(transparent)
+	return p
+}
+
+// GetInputCapture returns the input capture function of this Panels.
+func (p *Panels) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return p.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Panels.
+func (p *Panels) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Panels {
+	p.box.SetInputCapture(capture)
+	return p
+}
+
+// GetPadding returns the padding of this Panels.
+func (p *Panels) GetPadding() (top, bottom, left, right int) {
+	return p.box.GetPadding()
+}
+
+// SetPadding sets the padding of this Panels.
+func (p *Panels) SetPadding(top, bottom, left, right int) *Panels {
+	p.box.SetPadding(top, bottom, left, right)
+	return p
+}
+
+// InRect returns whether the given screen coordinates are within this Panels.
+func (p *Panels) InRect(x, y int) bool {
+	return p.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Panels.
+func (p *Panels) GetInnerRect() (x, y, width, height int) {
+	return p.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Panels is preservel.
+func (p *Panels) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return p.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Panels is preservel.
+func (p *Panels) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return p.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Panels.
+func (p *Panels) GetRect() (x, y, width, height int) {
+	return p.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Panels.
+func (p *Panels) SetRect(x, y, width, height int) {
+	p.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Panels is visible.
+func (p *Panels) GetVisible() bool {
+	return p.box.GetVisible()
+}
+
+// SetVisible sets whether this Panels is visible.
+func (p *Panels) SetVisible(visible bool) {
+	p.box.SetVisible(visible)
+}
+
+// Focus is called by the application when the primitive receives focus.
+func (p *Panels) Focus(delegate func(p Widget)) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if delegate == nil {
+		return // We cannot delegate so we cannot focus.
+	}
+	p.setFocus = delegate
+	var topItem Widget
+	for _, panel := range p.panels {
+		if panel.Visible {
+			topItem = panel.Item
+		}
+	}
+	if topItem != nil {
+		p.mu.Unlock()
+		delegate(topItem)
+		p.mu.Lock()
+	}
+}
+
+// HasFocus returns whether or not this primitive has focus.
+func (p *Panels) HasFocus() bool {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
+	for _, panel := range p.panels {
+		if panel.Item.GetFocusable().HasFocus() {
+			return true
+		}
+	}
+	return false
+}
+
+// GetFocusable returns the focusable primitive of this Panels.
+func (p *Panels) GetFocusable() Focusable {
+	return p.box.GetFocusable()
+}
+
+// Blur is called when this Panels loses focus.
+func (p *Panels) Blur() {
+	p.box.Blur()
 }
 
 // SetChangedFunc sets a handler which is called whenever the visibility or the
 // order of any visible panels changes. This can be used to redraw the panels.
 func (p *Panels) SetChangedFunc(handler func()) {
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	p.changed = handler
 }
 
 // GetPanelCount returns the number of panels currently stored in this object.
 func (p *Panels) GetPanelCount() int {
-	p.RLock()
-	defer p.RUnlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
 	return len(p.panels)
 }
@@ -72,8 +325,8 @@ func (p *Panels) GetPanelCount() int {
 func (p *Panels) AddPanel(name string, item Widget, resize, visible bool) {
 	hasFocus := p.HasFocus()
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	var added bool
 	for i, pg := range p.panels {
@@ -87,14 +340,14 @@ func (p *Panels) AddPanel(name string, item Widget, resize, visible bool) {
 		p.panels = append(p.panels, &panel{Item: item, Name: name, Resize: resize, Visible: visible})
 	}
 	if p.changed != nil {
-		p.Unlock()
+		p.mu.Unlock()
 		p.changed()
-		p.Lock()
+		p.mu.Lock()
 	}
 	if hasFocus {
-		p.Unlock()
+		p.mu.Unlock()
 		p.Focus(p.setFocus)
-		p.Lock()
+		p.mu.Lock()
 	}
 }
 
@@ -103,8 +356,8 @@ func (p *Panels) AddPanel(name string, item Widget, resize, visible bool) {
 func (p *Panels) RemovePanel(name string) {
 	hasFocus := p.HasFocus()
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	var isVisible bool
 	for index, panel := range p.panels {
@@ -112,9 +365,9 @@ func (p *Panels) RemovePanel(name string) {
 			isVisible = panel.Visible
 			p.panels = append(p.panels[:index], p.panels[index+1:]...)
 			if panel.Visible && p.changed != nil {
-				p.Unlock()
+				p.mu.Unlock()
 				p.changed()
-				p.Lock()
+				p.mu.Lock()
 			}
 			break
 		}
@@ -131,16 +384,16 @@ func (p *Panels) RemovePanel(name string) {
 		}
 	}
 	if hasFocus {
-		p.Unlock()
+		p.mu.Unlock()
 		p.Focus(p.setFocus)
-		p.Lock()
+		p.mu.Lock()
 	}
 }
 
 // HasPanel returns true if a panel with the given name exists in this object.
 func (p *Panels) HasPanel(name string) bool {
-	p.RLock()
-	defer p.RUnlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
 	for _, panel := range p.panels {
 		if panel.Name == name {
@@ -155,24 +408,24 @@ func (p *Panels) HasPanel(name string) bool {
 func (p *Panels) ShowPanel(name string) {
 	hasFocus := p.HasFocus()
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	for _, panel := range p.panels {
 		if panel.Name == name {
 			panel.Visible = true
 			if p.changed != nil {
-				p.Unlock()
+				p.mu.Unlock()
 				p.changed()
-				p.Lock()
+				p.mu.Lock()
 			}
 			break
 		}
 	}
 	if hasFocus {
-		p.Unlock()
+		p.mu.Unlock()
 		p.Focus(p.setFocus)
-		p.Lock()
+		p.mu.Lock()
 	}
 }
 
@@ -180,24 +433,24 @@ func (p *Panels) ShowPanel(name string) {
 func (p *Panels) HidePanel(name string) {
 	hasFocus := p.HasFocus()
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	for _, panel := range p.panels {
 		if panel.Name == name {
 			panel.Visible = false
 			if p.changed != nil {
-				p.Unlock()
+				p.mu.Unlock()
 				p.changed()
-				p.Lock()
+				p.mu.Lock()
 			}
 			break
 		}
 	}
 	if hasFocus {
-		p.Unlock()
+		p.mu.Unlock()
 		p.Focus(p.setFocus)
-		p.Lock()
+		p.mu.Lock()
 	}
 }
 
@@ -206,8 +459,8 @@ func (p *Panels) HidePanel(name string) {
 func (p *Panels) SetCurrentPanel(name string) {
 	hasFocus := p.HasFocus()
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	for _, panel := range p.panels {
 		if panel.Name == name {
@@ -217,14 +470,14 @@ func (p *Panels) SetCurrentPanel(name string) {
 		}
 	}
 	if p.changed != nil {
-		p.Unlock()
+		p.mu.Unlock()
 		p.changed()
-		p.Lock()
+		p.mu.Lock()
 	}
 	if hasFocus {
-		p.Unlock()
+		p.mu.Unlock()
 		p.Focus(p.setFocus)
-		p.Lock()
+		p.mu.Lock()
 	}
 }
 
@@ -234,8 +487,8 @@ func (p *Panels) SetCurrentPanel(name string) {
 func (p *Panels) SendToFront(name string) {
 	hasFocus := p.HasFocus()
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	for index, panel := range p.panels {
 		if panel.Name == name {
@@ -243,17 +496,17 @@ func (p *Panels) SendToFront(name string) {
 				p.panels = append(append(p.panels[:index], p.panels[index+1:]...), panel)
 			}
 			if panel.Visible && p.changed != nil {
-				p.Unlock()
+				p.mu.Unlock()
 				p.changed()
-				p.Lock()
+				p.mu.Lock()
 			}
 			break
 		}
 	}
 	if hasFocus {
-		p.Unlock()
+		p.mu.Unlock()
 		p.Focus(p.setFocus)
-		p.Lock()
+		p.mu.Lock()
 	}
 }
 
@@ -263,8 +516,8 @@ func (p *Panels) SendToFront(name string) {
 func (p *Panels) SendToBack(name string) {
 	hasFocus := p.HasFocus()
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	for index, pg := range p.panels {
 		if pg.Name == name {
@@ -272,25 +525,25 @@ func (p *Panels) SendToBack(name string) {
 				p.panels = append(append([]*panel{pg}, p.panels[:index]...), p.panels[index+1:]...)
 			}
 			if pg.Visible && p.changed != nil {
-				p.Unlock()
+				p.mu.Unlock()
 				p.changed()
-				p.Lock()
+				p.mu.Lock()
 			}
 			break
 		}
 	}
 	if hasFocus {
-		p.Unlock()
+		p.mu.Unlock()
 		p.Focus(p.setFocus)
-		p.Lock()
+		p.mu.Lock()
 	}
 }
 
 // GetFrontPanel returns the front-most visible panel. If there are no visible
 // panels, ("", nil) is returned.
 func (p *Panels) GetFrontPanel() (name string, item Widget) {
-	p.RLock()
-	defer p.RUnlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
 	for index := len(p.panels) - 1; index >= 0; index-- {
 		if p.panels[index].Visible {
@@ -300,51 +553,16 @@ func (p *Panels) GetFrontPanel() (name string, item Widget) {
 	return
 }
 
-// HasFocus returns whether or not this primitive has focus.
-func (p *Panels) HasFocus() bool {
-	p.RLock()
-	defer p.RUnlock()
-
-	for _, panel := range p.panels {
-		if panel.Item.GetFocusable().HasFocus() {
-			return true
-		}
-	}
-	return false
-}
-
-// Focus is called by the application when the primitive receives focus.
-func (p *Panels) Focus(delegate func(p Widget)) {
-	p.Lock()
-	defer p.Unlock()
-
-	if delegate == nil {
-		return // We cannot delegate so we cannot focus.
-	}
-	p.setFocus = delegate
-	var topItem Widget
-	for _, panel := range p.panels {
-		if panel.Visible {
-			topItem = panel.Item
-		}
-	}
-	if topItem != nil {
-		p.Unlock()
-		delegate(topItem)
-		p.Lock()
-	}
-}
-
 // Draw draws this primitive onto the screen.
 func (p *Panels) Draw(screen tcell.Screen) {
 	if !p.GetVisible() {
 		return
 	}
 
-	p.Box.Draw(screen)
+	p.box.Draw(screen)
 
-	p.Lock()
-	defer p.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	x, y, width, height := p.GetInnerRect()
 
@@ -357,6 +575,10 @@ func (p *Panels) Draw(screen tcell.Screen) {
 		}
 		panel.Item.Draw(screen)
 	}
+}
+
+func (p *Panels) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return p.box.InputHandler()
 }
 
 // MouseHandler returns the mouse handler for this primitive.

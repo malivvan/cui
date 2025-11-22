@@ -13,7 +13,7 @@ import (
 // may include additional elements within the window by modifying the Form
 // returned by GetForm.
 type Modal struct {
-	*Box
+	box *Box
 
 	// The Frame embedded in the Modal.
 	frame *Frame
@@ -40,7 +40,7 @@ type Modal struct {
 // NewModal returns a new centered message window.
 func NewModal() *Modal {
 	m := &Modal{
-		Box:       NewBox(),
+		box:       NewBox(),
 		textColor: Styles.PrimaryTextColor,
 		textAlign: AlignCenter,
 	}
@@ -59,17 +59,240 @@ func NewModal() *Modal {
 	m.frame.SetBorders(0, 0, 1, 0, 0, 0)
 	m.frame.SetPadding(1, 1, 1, 1)
 
-	m.focus = m
+	m.box.focus = m
 	return m
 }
 
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (m *Modal) set(setter func(m *Modal)) *Modal {
+	m.mu.Lock()
+	setter(m)
+	m.mu.Unlock()
+	return m
+}
+
+func (m *Modal) get(getter func(m *Modal)) {
+	m.mu.RLock()
+	getter(m)
+	m.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Modal.
+func (m *Modal) GetTitle() string {
+	return m.box.GetTitle()
+}
+
+// SetTitle sets the title of this Modal.
+func (m *Modal) SetTitle(title string) *Modal {
+	m.box.SetTitle(title)
+	return m
+}
+
+// GetTitleAlign returns the title alignment of this Modal.
+func (m *Modal) GetTitleAlign() int {
+	return m.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this Modal.
+func (m *Modal) SetTitleAlign(align int) *Modal {
+	m.box.SetTitleAlign(align)
+	return m
+}
+
+// GetBorder returns whether this Modal has a border.
+func (m *Modal) GetBorder() bool {
+	return m.box.GetBorder()
+}
+
+// SetBorder sets whether this Modal has a border.
+func (m *Modal) SetBorder(show bool) *Modal {
+	m.box.SetBorder(show)
+	return m
+}
+
+// GetBorderColor returns the border color of this Modal.
+func (m *Modal) GetBorderColor() tcell.Color {
+	return m.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Modal.
+func (m *Modal) SetBorderColor(color tcell.Color) *Modal {
+	m.box.SetBorderColor(color)
+	return m
+}
+
+// GetBorderAttributes returns the border attributes of this Modal.
+func (m *Modal) GetBorderAttributes() tcell.AttrMask {
+	return m.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Modal.
+func (m *Modal) SetBorderAttributes(attr tcell.AttrMask) *Modal {
+	m.box.SetBorderAttributes(attr)
+	return m
+}
+
+// GetBorderColorFocused returns the border color of this Modal when focusel.
+func (m *Modal) GetBorderColorFocused() tcell.Color {
+	return m.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Modal when focusel.
+func (m *Modal) SetBorderColorFocused(color tcell.Color) *Modal {
+	m.box.SetBorderColorFocused(color)
+	return m
+}
+
+// GetTitleColor returns the title color of this Modal.
+func (m *Modal) GetTitleColor() tcell.Color {
+	return m.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Modal.
+func (m *Modal) SetTitleColor(color tcell.Color) *Modal {
+	m.box.SetTitleColor(color)
+	return m
+}
+
+// GetDrawFunc returns the custom draw function of this Modal.
+func (m *Modal) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return m.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Modal.
+func (m *Modal) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Modal {
+	m.box.SetDrawFunc(handler)
+	return m
+}
+
+// ShowFocus sets whether this Modal should show a focus indicator when focusel.
+func (m *Modal) ShowFocus(showFocus bool) *Modal {
+	m.box.ShowFocus(showFocus)
+	return m
+}
+
+// GetMouseCapture returns the mouse capture function of this Modal.
+func (m *Modal) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return m.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Modal.
+func (m *Modal) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Modal {
+	m.box.SetMouseCapture(capture)
+	return m
+}
+
+// GetBackgroundColor returns the background color of this Modal.
+func (m *Modal) GetBackgroundColor() tcell.Color {
+	return m.box.GetBackgroundColor()
+}
+
 // SetBackgroundColor sets the color of the Modal Frame background.
-func (m *Modal) SetBackgroundColor(color tcell.Color) {
+func (m *Modal) SetBackgroundColor(color tcell.Color) *Modal {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	m.form.SetBackgroundColor(color)
 	m.frame.SetBackgroundColor(color)
+	return m
+}
+
+// GetBackgroundTransparent returns whether the background of this Modal is transparent.
+func (m *Modal) GetBackgroundTransparent() bool {
+	return m.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Modal is transparent.
+func (m *Modal) SetBackgroundTransparent(transparent bool) *Modal {
+	m.box.SetBackgroundTransparent(transparent)
+	return m
+}
+
+// GetInputCapture returns the input capture function of this Modal.
+func (m *Modal) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return m.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Modal.
+func (m *Modal) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Modal {
+	m.box.SetInputCapture(capture)
+	return m
+}
+
+// GetPadding returns the padding of this Modal.
+func (m *Modal) GetPadding() (top, bottom, left, right int) {
+	return m.box.GetPadding()
+}
+
+// SetPadding sets the padding of this Modal.
+func (m *Modal) SetPadding(top, bottom, left, right int) *Modal {
+	m.box.SetPadding(top, bottom, left, right)
+	return m
+}
+
+// InRect returns whether the given screen coordinates are within this Modal.
+func (m *Modal) InRect(x, y int) bool {
+	return m.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Modal.
+func (m *Modal) GetInnerRect() (x, y, width, height int) {
+	return m.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Modal is preservel.
+func (m *Modal) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return m.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Modal is preservel.
+func (m *Modal) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return m.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Modal.
+func (m *Modal) GetRect() (x, y, width, height int) {
+	return m.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Modal.
+func (m *Modal) SetRect(x, y, width, height int) {
+	m.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Modal is visible.
+func (m *Modal) GetVisible() bool {
+	return m.box.GetVisible()
+}
+
+// SetVisible sets whether this Modal is visible.
+func (m *Modal) SetVisible(visible bool) {
+	m.box.SetVisible(visible)
+}
+
+// Focus is called when this primitive receives focus.
+func (m *Modal) Focus(delegate func(p Widget)) {
+	delegate(m.form)
+}
+
+// HasFocus returns whether or not this primitive has focus.
+func (m *Modal) HasFocus() bool {
+	return m.GetForm().HasFocus()
+}
+
+// GetFocusable returns the focusable primitive of this Modal.
+func (m *Modal) GetFocusable() Focusable {
+	return m.box.GetFocusable()
+}
+
+// Blur is called when this Modal loses focus.
+func (m *Modal) Blur() {
+	m.box.Blur()
 }
 
 // SetTextColor sets the color of the message text.
@@ -195,16 +418,6 @@ func (m *Modal) SetFocus(index int) {
 	m.form.SetFocus(index)
 }
 
-// Focus is called when this primitive receives focus.
-func (m *Modal) Focus(delegate func(p Widget)) {
-	delegate(m.form)
-}
-
-// HasFocus returns whether or not this primitive has focus.
-func (m *Modal) HasFocus() bool {
-	return m.GetForm().HasFocus()
-}
-
 // Draw draws this primitive onto the screen.
 func (m *Modal) Draw(screen tcell.Screen) {
 	if !m.GetVisible() {
@@ -248,13 +461,17 @@ func (m *Modal) Draw(screen tcell.Screen) {
 	m.frame.Draw(screen)
 }
 
+func (m *Modal) InputHandler() func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return m.box.InputHandler()
+}
+
 // MouseHandler returns the mouse handler for this primitive.
 func (m *Modal) MouseHandler() func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 	return m.WrapMouseHandler(func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
 		// Pass mouse events on to the form.
 		consumed, capture = m.form.MouseHandler()(action, event, setFocus)
 		if !consumed && action == MouseLeftClick && m.InRect(event.Position()) {
-			setFocus(m)
+			setFocus(m.box)
 			consumed = true
 		}
 		return

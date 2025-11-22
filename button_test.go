@@ -13,7 +13,7 @@ func TestButton(t *testing.T) {
 	t.Parallel()
 
 	// Initialize
-	b := NewButton(testButtonLabelA)
+	b := NewButton().SetLabel(testButtonLabelA)
 	if b.GetLabel() != testButtonLabelA {
 		t.Errorf("failed to initialize Button: incorrect label: expected %s, got %s", testButtonLabelA, b.GetLabel())
 	}

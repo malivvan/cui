@@ -9,7 +9,7 @@ import (
 
 // Slider is a progress bar which may be modified via keyboard and mouse.
 type Slider struct {
-	*ProgressBar
+	progressBar *ProgressBar
 
 	// The text to be displayed before the slider.
 	label []byte
@@ -55,13 +55,13 @@ type Slider struct {
 	// this form item.
 	finished func(tcell.Key)
 
-	sync.RWMutex
+	mu sync.RWMutex
 }
 
 // NewSlider returns a new slider.
 func NewSlider() *Slider {
 	s := &Slider{
-		ProgressBar:                 NewProgressBar(),
+		progressBar:                 NewProgressBar(),
 		increment:                   10,
 		labelColor:                  Styles.SecondaryTextColor,
 		fieldBackgroundColor:        Styles.MoreContrastBackgroundColor,
@@ -73,10 +73,284 @@ func NewSlider() *Slider {
 	return s
 }
 
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (s *Slider) set(setter func(s *Slider)) *Slider {
+	s.mu.Lock()
+	setter(s)
+	s.mu.Unlock()
+	return s
+}
+
+func (s *Slider) get(getter func(s *Slider)) {
+	s.mu.RLock()
+	getter(s)
+	s.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Slider.
+func (s *Slider) GetTitle() string {
+	return s.progressBar.GetTitle()
+}
+
+// SetTitle sets the title of this Slider.
+func (s *Slider) SetTitle(title string) *Slider {
+	s.progressBar.SetTitle(title)
+	return s
+}
+
+// GetTitleAlign returns the title alignment of this Slider.
+func (s *Slider) GetTitleAlign() int {
+	return s.progressBar.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this Slider.
+func (s *Slider) SetTitleAlign(align int) *Slider {
+	s.progressBar.SetTitleAlign(align)
+	return s
+}
+
+// GetBorder returns whether this Slider has a border.
+func (s *Slider) GetBorder() bool {
+	return s.progressBar.GetBorder()
+}
+
+// SetBorder sets whether this Slider has a border.
+func (s *Slider) SetBorder(show bool) *Slider {
+	s.progressBar.SetBorder(show)
+	return s
+}
+
+// GetBorderColor returns the border color of this Slider.
+func (s *Slider) GetBorderColor() tcell.Color {
+	return s.progressBar.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Slider.
+func (s *Slider) SetBorderColor(color tcell.Color) *Slider {
+	s.progressBar.SetBorderColor(color)
+	return s
+}
+
+// GetBorderAttributes returns the border attributes of this Slider.
+func (s *Slider) GetBorderAttributes() tcell.AttrMask {
+	return s.progressBar.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Slider.
+func (s *Slider) SetBorderAttributes(attr tcell.AttrMask) *Slider {
+	s.progressBar.SetBorderAttributes(attr)
+	return s
+}
+
+// GetBorderColorFocused returns the border color of this Slider when focused.
+func (s *Slider) GetBorderColorFocused() tcell.Color {
+	return s.progressBar.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Slider when focused.
+func (s *Slider) SetBorderColorFocused(color tcell.Color) *Slider {
+	s.progressBar.SetBorderColorFocused(color)
+	return s
+}
+
+// GetTitleColor returns the title color of this Slider.
+func (s *Slider) GetTitleColor() tcell.Color {
+	return s.progressBar.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Slider.
+func (s *Slider) SetTitleColor(color tcell.Color) *Slider {
+	s.progressBar.SetTitleColor(color)
+	return s
+}
+
+// GetDrawFunc returns the custom draw function of this Slider.
+func (s *Slider) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return s.progressBar.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Slider.
+func (s *Slider) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Slider {
+	s.progressBar.SetDrawFunc(handler)
+	return s
+}
+
+// ShowFocus sets whether this Slider should show a focus indicator when focused.
+func (s *Slider) ShowFocus(showFocus bool) *Slider {
+	s.progressBar.ShowFocus(showFocus)
+	return s
+}
+
+// GetMouseCapture returns the mouse capture function of this Slider.
+func (s *Slider) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return s.progressBar.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Slider.
+func (s *Slider) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Slider {
+	s.progressBar.SetMouseCapture(capture)
+	return s
+}
+
+// GetBackgroundColor returns the background color of this Slider.
+func (s *Slider) GetBackgroundColor() tcell.Color {
+	return s.progressBar.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this Slider.
+func (s *Slider) SetBackgroundColor(color tcell.Color) *Slider {
+	s.progressBar.SetBackgroundColor(color)
+	return s
+}
+
+// GetBackgroundTransparent returns whether the background of this Slider is transparent.
+func (s *Slider) GetBackgroundTransparent() bool {
+	return s.progressBar.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Slider is transparent.
+func (s *Slider) SetBackgroundTransparent(transparent bool) *Slider {
+	s.progressBar.SetBackgroundTransparent(transparent)
+	return s
+}
+
+// GetInputCapture returns the input capture function of this Slider.
+func (s *Slider) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return s.progressBar.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Slider.
+func (s *Slider) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Slider {
+	s.progressBar.SetInputCapture(capture)
+	return s
+}
+
+// GetPadding returns the padding of this Slider.
+func (s *Slider) GetPadding() (top, bottom, left, right int) {
+	return s.progressBar.GetPadding()
+}
+
+// SetPadding sets the padding of this Slider.
+func (s *Slider) SetPadding(top, bottom, left, right int) *Slider {
+	s.progressBar.SetPadding(top, bottom, left, right)
+	return s
+}
+
+// InRect returns whether the given screen coordinates are within this Slider.
+func (s *Slider) InRect(x, y int) bool {
+	return s.progressBar.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Slider.
+func (s *Slider) GetInnerRect() (x, y, width, height int) {
+	return s.progressBar.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Slider is preserved.
+func (s *Slider) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return s.progressBar.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Slider is preserved.
+func (s *Slider) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return s.progressBar.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Slider.
+func (s *Slider) GetRect() (x, y, width, height int) {
+	return s.progressBar.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Slider.
+func (s *Slider) SetRect(x, y, width, height int) {
+	s.progressBar.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Slider is visible.
+func (s *Slider) GetVisible() bool {
+	return s.progressBar.GetVisible()
+}
+
+// SetVisible sets whether this Slider is visible.
+func (s *Slider) SetVisible(visible bool) {
+	s.progressBar.SetVisible(visible)
+}
+
+// Focus is called when this Slider receives focus.
+func (s *Slider) Focus(delegate func(p Widget)) {
+	s.progressBar.Focus(delegate)
+}
+
+// HasFocus returns whether this Slider has focus.
+func (s *Slider) HasFocus() bool {
+	return s.progressBar.HasFocus()
+}
+
+// GetFocusable returns the focusable primitive of this Slider.
+func (s *Slider) GetFocusable() Focusable {
+	return s.progressBar.GetFocusable()
+}
+
+// Blur is called when this Slider loses focus.
+func (s *Slider) Blur() {
+	s.progressBar.Blur()
+}
+
+/////////////////////////////// <PROGRESS BAR> ///////////////////////////////
+
+func (s *Slider) SetEmptyRune(r rune) *Slider {
+	s.progressBar.SetEmptyRune(r)
+	return s
+}
+func (s *Slider) SetEmptyColor(color tcell.Color) *Slider {
+	s.progressBar.SetEmptyColor(color)
+	return s
+}
+func (s *Slider) SetFilledRune(r rune) *Slider {
+	s.progressBar.SetFilledRune(r)
+	return s
+}
+func (s *Slider) SetFilledColor(color tcell.Color) *Slider {
+	s.progressBar.SetFilledColor(color)
+	return s
+}
+func (s *Slider) SetVertical(vertical bool) *Slider {
+	s.progressBar.SetVertical(vertical)
+	return s
+}
+func (s *Slider) SetMax(max int) *Slider {
+	s.progressBar.SetMax(max)
+	return s
+}
+func (s *Slider) GetMax() int {
+	return s.progressBar.GetMax()
+}
+func (s *Slider) AddProgress(progress int) *Slider {
+	s.progressBar.AddProgress(progress)
+	return s
+}
+func (s *Slider) Complete() bool {
+	return s.progressBar.Complete()
+}
+func (s *Slider) GetProgress() (progress int) {
+	return s.progressBar.GetProgress()
+}
+func (s *Slider) SetProgress(progress int) *Slider {
+	s.progressBar.SetProgress(progress)
+	return s
+}
+
+/////////////////////////////// <API> ///////////////////////////////
+
 // SetLabel sets the text to be displayed before the input area.
 func (s *Slider) SetLabel(label string) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.label = []byte(label)
 	return s
@@ -84,8 +358,8 @@ func (s *Slider) SetLabel(label string) *Slider {
 
 // GetLabel returns the text to be displayed before the input area.
 func (s *Slider) GetLabel() string {
-	s.RLock()
-	defer s.RUnlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 
 	return string(s.label)
 }
@@ -93,8 +367,8 @@ func (s *Slider) GetLabel() string {
 // SetLabelWidth sets the screen width of the label. A value of 0 will cause the
 // primitive to use the width of the label string.
 func (s *Slider) SetLabelWidth(width int) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.labelWidth = width
 	return s
@@ -102,8 +376,8 @@ func (s *Slider) SetLabelWidth(width int) *Slider {
 
 // SetLabelColor sets the color of the label.
 func (s *Slider) SetLabelColor(color tcell.Color) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.labelColor = color
 	return s
@@ -111,8 +385,8 @@ func (s *Slider) SetLabelColor(color tcell.Color) *Slider {
 
 // SetLabelColorFocused sets the color of the label when focused.
 func (s *Slider) SetLabelColorFocused(color tcell.Color) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.labelColorFocused = color
 	return s
@@ -120,8 +394,8 @@ func (s *Slider) SetLabelColorFocused(color tcell.Color) *Slider {
 
 // SetFieldBackgroundColor sets the background color of the input area.
 func (s *Slider) SetFieldBackgroundColor(color tcell.Color) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.fieldBackgroundColor = color
 	return s
@@ -129,8 +403,8 @@ func (s *Slider) SetFieldBackgroundColor(color tcell.Color) *Slider {
 
 // SetFieldBackgroundColorFocused sets the background color of the input area when focused.
 func (s *Slider) SetFieldBackgroundColorFocused(color tcell.Color) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.fieldBackgroundColorFocused = color
 	return s
@@ -138,8 +412,8 @@ func (s *Slider) SetFieldBackgroundColorFocused(color tcell.Color) *Slider {
 
 // SetFieldTextColor sets the text color of the input area.
 func (s *Slider) SetFieldTextColor(color tcell.Color) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.fieldTextColor = color
 	return s
@@ -147,18 +421,10 @@ func (s *Slider) SetFieldTextColor(color tcell.Color) *Slider {
 
 // SetFieldTextColorFocused sets the text color of the input area when focused.
 func (s *Slider) SetFieldTextColorFocused(color tcell.Color) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.fieldTextColorFocused = color
-	return s
-}
-
-func (s *Slider) SetBackgroundColor(color tcell.Color) *Slider {
-	s.Lock()
-	defer s.Unlock()
-
-	s.Box.SetBackgroundColor(color)
 	return s
 }
 
@@ -175,8 +441,8 @@ func (s *Slider) GetFieldWidth() int {
 // SetIncrement sets the amount the slider is incremented by when modified via
 // keyboard.
 func (s *Slider) SetIncrement(increment int) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.increment = increment
 	return s
@@ -185,8 +451,8 @@ func (s *Slider) SetIncrement(increment int) *Slider {
 // SetChangedFunc sets a handler which is called when the value of this slider
 // was changed by the user. The handler function receives the new value.
 func (s *Slider) SetChangedFunc(handler func(value int)) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.changed = handler
 	return s
@@ -200,8 +466,8 @@ func (s *Slider) SetChangedFunc(handler func(value int)) *Slider {
 //   - KeyTab: Move to the next field.
 //   - KeyBacktab: Move to the previous field.
 func (s *Slider) SetDoneFunc(handler func(key tcell.Key)) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.done = handler
 	return s
@@ -209,8 +475,8 @@ func (s *Slider) SetDoneFunc(handler func(key tcell.Key)) *Slider {
 
 // SetFinishedFunc sets a callback invoked when the user leaves this form item.
 func (s *Slider) SetFinishedFunc(handler func(key tcell.Key)) *Slider {
-	s.Lock()
-	defer s.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	s.finished = handler
 	return s
@@ -222,10 +488,10 @@ func (s *Slider) Draw(screen tcell.Screen) {
 		return
 	}
 
-	s.Box.Draw(screen)
+	s.progressBar.box.Draw(screen)
 	hasFocus := s.GetFocusable().HasFocus()
 
-	s.Lock()
+	s.mu.Lock()
 
 	// Select colors
 	labelColor := s.labelColor
@@ -247,13 +513,13 @@ func (s *Slider) Draw(screen tcell.Screen) {
 	x, y, width, height := s.GetInnerRect()
 	rightLimit := x + width
 	if height < 1 || rightLimit <= x {
-		s.Unlock()
+		s.mu.Unlock()
 		return
 	}
 
 	// Draw label.
 	if len(s.label) > 0 {
-		if s.vertical {
+		if s.progressBar.vertical {
 			height--
 
 			// TODO draw label on bottom
@@ -275,11 +541,11 @@ func (s *Slider) Draw(screen tcell.Screen) {
 	}
 
 	// Draw slider.
-	s.Unlock()
-	s.ProgressBar.SetRect(x, y, width, height)
-	s.ProgressBar.SetEmptyColor(fieldBackgroundColor)
-	s.ProgressBar.SetFilledColor(fieldTextColor)
-	s.ProgressBar.Draw(screen)
+	s.mu.Unlock()
+	s.progressBar.SetRect(x, y, width, height)
+	s.progressBar.SetEmptyColor(fieldBackgroundColor)
+	s.progressBar.SetFilledColor(fieldTextColor)
+	s.progressBar.Draw(screen)
 }
 
 // InputHandler returns the handler for this primitive.
@@ -295,20 +561,20 @@ func (s *Slider) InputHandler() func(event *tcell.EventKey, setFocus func(p Widg
 			return
 		}
 
-		previous := s.progress
+		previous := s.progressBar.progress
 
 		if HitShortcut(event, Keys.MoveFirst, Keys.MoveFirst2) {
-			s.SetProgress(0)
+			s.progressBar.SetProgress(0)
 		} else if HitShortcut(event, Keys.MoveLast, Keys.MoveLast2) {
-			s.SetProgress(s.max)
+			s.progressBar.SetProgress(s.progressBar.max)
 		} else if HitShortcut(event, Keys.MoveUp, Keys.MoveUp2, Keys.MoveRight, Keys.MoveRight2, Keys.MovePreviousField) {
-			s.AddProgress(s.increment)
+			s.progressBar.AddProgress(s.increment)
 		} else if HitShortcut(event, Keys.MoveDown, Keys.MoveDown2, Keys.MoveLeft, Keys.MoveLeft2, Keys.MoveNextField) {
-			s.AddProgress(s.increment * -1)
+			s.progressBar.AddProgress(s.increment * -1)
 		}
 
-		if s.progress != previous && s.changed != nil {
-			s.changed(s.progress)
+		if s.progressBar.progress != previous && s.changed != nil {
+			s.changed(s.progressBar.progress)
 		}
 	})
 }
@@ -329,25 +595,25 @@ func (s *Slider) MouseHandler() func(action MouseAction, event *tcell.EventMouse
 		}
 
 		handleMouse := func() {
-			if !s.ProgressBar.InRect(x, y) {
+			if !s.progressBar.InRect(x, y) {
 				s.dragging = false
 				return
 			}
 
 			bx, by, bw, bh := s.GetInnerRect()
 			var clickPos, clickRange int
-			if s.ProgressBar.vertical {
+			if s.progressBar.vertical {
 				clickPos = (bh - 1) - (y - by)
 				clickRange = bh - 1
 			} else {
 				clickPos = x - bx
 				clickRange = bw - 1
 			}
-			setValue := int(math.Floor(float64(s.max) * (float64(clickPos) / float64(clickRange))))
-			if setValue != s.progress {
-				s.SetProgress(setValue)
+			setValue := int(math.Floor(float64(s.progressBar.max) * (float64(clickPos) / float64(clickRange))))
+			if setValue != s.progressBar.progress {
+				s.progressBar.SetProgress(setValue)
 				if s.changed != nil {
-					s.changed(s.progress)
+					s.changed(s.progressBar.progress)
 				}
 			}
 		}
