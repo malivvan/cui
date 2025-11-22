@@ -20,7 +20,7 @@ var (
 	_ widget[*ProgressBar]  = (*ProgressBar)(nil)
 	_ widget[*Slider]       = (*Slider)(nil)
 	_ widget[*TabbedPanels] = (*TabbedPanels)(nil)
-	//_ widget[*Table]         = (*Table)(nil)
+	_ widget[*Table]        = (*Table)(nil)
 	//_ widget[*TextView]      = (*TextView)(nil)
 	//_ widget[*TreeView]      = (*TreeView)(nil)
 	//_ widget[*Window]        = (*Window)(nil)

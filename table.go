@@ -271,7 +271,7 @@ func (c *TableCell) GetLastPosition() (x, y, width int) {
 //
 // Use SetInputCapture() to override or modify keyboard input.
 type Table struct {
-	*Box
+	box *Box
 
 	// Whether or not this table has borders around each cell.
 	borders bool
@@ -361,7 +361,7 @@ type Table struct {
 // NewTable returns a new table.
 func NewTable() *Table {
 	return &Table{
-		Box:                 NewBox(),
+		box:                 NewBox(),
 		scrollBarVisibility: ScrollBarAuto,
 		scrollBarColor:      Styles.ScrollBarColor,
 		bordersColor:        Styles.GraphicsColor,
@@ -370,6 +370,236 @@ func NewTable() *Table {
 		lastColumn:          -1,
 	}
 }
+
+///////////////////////////////////// <MUTEX> ///////////////////////////////////
+
+func (t *Table) set(setter func(t *Table)) *Table {
+	t.mu.Lock()
+	setter(t)
+	t.mu.Unlock()
+	return t
+}
+
+func (t *Table) get(getter func(t *Table)) {
+	t.mu.RLock()
+	getter(t)
+	t.mu.RUnlock()
+}
+
+///////////////////////////////////// <BOX> ////////////////////////////////////
+
+// GetTitle returns the title of this Table.
+func (t *Table) GetTitle() string {
+	return t.box.GetTitle()
+}
+
+// SetTitle sets the title of this Table.
+func (t *Table) SetTitle(title string) *Table {
+	t.box.SetTitle(title)
+	return t
+}
+
+// GetTitleAlign returns the title alignment of this Table.
+func (t *Table) GetTitleAlign() int {
+	return t.box.GetTitleAlign()
+}
+
+// SetTitleAlign sets the title alignment of this Table.
+func (t *Table) SetTitleAlign(align int) *Table {
+	t.box.SetTitleAlign(align)
+	return t
+}
+
+// GetBorder returns whether this Table has a border.
+func (t *Table) GetBorder() bool {
+	return t.box.GetBorder()
+}
+
+// SetBorder sets whether this Table has a border.
+func (t *Table) SetBorder(show bool) *Table {
+	t.box.SetBorder(show)
+	return t
+}
+
+// GetBorderColor returns the border color of this Table.
+func (t *Table) GetBorderColor() tcell.Color {
+	return t.box.GetBorderColor()
+}
+
+// SetBorderColor sets the border color of this Table.
+func (t *Table) SetBorderColor(color tcell.Color) *Table {
+	t.box.SetBorderColor(color)
+	return t
+}
+
+// GetBorderAttributes returns the border attributes of this Table.
+func (t *Table) GetBorderAttributes() tcell.AttrMask {
+	return t.box.GetBorderAttributes()
+}
+
+// SetBorderAttributes sets the border attributes of this Table.
+func (t *Table) SetBorderAttributes(attr tcell.AttrMask) *Table {
+	t.box.SetBorderAttributes(attr)
+	return t
+}
+
+// GetBorderColorFocused returns the border color of this Table when focused.
+func (t *Table) GetBorderColorFocused() tcell.Color {
+	return t.box.GetBorderColorFocused()
+}
+
+// SetBorderColorFocused sets the border color of this Table when focused.
+func (t *Table) SetBorderColorFocused(color tcell.Color) *Table {
+	t.box.SetBorderColorFocused(color)
+	return t
+}
+
+// GetTitleColor returns the title color of this Table.
+func (t *Table) GetTitleColor() tcell.Color {
+	return t.box.GetTitleColor()
+}
+
+// SetTitleColor sets the title color of this Table.
+func (t *Table) SetTitleColor(color tcell.Color) *Table {
+	t.box.SetTitleColor(color)
+	return t
+}
+
+// GetDrawFunc returns the custom draw function of this Table.
+func (t *Table) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+	return t.box.GetDrawFunc()
+}
+
+// SetDrawFunc sets a custom draw function for this Table.
+func (t *Table) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Table {
+	t.box.SetDrawFunc(handler)
+	return t
+}
+
+// ShowFocus sets whether this Table should show a focus indicator when focused.
+func (t *Table) ShowFocus(showFocus bool) *Table {
+	t.box.ShowFocus(showFocus)
+	return t
+}
+
+// GetMouseCapture returns the mouse capture function of this Table.
+func (t *Table) GetMouseCapture() func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse) {
+	return t.box.GetMouseCapture()
+}
+
+// SetMouseCapture sets a mouse capture function for this Table.
+func (t *Table) SetMouseCapture(capture func(action MouseAction, event *tcell.EventMouse) (MouseAction, *tcell.EventMouse)) *Table {
+	t.box.SetMouseCapture(capture)
+	return t
+}
+
+// GetBackgroundColor returns the background color of this Table.
+func (t *Table) GetBackgroundColor() tcell.Color {
+	return t.box.GetBackgroundColor()
+}
+
+// SetBackgroundColor sets the background color of this Table.
+func (t *Table) SetBackgroundColor(color tcell.Color) *Table {
+	t.box.SetBackgroundColor(color)
+	return t
+}
+
+// GetBackgroundTransparent returns whether the background of this Table is transparent.
+func (t *Table) GetBackgroundTransparent() bool {
+	return t.box.GetBackgroundTransparent()
+}
+
+// SetBackgroundTransparent sets whether the background of this Table is transparent.
+func (t *Table) SetBackgroundTransparent(transparent bool) *Table {
+	t.box.SetBackgroundTransparent(transparent)
+	return t
+}
+
+// GetInputCapture returns the input capture function of this Table.
+func (t *Table) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
+	return t.box.GetInputCapture()
+}
+
+// SetInputCapture sets a custom input capture function for this Table.
+func (t *Table) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *Table {
+	t.box.SetInputCapture(capture)
+	return t
+}
+
+// GetPadding returns the padding of this Table.
+func (t *Table) GetPadding() (top, bottom, left, right int) {
+	return t.box.GetPadding()
+}
+
+// SetPadding sets the padding of this Table.
+func (t *Table) SetPadding(top, bottom, left, right int) *Table {
+	t.box.SetPadding(top, bottom, left, right)
+	return t
+}
+
+// InRect returns whether the given screen coordinates are within this Table.
+func (t *Table) InRect(x, y int) bool {
+	return t.box.InRect(x, y)
+}
+
+// GetInnerRect returns the inner rectangle of this Table.
+func (t *Table) GetInnerRect() (x, y, width, height int) {
+	return t.box.GetInnerRect()
+}
+
+// WrapInputHandler wraps the provided input handler function such that
+// input capture and other processing of the Table is preserved.
+func (t *Table) WrapInputHandler(inputHandler func(event *tcell.EventKey, setFocus func(p Widget))) func(event *tcell.EventKey, setFocus func(p Widget)) {
+	return t.box.WrapInputHandler(inputHandler)
+}
+
+// WrapMouseHandler wraps the provided mouse handler function such that
+// mouse capture and other processing of the Table is preserved.
+func (t *Table) WrapMouseHandler(mouseHandler func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget)) func(action MouseAction, event *tcell.EventMouse, setFocus func(p Widget)) (consumed bool, capture Widget) {
+	return t.box.WrapMouseHandler(mouseHandler)
+}
+
+// GetRect returns the rectangle occupied by this Table.
+func (t *Table) GetRect() (x, y, width, height int) {
+	return t.box.GetRect()
+}
+
+// SetRect sets the rectangle occupied by this Table.
+func (t *Table) SetRect(x, y, width, height int) {
+	t.box.SetRect(x, y, width, height)
+}
+
+// GetVisible returns whether this Table is visible.
+func (t *Table) GetVisible() bool {
+	return t.box.GetVisible()
+}
+
+// SetVisible sets whether this Table is visible.
+func (t *Table) SetVisible(visible bool) {
+	t.box.SetVisible(visible)
+}
+
+// Focus is called when this Table receives focus.
+func (t *Table) Focus(delegate func(p Widget)) {
+	t.box.Focus(delegate)
+}
+
+// HasFocus returns whether this Table has focus.
+func (t *Table) HasFocus() bool {
+	return t.box.HasFocus()
+}
+
+// GetFocusable returns the focusable primitive of this Table.
+func (t *Table) GetFocusable() Focusable {
+	return t.box.GetFocusable()
+}
+
+// Blur is called when this Table loses focus.
+func (t *Table) Blur() {
+	t.box.Blur()
+}
+
+////////////////////////////////// <API> ////////////////////////////////////
 
 // Clear removes all table data.
 func (t *Table) Clear() {
@@ -838,7 +1068,7 @@ func (t *Table) Draw(screen tcell.Screen) {
 		return
 	}
 
-	t.Box.Draw(screen)
+	t.box.Draw(screen)
 
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -1056,7 +1286,7 @@ ColumnLoop:
 	}
 
 	// Helper function which draws border runes.
-	borderStyle := tcell.StyleDefault.Background(t.backgroundColor).Foreground(t.bordersColor)
+	borderStyle := tcell.StyleDefault.Background(t.box.backgroundColor).Foreground(t.bordersColor)
 	drawBorder := func(colX, rowY int, ch rune) {
 		screen.SetContent(x+colX, y+rowY, ch, nil, borderStyle)
 	}
@@ -1174,7 +1404,7 @@ ColumnLoop:
 		// Draw scroll bar.
 		cursor := int(float64(scrollBarItems) * (float64(t.rowOffset) / float64(((rows-t.fixedRows)-t.visibleRows)+padTotalOffset)))
 		for printed := 0; printed < scrollBarHeight; printed++ {
-			RenderScrollBar(screen, t.scrollBarVisibility, scrollBarX, scrollBarY+printed, scrollBarHeight, scrollBarItems, cursor, printed, t.hasFocus, t.scrollBarColor)
+			RenderScrollBar(screen, t.scrollBarVisibility, scrollBarX, scrollBarY+printed, scrollBarHeight, scrollBarItems, cursor, printed, t.box.hasFocus, t.scrollBarColor)
 		}
 	}
 
@@ -1196,7 +1426,7 @@ ColumnLoop:
 						fg = backgroundColor
 					}
 					if fg == tcell.ColorDefault {
-						fg = t.backgroundColor
+						fg = t.box.backgroundColor
 					}
 					style = style.Background(textColor).Foreground(fg)
 				} else {
