@@ -6,7 +6,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/malivvan/cui/vte/utils/ioctl"
+	"github.com/malivvan/cui/vte/ioctl"
 )
 
 // See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/ptsname.c.html#54

@@ -1,6 +1,4 @@
 //go:build (darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris) && cgo
-// +build darwin dragonfly freebsd linux netbsd openbsd solaris
-// +build cgo
 
 package nixpty
 
@@ -16,14 +14,10 @@ import "C"
 import (
 	"os"
 	"syscall"
-
-	"github.com/malivvan/cui/vte/utils/log"
 )
 
 // Open returns a control pty(ptm) and the linked process tty(pts).
 func open() (ptm *os.File, pts *os.File, err error) {
-	log.Debug("Supported by CGO")
-
 	ptmFd, err := C.posix_openpt(syscall.O_RDWR)
 	if ptmFd < 0 {
 		return

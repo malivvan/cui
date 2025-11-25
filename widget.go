@@ -12,7 +12,7 @@ type Widget interface {
 	// GetRect returns the current position of the primitive, x, y, width, and
 	// height.
 	GetRect() (int, int, int, int)
-	
+
 	// SetRect sets a new position of the primitive.
 	SetRect(x, y, width, height int)
 

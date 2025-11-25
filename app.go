@@ -508,6 +508,8 @@ func (a *App) fireMouseActions(event *tcell.EventMouse) (consumed, isMouseDownAc
 		switch action {
 		case MouseLeftDown, MouseMiddleDown, MouseRightDown:
 			isMouseDownAction = true
+		default:
+			isMouseDownAction = false
 		}
 
 		// Intercept event.

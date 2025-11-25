@@ -4,7 +4,7 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/malivvan/cui/vte/utils/ioctl"
+	"github.com/malivvan/cui/vte/ioctl"
 )
 
 // See https://github.com/DragonFlyBSD/DragonFlyBSD/blob/master/lib/libc/stdlib/ptsname.c

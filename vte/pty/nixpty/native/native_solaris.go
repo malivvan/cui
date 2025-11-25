@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/malivvan/cui/vte/utils/ioctl"
+	"github.com/malivvan/cui/vte/ioctl"
 )
 
 // See https://src.illumos.org/source/xref/illumos-gate/usr/src/lib/libc/port/gen/pt.c?r=7d8deab2

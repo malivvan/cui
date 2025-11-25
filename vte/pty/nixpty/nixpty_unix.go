@@ -10,9 +10,8 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/malivvan/cui/vte/ioctl"
 	"github.com/malivvan/cui/vte/pty/common"
-	"github.com/malivvan/cui/vte/utils/ioctl"
-	"github.com/malivvan/cui/vte/utils/log"
 )
 
 func openWithOptions(opt *common.Options) (p *NixPty, err error) {
@@ -60,8 +59,6 @@ func openWithOptions(opt *common.Options) (p *NixPty, err error) {
 	if err != nil {
 		return
 	}
-
-	log.Debug("Start NixPty")
 	p.cmd = cmd
 	return
 }

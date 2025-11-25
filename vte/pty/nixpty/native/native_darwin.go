@@ -5,7 +5,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/malivvan/cui/vte/utils/ioctl"
+	"github.com/malivvan/cui/vte/ioctl"
 )
 
 // See https://opensource.apple.com/source/Libc/Libc-1353.60.8/stdlib/grantpt.c.auto.html

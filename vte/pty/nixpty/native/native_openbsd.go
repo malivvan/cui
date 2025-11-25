@@ -4,7 +4,7 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/malivvan/cui/vte/utils/ioctl"
+	"github.com/malivvan/cui/vte/ioctl"
 )
 
 // See https://github.com/openbsd/src/blob/master/lib/libc/stdlib/posix_pty.c

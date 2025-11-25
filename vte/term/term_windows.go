@@ -7,7 +7,6 @@ import (
 	"unsafe"
 
 	"github.com/malivvan/cui/vte/term/color"
-	"github.com/malivvan/cui/vte/utils/log"
 )
 
 type fields struct {
@@ -72,10 +71,8 @@ func (t *Term) wrapOutput() (err error) {
 			return fmt.Errorf("failed to set VT output mode: %v", err)
 		}
 		t.wrapStdout = t.stdout
-		log.Debug("Using Console Virtual Terminal Sequences to handle ANSI escape sequences")
 	} else {
 		t.wrapStdout = color.NewColorable(t.stdout)
-		log.Debug("Using Third Party Package to handle ANSI escape sequences")
 	}
 	return
 }

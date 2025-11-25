@@ -3,8 +3,9 @@ module github.com/malivvan/cui
 go 1.25.4
 
 require (
-	github.com/antchfx/xmlquery v1.5.0
+	github.com/agreffard/douceur v0.2.1
 	github.com/atotto/clipboard v0.1.4
+	github.com/beevik/etree v1.6.0
 	github.com/gdamore/tcell/v2 v2.10.0
 	github.com/lucasb-eyer/go-colorful v1.3.0
 	github.com/mattn/go-runewidth v0.0.19
@@ -14,14 +15,13 @@ require (
 )
 
 require (
-	github.com/antchfx/xpath v1.3.5 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gdamore/encoding v1.0.1 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/gorilla/css v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
+	github.com/redforks/douceur v0.2.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/term v0.37.0 // indirect
 	golang.org/x/text v0.31.0 // indirect

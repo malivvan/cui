@@ -8,7 +8,6 @@ import (
 	"github.com/malivvan/cui/vte/pty/conpty"
 	"github.com/malivvan/cui/vte/pty/nixpty"
 	"github.com/malivvan/cui/vte/pty/winpty"
-	"github.com/malivvan/cui/vte/utils/log"
 )
 
 // Options contains the necessary information to run Pty
@@ -132,18 +131,9 @@ func OpenWithOptions(opt *Options) (p *Pty, err error) {
 	default:
 		return nil, fmt.Errorf("error pty type: %v", opt.Type)
 	}
-
 	if err != nil {
 		return nil, err
 	}
-
-	log.Debug("Path: %v", opt.Path)
-	log.Debug("Args: %v", opt.Args)
-	log.Debug("Dir: %v", opt.Dir)
-	log.Debug("Env: %v", opt.Env)
-	log.Debug("Size: %v", opt.Size)
-	log.Debug("Type: %v", opt.Type)
-
 	return p, err
 }
 func (p *Pty) Pid() (int, error) {

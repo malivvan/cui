@@ -1,3 +1,6 @@
+// Package cui provides a collection of terminal user interface (TUI) components built on top of the tcell library.
+// It offers various widgets such as buttons, input fields, text views, tables, and more, allowing developers
+// to create rich and interactive terminal applications with ease.
 package cui
 
 import "github.com/gdamore/tcell/v2"
@@ -19,6 +22,7 @@ var (
 	_ widget[*Panels]        = (*Panels)(nil)
 	_ widget[*ProgressBar]   = (*ProgressBar)(nil)
 	_ widget[*Slider]        = (*Slider)(nil)
+	_ widget[*Spinner]       = (*Spinner)(nil)
 	_ widget[*TabbedPanels]  = (*TabbedPanels)(nil)
 	_ widget[*Table]         = (*Table)(nil)
 	_ widget[*TextView]      = (*TextView)(nil)

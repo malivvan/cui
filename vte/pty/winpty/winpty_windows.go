@@ -7,7 +7,6 @@ import (
 	"unsafe"
 
 	"github.com/malivvan/cui/vte/pty/common"
-	"github.com/malivvan/cui/vte/utils/log"
 )
 
 func openWithOptions(opt *common.Options) (p *WinPty, err error) {
@@ -47,8 +46,6 @@ func openWithOptions(opt *common.Options) (p *WinPty, err error) {
 	if err != nil {
 		return
 	}
-
-	log.Debug("Start WinPty")
 	return
 }
 

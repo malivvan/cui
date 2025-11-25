@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/malivvan/cui/vte/ioctl"
 	"github.com/malivvan/cui/vte/term/export"
-	"github.com/malivvan/cui/vte/utils/ioctl"
 )
 
 type fields struct {

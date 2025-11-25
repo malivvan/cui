@@ -6,14 +6,13 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"sync"
 	"unicode"
 )
 
 const eof rune = -1
 
-// https://vt100.net/emu/dec_ansi_parser
-//
-// parser is an implementation of Paul Flo Williams' VT500-series
+// Parser is an implementation of Paul Flo Williams' VT500-series
 // parser, as seen [here](https://vt100.net/emu/dec_ansi_parser). The
 // architecture is designed after Rob Pike's text/template parser, with a
 // few modifications.
@@ -30,6 +29,9 @@ type Parser struct {
 	final        rune
 
 	oscData []rune
+
+	// Seems to be required to avoid race-conditions when using the parser.
+	mu sync.Mutex
 }
 
 func NewParser(r io.Reader) *Parser {
@@ -357,6 +359,7 @@ type stateFn func(rune, *Parser) stateFn
 // This isn’t a real state. It is used on the state diagram to show
 // transitions that can occur from any state to some other state.
 func anywhere(r rune, p *Parser) stateFn {
+	p.mu.Lock()
 	switch {
 	case r == eof:
 		if p.exit != nil {
@@ -364,6 +367,7 @@ func anywhere(r rune, p *Parser) stateFn {
 			p.exit = nil
 		}
 		p.emit(nil)
+		p.mu.Unlock()
 		return nil
 	case is(r, 0x18, 0x1A):
 		if p.exit != nil {
@@ -371,6 +375,7 @@ func anywhere(r rune, p *Parser) stateFn {
 			p.exit = nil
 		}
 		p.execute(r)
+		p.mu.Unlock()
 		return ground
 	case is(r, 0x1B):
 		if p.exit != nil {
@@ -378,8 +383,10 @@ func anywhere(r rune, p *Parser) stateFn {
 			p.exit = nil
 		}
 		p.clear()
+		p.mu.Unlock()
 		return escape
 	default:
+		p.mu.Unlock()
 		return p.state(r, p)
 	}
 }

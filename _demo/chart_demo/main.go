@@ -2,11 +2,12 @@
 package main
 
 import (
-	"github.com/malivvan/cui"
-	"github.com/malivvan/cui/chart"
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/malivvan/cui"
+	"github.com/malivvan/cui/chart"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -15,27 +16,27 @@ func main() {
 	app := cui.New()
 
 	// spinners
-	spinners := []*chart.Spinner{
+	spinners := []*cui.Spinner{
 
-		chart.NewSpinner().SetStyle(chart.SpinnerDotsCircling),
-		chart.NewSpinner().SetStyle(chart.SpinnerDotsUpDown),
-		chart.NewSpinner().SetStyle(chart.SpinnerBounce),
-		chart.NewSpinner().SetStyle(chart.SpinnerLine),
+		cui.NewSpinner().SetStyle(cui.SpinnerDotsCircling),
+		cui.NewSpinner().SetStyle(cui.SpinnerDotsUpDown),
+		cui.NewSpinner().SetStyle(cui.SpinnerBounce),
+		cui.NewSpinner().SetStyle(cui.SpinnerLine),
 
-		chart.NewSpinner().SetStyle(chart.SpinnerCircleQuarters),
-		chart.NewSpinner().SetStyle(chart.SpinnerSquareCorners),
-		chart.NewSpinner().SetStyle(chart.SpinnerCircleHalves),
-		chart.NewSpinner().SetStyle(chart.SpinnerCorners),
+		cui.NewSpinner().SetStyle(cui.SpinnerCircleQuarters),
+		cui.NewSpinner().SetStyle(cui.SpinnerSquareCorners),
+		cui.NewSpinner().SetStyle(cui.SpinnerCircleHalves),
+		cui.NewSpinner().SetStyle(cui.SpinnerCorners),
 
-		chart.NewSpinner().SetStyle(chart.SpinnerArrows),
-		chart.NewSpinner().SetStyle(chart.SpinnerHamburger),
-		chart.NewSpinner().SetStyle(chart.SpinnerStack),
-		chart.NewSpinner().SetStyle(chart.SpinnerStar),
+		cui.NewSpinner().SetStyle(cui.SpinnerArrows),
+		cui.NewSpinner().SetStyle(cui.SpinnerHamburger),
+		cui.NewSpinner().SetStyle(cui.SpinnerStack),
+		cui.NewSpinner().SetStyle(cui.SpinnerStar),
 
-		chart.NewSpinner().SetStyle(chart.SpinnerGrowHorizontal),
-		chart.NewSpinner().SetStyle(chart.SpinnerGrowVertical),
-		chart.NewSpinner().SetStyle(chart.SpinnerBoxBounce),
-		chart.NewSpinner().SetCustomStyle([]rune{'🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'}),
+		cui.NewSpinner().SetStyle(cui.SpinnerGrowHorizontal),
+		cui.NewSpinner().SetStyle(cui.SpinnerGrowVertical),
+		cui.NewSpinner().SetStyle(cui.SpinnerBoxBounce),
+		cui.NewSpinner().SetCustomStyle([]rune{'🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'}),
 	}
 
 	spinnerRow := cui.NewFlex()

@@ -1,6 +1,4 @@
 //go:build (darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris) && !cgo
-// +build darwin dragonfly freebsd linux netbsd openbsd solaris
-// +build !cgo
 
 package nixpty
 
@@ -9,13 +7,10 @@ import (
 	"syscall"
 
 	"github.com/malivvan/cui/vte/pty/nixpty/native"
-	"github.com/malivvan/cui/vte/utils/log"
 )
 
 // Open returns a control pty(ptm) and the linked process tty(pts).
 func open() (ptm *os.File, pts *os.File, err error) {
-	log.Debug("Supported by native GO")
-
 	ptm, err = native.Openpt(syscall.O_RDWR)
 	if err != nil {
 		return

@@ -1,46 +1,30 @@
-# kernel-style V=1 build verbosity
-ifeq ("$(origin V)", "command line")
-	BUILD_VERBOSE = $(V)
-endif
-
-ifeq ($(BUILD_VERBOSE),1)
-	Q =
-else
-	Q = @
-endif
-
-define go_get
-	$(Q)command -v $(1) > /dev/null || GO111MODULE=off go get $(2)
-endef
-
-export CGO_ENABLED := 1
-
+export CGO_ENABLED := 0W
 .DEFAULT_GOAL := help
 
 .PHONY: validate
-validate: check-fmt test vet ## Validates the go code format, runs tests and executes vet.
+validate: check-fmt check-static test ## Validates the go code format, executes staticcheck and runs tests
 
 .PHONY: test
 test: ## Run tests
-	$(Q)echo "running tests..."
-	$(Q)go test -race -v ./...
+	@CGO_ENABLED=1 gotestsum --format-hide-empty-pkg -- -race -v ./...
 
-.PHONY: vet
-vet: ## Run go vet
-	$(Q)echo "running go vet..."
-	$(Q)go vet -composites=false ./...
+.PHONY: check-static
+check-static: ## Run static analysis
+	@staticcheck -checks all ./...
 
 .PHONY: check-fmt
 check-fmt: ## Check go format
-	$(Q)echo "checking format..."
 	@gofmt_out=$$(gofmt -d -e . 2>&1) && [ -z "$${gofmt_out}" ] || (echo "$${gofmt_out}" 1>&2; exit 1)
 
 .PHONY: fmt
 fmt: ## Formats the go code
-	$(Q)echo "formatting go code..."
-	$(Q)set -e
-	$(call go_get,goimports,golang.org/x/tools/cmd/goimports)
-	$(Q)goimports -w .
+	@go fmt ./...
+
+.PHONY: install
+install: ## Installs required tools
+	@echo "installing required tools..."
+	@go install honnef.co/go/tools/cmd/staticcheck@latest
+	@go install gotest.tools/gotestsum@latest
 
 .PHONY: help
 help: ## Shows this help

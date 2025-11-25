@@ -7,7 +7,6 @@ import (
 	"unsafe"
 
 	"github.com/malivvan/cui/vte/pty/common"
-	"github.com/malivvan/cui/vte/utils/log"
 )
 
 func openWithOptions(opt *common.Options) (p *ConPty, err error) {
@@ -71,8 +70,6 @@ func openWithOptions(opt *common.Options) (p *ConPty, err error) {
 		p.process.Wait()
 		p.close()
 	}()
-
-	log.Debug("Start ConPty")
 	return
 }
 

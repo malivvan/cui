@@ -4,50 +4,89 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/antchfx/xmlquery"
+	"github.com/beevik/etree"
+	"github.com/malivvan/cui"
 )
 
-func main() {
-	s := `<?xml version="1.0" encoding="UTF-8" ?>
-<view id="myview">
-<channel>
-  <title>W3Schools Home Page</title>
-  <link>https://www.w3schools.com</link>
-  <description>Free web building tutorials</description>
-  <item>
-    <title>RSS Tutorial</title>
-    <link>https://www.w3schools.com/xml/xml_rss.asp</link>
-    <description>New RSS tutorial on W3Schools</description>
-  </item>
-  <item>
-    <title>XML Tutorial</title>
-    <link>https://www.w3schools.com/xml</link>
-    <description>New XML tutorial on W3Schools</description>
-  </item>
-</channel>
-</view>`
+type View struct {
+	root   *Node[cui.Widget]
+	flex   map[string]*Node[*cui.Flex]
+	button map[string]*Node[*cui.Button]
+}
 
-	doc, err := xmlquery.Parse(strings.NewReader(s))
+type Node[WIDGET cui.Widget] struct {
+	*etree.Element
+	widget   WIDGET
+	parent   *Node[cui.Widget]
+	children []*Node[cui.Widget]
+}
+
+var (
+	ErrNoRootNode = fmt.Errorf("no root node found")
+)
+
+func NewView(s string) (view *View, err error) {
+
+	doc := etree.NewDocument()
+	if err := doc.ReadFromString(s); err != nil {
+		panic(err)
+	}
+	view = &View{
+		flex:   make(map[string]*Node[*cui.Flex]),
+		button: make(map[string]*Node[*cui.Button]),
+	}
+	view.root, err = view.traverse(doc.Root())
+	if err != nil {
+		return nil, err
+	}
+	return view, nil
+}
+
+func (view *View) traverse(elem *etree.Element) (*Node[cui.Widget], error) {
+	switch elem.Tag {
+	case "flex":
+		flex := cui.NewFlex().SetDirection(cui.FlexRow)
+		for _, child := range elem.ChildElements() {
+			childNode, err := view.traverse(child)
+			if err != nil {
+				return nil, err
+			}
+			flex.AddItem(childNode.widget, 1, 0, false)
+		}
+		return &Node[cui.Widget]{
+			Element: elem,
+			widget:  flex,
+		}, nil
+
+	case "button":
+		button := cui.NewButton()
+		button.SetLabel(elem.Text())
+		return &Node[cui.Widget]{
+			Element: elem,
+			widget:  button,
+		}, nil
+	}
+	return nil, fmt.Errorf("unknown node type: %s", strings.ToLower(elem.Tag))
+}
+
+func main() {
+	s := `<flex>
+	<button>Click Me!</button>
+	<button>Click Me2</button>
+	<button>Click Me3</button>
+</flex>
+`
+
+	view, err := NewView(s)
 	if err != nil {
 		panic(err)
 	}
-	for _, n := range doc.ChildNodes() {
-		if n.Data == "view" {
-			fmt.Println("view node:", n.SelectAttr("id"))
-			for _, nn := range n.ChildNodes() {
-				fmt.Printf("node: %s\n", nn.Data)
-			}
-		}
-	}
+	fmt.Println(view)
 
-	channel := xmlquery.FindOne(doc, "//channel")
-	if n := channel.SelectElement("title"); n != nil {
-		fmt.Printf("title: %s\n", n.InnerText())
-	}
-	if n := channel.SelectElement("link"); n != nil {
-		fmt.Printf("link: %s\n", n.InnerText())
-	}
-	for i, n := range xmlquery.Find(doc, "//item/title") {
-		fmt.Printf("#%d %s\n", i, n.InnerText())
+	app := cui.New()
+	defer app.HandlePanic()
+
+	if err := app.SetRoot(view.root.widget, true).EnableMouse(true).Run(); err != nil {
+		panic(err)
 	}
 }

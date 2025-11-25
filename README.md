@@ -1,96 +1,18 @@
-# cview - Terminal-based user interface toolkit
-[![GoDoc](https://codeberg.org/tslocum/godoc-static/raw/branch/master/badge.svg)](https://docs.rocket9labs.com/github.com/malivvan/cui)
-[![Donate](https://img.shields.io/liberapay/receives/rocket9labs.com.svg?logo=liberapay)](https://liberapay.com/rocket9labs.com)
+# cui - A terminal UI framework in Go
 
-This package is a fork of [tview](https://github.com/rivo/tview).
-See [FORK.md](https://github.com/malivvan/cui/src/branch/master/FORK.md) for more information.
-
-## Demo
-
-`ssh cui.rocket9labs.com -p 20000`
-
-[![Recording of presentation demo](https://github.com/malivvan/cui/raw/branch/master/cui.svg)](https://github.com/malivvan/cui/src/branch/master/demos/presentation)
-
-## Features
-
-Available widgets:
-
-- __Input forms__ (including __input/password fields__, __drop-down selections__, __checkboxes__, and __buttons__)
-- Navigable multi-color __text views__
-- Selectable __lists__ with __context menus__
-- Modal __dialogs__
-- Horizontal and vertical __progress bars__
-- __Grid__, __Flexbox__ and __tabbed panel layouts__
-- Sophisticated navigable __table views__
-- Flexible __tree views__
-- Draggable and resizable __windows__
-- An __application__ wrapper
-
-Widgets may be customized and extended to suit any application.
-
-[Mouse support](https://docs.rocket9labs.com/github.com/malivvan/cui#hdr-Mouse_Support) is available.
-
-## Applications
-
-A list of applications powered by cview is available via [pkg.go.dev](https://pkg.go.dev/github.com/malivvan/cui?tab=importedby).
-
-## Installation
-
-```bash
-go get github.com/malivvan/cui
-```
-
-## Hello World
-
-This basic example creates a TextView titled "Hello, World!" and displays it in your terminal:
-
-```go
-package main
-
-import (
-	"github.com/malivvan/cui"
-)
-
-func main() {
-	app := cui.NewApplication()
-
-	tv := cui.NewTextView()
-	tv.SetBorder(true)
-	tv.SetTitle("Hello, world!")
-	tv.SetText("Lorem ipsum dolor sit amet")
-	
-	app.SetRoot(tv, true)
-	if err := app.Run(); err != nil {
-		panic(err)
-	}
-}
-```
-
-Examples are available via [godoc](https://docs.rocket9labs.com/github.com/malivvan/cui#pkg-examples)
-and in the [demos](https://github.com/malivvan/cui/src/branch/master/demos) directory.
-
-For a presentation highlighting the features of this package, compile and run
-the program in the [demos/presentation](https://github.com/malivvan/cui/src/branch/master/demos/presentation) directory.
-
-## Documentation
-
-Package documentation is available via [godoc](https://docs.rocket9labs.com/github.com/malivvan/cui).
-
-An [introduction tutorial](https://rocket9labs.com/post/tview-and-you/) is also available.
-
-## Dependencies
-
-This package is based on [github.com/gdamore/tcell](https://github.com/gdamore/tcell)
-(and its dependencies) and [github.com/rivo/uniseg](https://github.com/rivo/uniseg).
-
-## Support
-
-[CONTRIBUTING.md](https://github.com/malivvan/cui/src/branch/master/CONTRIBUTING.md) describes how to share
-issues, suggestions and patches (pull requests).
 
 ## Packages
-- / [codeberg.org/tslocum/cview](https://codeberg.org/tslocum/cview/src/commit/242e7c1f1b61a4b3722a1afb45ca1165aefa9a59)
-- /bind.go [codeberg.org/tslocum/cbind](https://codeberg.org/tslocum/cbind/src/commit/5cd49d3cfccbe4eefaab8a5282826aa95100aa42)
-- /vte/ [git.sr.ht/~rockorager/tcell-term](https://git.sr.ht/~rockorager/tcell-term/refs/v0.10.0)
-- /femto/ [github.com/wellcomez/femto](https://github.com/wellcomez/femto/tree/8413a0288bcb042fd0de5cbbcb9893c16a01ee69)
-- /chart/ [github.com/navidys/tvxwidgets](https://github.com/navidys/tvxwidgets/commit/96bcc0450684693eebd4f8e3e95fcc40eae2dbaa)
+
+| path                | repository                                                                                                                   | commit                                     |    license     |
+|:--------------------|:-----------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------|:--------------:|
+| **/**               | [codeberg.org/tslocum/cview](https://codeberg.org/tslocum/cview/src/commit/242e7c1f1b61a4b3722a1afb45ca1165aefa9a59)         | `242e7c1f1b61a4b3722a1afb45ca1165aefa9a59` |     `MIT`      |
+| **/bind.go**        | [codeberg.org/tslocum/cbind](https://codeberg.org/tslocum/cbind/src/commit/5cd49d3cfccbe4eefaab8a5282826aa95100aa42)         | `5cd49d3cfccbe4eefaab8a5282826aa95100aa42` |     `MIT`      |
+| **/vte/**           | [git.sr.ht/~rockorager/tcell-term](https://git.sr.ht/~rockorager/tcell-term/commit/6805a6d75db82c2e1f51c1fb97170c26daf7aea0) | `6805a6d75db82c2e1f51c1fb97170c26daf7aea0` |     `MIT`      |
+| **/vte/pty**        | [github.com/wellcomez/aiopty](https://github.com/wellcomez/aiopty/tree/afbcf1124b2cb834b75236fd0a5e6b56a2790e03)             | `afbcf1124b2cb834b75236fd0a5e6b56a2790e03` |     `MIT`      |
+| **/vte/term**       | [github.com/wellcomez/aiopty](https://github.com/wellcomez/aiopty/tree/afbcf1124b2cb834b75236fd0a5e6b56a2790e03)             | `afbcf1124b2cb834b75236fd0a5e6b56a2790e03` |     `MIT`      |
+| **/vte/ioctl**      | [github.com/wellcomez/aiopty](https://github.com/wellcomez/aiopty/tree/afbcf1124b2cb834b75236fd0a5e6b56a2790e03)             | `afbcf1124b2cb834b75236fd0a5e6b56a2790e03` |     `MIT`      |
+| **/editor**         | [github.com/wellcomez/femto](https://github.com/wellcomez/femto/tree/8413a0288bcb042fd0de5cbbcb9893c16a01ee69)               | `8413a0288bcb042fd0de5cbbcb9893c16a01ee69` |     `MIT`      |                                     
+| **/chart**          | [github.com/navidys/tvxwidgets](https://github.com/navidys/tvxwidgets/commit/96bcc0450684693eebd4f8e3e95fcc40eae2dbaa)       | `96bcc0450684693eebd4f8e3e95fcc40eae2dbaa` |     `MIT`      | 
+| **/internal/etree** | [github.com/beevik/etree](https://github.com/beevik/etree/tree/4032e04c8f2e2f35e43ce5d772fcef14a5df4d74)                     | `4032e04c8f2e2f35e43ce5d772fcef14a5df4d74` | `BSD-2-Clause` |
+|
+
