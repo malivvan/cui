@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/agreffard/douceur/parser"
+	"github.com/malivvan/cui/internal/dauceur/parser"
 )
 
 func main() {

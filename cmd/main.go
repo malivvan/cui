@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/beevik/etree"
 	"github.com/malivvan/cui"
+	"github.com/malivvan/cui/internal/etree"
 )
 
 type View struct {
@@ -14,11 +14,32 @@ type View struct {
 	button map[string]*Node[*cui.Button]
 }
 
+type Element[WIDGET cui.Widget] struct {
+	*etree.Element
+	widget WIDGET
+	parent *Container[cui.Widget]
+	styles []*Style
+}
+
+type Container[WIDGET cui.Widget] struct {
+	Element[WIDGET]
+	children []*Node[cui.Widget]
+}
+
+type Style struct {
+}
+
 type Node[WIDGET cui.Widget] struct {
 	*etree.Element
 	widget   WIDGET
 	parent   *Node[cui.Widget]
 	children []*Node[cui.Widget]
+}
+
+type Stylex struct {
+	BackgroundColor string
+	ForegroundColor string
+	BorderColor     string
 }
 
 var (
@@ -69,11 +90,41 @@ func (view *View) traverse(elem *etree.Element) (*Node[cui.Widget], error) {
 	return nil, fmt.Errorf("unknown node type: %s", strings.ToLower(elem.Tag))
 }
 
+type Type int
+
+const (
+	// ELEMENT is a Widget drawing the ui.
+	ELEMENT Type = iota
+
+	// CONTAINER is a Widget that can contain other Widgets.
+	// A container can draw itself and control elements.
+	// the layout of its children through attributes (e.g. flex)
+	CONTAINER
+
+	// STYLE is a Widget that defines styles for other Widgets.
+	// Styles are prioritized according to their CONTAINER scope.
+	// Styles defined for id supersede styles defined for class.
+	// Styles defined for ELEMENT supersede styles defined for id.
+	STYLE
+)
+
 func main() {
-	s := `<flex>
-	<button>Click Me!</button>
-	<button>Click Me2</button>
-	<button>Click Me3</button>
+	s := `<style>
+#warning {
+	background: red;
+	foreground: white;
+	border: yellow;
+}
+#info {
+	background: blue;
+	foreground: white;
+	border: cyan;
+}
+</style>
+<flex>
+	<button id="first" style="background:#222222;">Click Me!</button>
+	<button class="warning">Click Me2</button>
+	<button class="info">Click Me3</button>
 </flex>
 `
 
