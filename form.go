@@ -13,7 +13,7 @@ import (
 var DefaultFormFieldWidth = 10
 
 // Form allows you to combine multiple one-line form elements into a vertical
-// or horizontal layout. Form elements include types such as InputField or
+// or horizontal layout. Form elements include types such as Input or
 // CheckBox. These elements can be optionally followed by one or more buttons
 // for which you can define form-wide actions (e.g. Save, Clear, Cancel).
 type Form struct {
@@ -659,7 +659,7 @@ func (f *Form) AddSlider(label string, current, max, increment int, changed func
 // AddButton adds a new button to the form. The "selected" function is called
 // when the user selects this button. It may be nil.
 func (f *Form) AddButton(label string, selected func()) *Form {
-	return f.set(func(f *Form) { f.buttons = append(f.buttons, NewButton().SetLabel(label).SetSelectedFunc(selected)) })
+	return f.set(func(f *Form) { f.buttons = append(f.buttons, NewButton().SetLabel(label).OnClick(selected)) })
 }
 
 // GetButton returns the button at the specified 0-based index. Note that
@@ -1241,8 +1241,8 @@ type FormItemAttributes struct {
 
 func (attrs *FormItemAttributes) Apply(item Widget) {
 	switch item.(type) {
-	case *InputField:
-		attrs.applyToInputField(item.(*InputField))
+	case *Input:
+		attrs.applyToInputField(item.(*Input))
 	case *DropDown:
 		attrs.applyToDropDown(item.(*DropDown))
 	case *CheckBox:
@@ -1252,7 +1252,7 @@ func (attrs *FormItemAttributes) Apply(item Widget) {
 	}
 }
 
-func (attrs *FormItemAttributes) applyToInputField(item *InputField) {
+func (attrs *FormItemAttributes) applyToInputField(item *Input) {
 	item.SetLabelWidth(attrs.LabelWidth)
 	item.SetBackgroundColor(attrs.BackgroundColor)
 	item.SetLabelColor(attrs.LabelColor)

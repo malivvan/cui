@@ -121,7 +121,7 @@ var rootNode = &node{
 func TreeView(nextSlide func()) (title string, info string, content cui.Widget) {
 	treeNextSlide = nextSlide
 	tree.SetBorder(true)
-	tree.SetTitle("TreeView")
+	tree.SetTitle("Tree")
 
 	// Add nodes.
 	var add func(target *node) *cui.TreeNode
@@ -161,5 +161,5 @@ func TreeView(nextSlide func()) (title string, info string, content cui.Widget) 
 	flex.AddItem(tree, 0, 1, true)
 	flex.AddItem(treeCode, codeWidth, 1, false)
 
-	return "TreeView", "", flex
+	return "Tree", "", flex
 }

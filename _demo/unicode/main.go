@@ -20,7 +20,7 @@ func main() {
 	form.AddCheckBox("", "年龄 18+", false, nil)
 	form.AddButton("保存", func() {
 		_, option := form.GetFormItem(0).(*cui.DropDown).GetCurrentOption()
-		userName := form.GetFormItem(1).(*cui.InputField).GetText()
+		userName := form.GetFormItem(1).(*cui.Input).GetText()
 
 		alert(panels, "alert-dialog", fmt.Sprintf("保存成功，%s %s！", userName, option.GetText()))
 	})

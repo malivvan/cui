@@ -8,8 +8,8 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/views"
-	tcellterm "github.com/malivvan/cui/vte"
-	"github.com/malivvan/cui/vte/pty"
+	tcellterm "github.com/malivvan/cui/terminal"
+	"github.com/malivvan/cui/terminal/pty"
 )
 
 type model struct {

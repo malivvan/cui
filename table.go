@@ -210,7 +210,7 @@ func (c *TableCell) GetReference() interface{} {
 //
 // Because the Table class will attempt to keep selected cells on screen, this
 // function is most useful in response to a "selected" event (see
-// SetSelectedFunc()) or a "selectionChanged" event (see
+// OnClick()) or a "selectionChanged" event (see
 // SetSelectionChangedFunc()).
 func (c *TableCell) GetLastPosition() (x, y, width int) {
 	c.mu.RLock()

@@ -2,7 +2,8 @@
 
 
 ## Packages
-
+- https://github.com/c4milo/qjs/tree/317e28e5b54e87c6f0748c697b15c1deefcc5648
+-https://github.com/ncruces/go-sqlite3/tree/7028e3a5b97297755369e6280f47d199f2f530e3
 | path                  | repository                                                                                                                   | commit                                     |    license     |
 |:----------------------|:-----------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------|:--------------:|
 | **/**                 | [codeberg.org/tslocum/cview](https://codeberg.org/tslocum/cview/src/commit/242e7c1f1b61a4b3722a1afb45ca1165aefa9a59)         | `242e7c1f1b61a4b3722a1afb45ca1165aefa9a59` |     `MIT`      |

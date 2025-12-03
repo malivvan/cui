@@ -93,7 +93,7 @@ func (c *ContextMenu) ClearContextMenu() *ContextMenu {
 
 // SetContextSelectedFunc sets the function which is called when the user
 // selects a context menu item. The function receives the item's index in the
-// menu (starting with 0), its text and its shortcut rune. SetSelectedFunc must
+// menu (starting with 0), its text and its shortcut rune. OnClick must
 // be called before the context menu is shown.
 func (c *ContextMenu) SetContextSelectedFunc(handler func(index int, text string, shortcut rune)) *ContextMenu {
 	c.mu.Lock()

@@ -2,10 +2,11 @@ package editor
 
 import (
 	"fmt"
-	"github.com/gdamore/tcell/v2"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/gdamore/tcell/v2"
 )
 
 // Theme is a map from string to style -- it represents a theme

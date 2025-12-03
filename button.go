@@ -313,8 +313,8 @@ func (b *Button) SetBackgroundColorFocused(color tcell.Color) *Button {
 	return b.set(func(b *Button) { b.backgroundColorFocused = color })
 }
 
-// SetSelectedFunc sets a handler which is called when the button was selected.
-func (b *Button) SetSelectedFunc(handler func()) *Button {
+// OnClick sets a handler which is called when the button was selected.
+func (b *Button) OnClick(handler func()) *Button {
 	return b.set(func(b *Button) { b.selected = handler })
 }
 
@@ -330,7 +330,6 @@ func (b *Button) SetBlurFunc(handler func(key tcell.Key)) *Button {
 }
 
 // ////////////////////////////////// <WIDGET> ////////////////////////////////////
-var _ Widget = (*Button)(nil)
 
 // Draw draws this primitive onto the screen.
 func (b *Button) Draw(screen tcell.Screen) {

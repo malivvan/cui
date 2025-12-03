@@ -2,8 +2,10 @@ package cui
 
 import "github.com/gdamore/tcell/v2"
 
-// Theme defines the colors used when primitives are initialized.
-type Theme struct {
+// Styles defines the appearance of an application. The default is for a black
+// background and some basic colors: black, white, yellow, green, cyan, and
+// blue.
+var Styles = struct {
 	// Title, border and other lines
 	TitleColor    tcell.Color // Box titles.
 	BorderColor   tcell.Color // Box borders.
@@ -47,12 +49,7 @@ type Theme struct {
 	// Window
 	WindowMinWidth  int
 	WindowMinHeight int
-}
-
-// Styles defines the appearance of an application. The default is for a black
-// background and some basic colors: black, white, yellow, green, cyan, and
-// blue.
-var Styles = Theme{
+}{
 	TitleColor:    tcell.ColorWhite.TrueColor(),
 	BorderColor:   tcell.ColorWhite.TrueColor(),
 	GraphicsColor: tcell.ColorWhite.TrueColor(),

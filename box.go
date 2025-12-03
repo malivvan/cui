@@ -252,7 +252,7 @@ func (b *Box) GetInputCapture() (fn func(event *tcell.EventKey) *tcell.EventKey)
 //
 // Note that this function will not have an effect on primitives composed of
 // other primitives, such as Form, Flex, or Grid. Key events are only captured
-// by the primitives that have focus (e.g. InputField) and only one primitive
+// by the primitives that have focus (e.g. Input) and only one primitive
 // can have focus at a time. Composing primitives such as Form pass the focus on
 // to their contained primitives and thus never receive any key events
 // themselves. Therefore, they cannot intercept key events.

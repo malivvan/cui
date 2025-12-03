@@ -1,4 +1,4 @@
-// Demo code for the InputField primitive.
+// Demo code for the Input primitive.
 package main
 
 import (

@@ -12,7 +12,7 @@ import (
 // may be positioned vertically or horizontally, before or after the content.
 type TabbedPanels struct {
 	flex     *Flex
-	switcher *TextView
+	switcher *Text
 	panels   *Panels
 
 	tabLabels  map[string]string

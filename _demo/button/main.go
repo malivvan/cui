@@ -9,7 +9,7 @@ func main() {
 
 	button := cui.NewButton().
 		SetLabel("Hit Enter to close").
-		SetSelectedFunc(func() {
+		OnClick(func() {
 			app.Stop()
 		})
 	button.SetRect(0, 0, 22, 3)

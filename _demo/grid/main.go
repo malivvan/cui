@@ -17,7 +17,7 @@ func main() {
 		tv.SetText(text)
 		return tv
 	}
-	menu := newPrimitive("Menu")
+	menu := newPrimitive("MenuBar")
 	main := newPrimitive("Main content")
 	sideBar := newPrimitive("Side Bar")
 

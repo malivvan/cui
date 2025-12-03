@@ -2,7 +2,6 @@ package editor
 
 import (
 	"crypto/md5"
-	"github.com/malivvan/cui/editor/highlight"
 	"io"
 	"path/filepath"
 	"strings"
@@ -43,8 +42,8 @@ type Buffer struct {
 	// NumLines is the number of lines in the buffer
 	NumLines int
 
-	syntaxDef   *highlight.Def
-	highlighter *highlight.Highlighter
+	syntaxDef   *Def
+	highlighter *Highlighter
 
 	// Hash of the original buffer -- empty if fastdirty is on
 	origHash [md5.Size]byte
@@ -119,14 +118,14 @@ func (b *Buffer) updateRules() {
 	}
 
 	rehighlight := false
-	var files []*highlight.File
+	var files []*File
 	for _, f := range Assets.Syntax {
 
-		file, err := highlight.ParseFile(f.Data)
+		file, err := ParseFile(f.Data)
 		if err != nil {
 			continue
 		}
-		header, err := highlight.ParseHeader(f.Data)
+		header, err := ParseHeader(f.Data)
 		if err != nil {
 			continue
 		}
@@ -134,7 +133,7 @@ func (b *Buffer) updateRules() {
 		ft := b.Settings["filetype"].(string)
 		if (ft == "Unknown" || ft == "") && !rehighlight {
 			if header.Match(b.Path, b.lines[0].data) {
-				b.syntaxDef, err = highlight.ParseDef(file, header)
+				b.syntaxDef, err = ParseDef(file, header)
 				if err != nil {
 					continue
 				}
@@ -142,7 +141,7 @@ func (b *Buffer) updateRules() {
 			}
 		} else {
 			if file.FileType == ft && !rehighlight {
-				b.syntaxDef, err = highlight.ParseDef(file, header)
+				b.syntaxDef, err = ParseDef(file, header)
 				if err != nil {
 					continue
 				}
@@ -154,13 +153,13 @@ func (b *Buffer) updateRules() {
 	}
 
 	if b.syntaxDef != nil {
-		highlight.ResolveIncludes(b.syntaxDef, files)
+		ResolveIncludes(b.syntaxDef, files)
 	}
 
 	if b.highlighter == nil || rehighlight {
 		if b.syntaxDef != nil {
 			b.Settings["filetype"] = b.syntaxDef.FileType
-			b.highlighter = highlight.NewHighlighter(b.syntaxDef)
+			b.highlighter = NewHighlighter(b.syntaxDef)
 			if b.Settings["syntax"].(bool) {
 				b.highlighter.HighlightStates(b)
 			}

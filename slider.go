@@ -9,7 +9,7 @@ import (
 
 // Slider is a progress bar which may be modified via keyboard and mouse.
 type Slider struct {
-	progressBar *ProgressBar
+	progressBar *Progress
 
 	// The text to be displayed before the slider.
 	label []byte

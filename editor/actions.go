@@ -1,10 +1,11 @@
 package editor
 
 import (
-	"github.com/atotto/clipboard"
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"github.com/atotto/clipboard"
 )
 
 func (v *View) deselect(index int) bool {

@@ -26,7 +26,7 @@ func Grid(nextSlide func()) (title string, info string, content cui.Widget) {
 		return tv
 	}
 
-	menu := newPrimitive("Menu")
+	menu := newPrimitive("MenuBar")
 	main := newPrimitive("Main content")
 	sideBar := newPrimitive("Side Bar")
 

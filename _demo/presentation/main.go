@@ -72,6 +72,7 @@ func main() {
 		Flex,
 		Grid,
 		Window,
+		Charts,
 		End,
 	}
 

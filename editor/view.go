@@ -1,28 +1,21 @@
 package editor
 
 import (
-	"github.com/gdamore/tcell/v2"
-	"github.com/malivvan/cui"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-)
 
-type Overlay struct {
-	*cui.List
-}
+	"github.com/gdamore/tcell/v2"
+)
 
 // The View struct stores information about a view into a buffer.
 // It stores information about the cursor, and the viewport
 // that the user sees the buffer from.
 type View struct {
-	*cui.Box
 
 	// A pointer to the buffer's cursor for ease of access
 	Cursor *Cursor
-
-	Overlay *Overlay
 
 	// The topmost line, used for vertical scrolling
 	Topline int
@@ -71,38 +64,23 @@ type View struct {
 	sync.RWMutex
 }
 
+func (v *View) GetRect() (int, int, int, int) {
+	return v.x, v.y, v.width, v.height
+}
+
+func (v *View) SetBuffer(buf *Buffer) {
+	v.OpenBuffer(buf)
+	v.Buf.updateRules()
+
+}
+
 // NewView returns a new view with the specified buffer.
-func NewView(buf *Buffer) *View {
+func NewView() *View {
 	v := new(View)
-
-	v.Box = cui.NewBox()
-
-	v.Overlay = &Overlay{List: cui.NewList()}
-	v.Overlay.List.SetBackgroundTransparent(true)
-	v.Overlay.List.SetSelectedBackgroundColor(tcell.ColorLightBlue)
-	v.Overlay.List.SetSelectedAlwaysVisible(true)
-	v.Overlay.List.SetMainTextColor(tcell.ColorBlack)
-	v.Overlay.List.SetSelectedTextAttributes(tcell.AttrBold)
-	v.Overlay.List.ShowSecondaryText(false)
-	v.Overlay.List.SetHighlightFullLine(true)
-	item1 := cui.NewListItem("Option 1")
-	item2 := cui.NewListItem("Option 2")
-	item3 := cui.NewListItem("Option 3")
-	item4 := cui.NewListItem("Option 4")
-	item5 := cui.NewListItem("Option 5")
-	item6 := cui.NewListItem("Option 6")
-	v.Overlay.List.AddItem(item1)
-	v.Overlay.List.AddItem(item2)
-	v.Overlay.List.AddItem(item3)
-	v.Overlay.List.AddItem(item4)
-	v.Overlay.List.AddItem(item5)
-	v.Overlay.List.AddItem(item6)
 
 	v.x, v.y, v.width, v.height = 0, 0, 0, 0
 
 	v.cellview = new(CellView)
-
-	v.OpenBuffer(buf)
 
 	v.scrollbar = &ScrollBar{
 		view: v,
@@ -110,49 +88,16 @@ func NewView(buf *Buffer) *View {
 
 	v.bindings = DefaultKeyBindings
 
-	v.Buf.updateRules()
-
 	return v
 }
 
 // SetRect sets a new position for the view.
 func (v *View) SetRect(x, y, width, height int) {
-	v.Box.SetRect(x, y, width, height)
-	v.x, v.y, v.width, v.height = v.Box.GetInnerRect()
+	v.x, v.y, v.width, v.height = x, y, width, height
 }
 
-// InputHandler returns a handler which received key events when this view has focus,
-func (v *View) InputHandler() func(event *tcell.EventKey, _ func(p cui.Widget)) {
-	return v.WrapInputHandler(func(event *tcell.EventKey, _ func(p cui.Widget)) {
-		// if down or up arrow is pressed, we need to relocate the view
-		// show overlay on ctrl+space
-		if event.Key() == tcell.KeyCtrlSpace {
-			v.Overlay.List.SetVisible(true)
-		}
-		if v.Overlay.List.GetVisible() {
-			if event.Key() == tcell.KeyEsc {
-				v.Overlay.List.SetVisible(false)
-				return
-			}
-			if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp {
-				v.Overlay.List.InputHandler()(event, nil)
-				return
-			}
-		}
-		v.HandleEvent(event)
-	})
-}
-
-func (v *View) MouseHandler() func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
-	return v.WrapMouseHandler(func(action cui.MouseAction, event *tcell.EventMouse, setFocus func(p cui.Widget)) (consumed bool, capture cui.Widget) {
-		if v.InRect(event.Position()) {
-			if action == cui.MouseLeftClick {
-				setFocus(v)
-				return true, nil
-			}
-		}
-		return false, nil
-	})
+func (v *View) InRect(x, y int) bool {
+	return x >= v.x && x < v.x+v.width && y >= v.y && y < v.y+v.height
 }
 
 // GetKeyBindings gets the keybindings for this view.
@@ -635,16 +580,11 @@ func ShowMultiCursor(screen tcell.Screen, x, y, i int) {
 
 // Draw renders the view and the cursor
 func (v *View) Draw(screen tcell.Screen) {
-	if !v.GetVisible() {
-		return
-	}
-
-	v.Box.Draw(screen)
 
 	v.Lock()
 	defer v.Unlock()
 
-	v.x, v.y, v.width, v.height = v.Box.GetInnerRect()
+	v.width, v.height = screen.Size()
 
 	// TODO(pdg): just clear from the last line down.
 	for y := v.y; y < v.y+v.height; y++ {
@@ -659,11 +599,6 @@ func (v *View) Draw(screen tcell.Screen) {
 	if v.Cursor.Y-v.Topline < 0 || v.Cursor.Y-v.Topline > v.height-1 || v.Cursor.HasSelection() {
 		screen.HideCursor()
 	}
-
-	v.Overlay.SetRect(v.x+v.lineNumOffset+v.Cursor.GetVisualX(), v.y+v.Cursor.Y-v.Topline+1, 25, 4)
-	v.Overlay.SetBackgroundColor(tcell.ColorBlue)
-
-	v.Overlay.Draw(screen)
 
 	if v.Buf.Settings["scrollbar"].(bool) {
 		v.scrollbar.Display(screen)

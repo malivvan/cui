@@ -56,9 +56,9 @@ func TextView1(nextSlide func()) (title string, info string, content cui.Widget)
 		}
 	}()
 	textView.SetBorder(true)
-	textView.SetTitle("TextView implements io.Writer")
+	textView.SetTitle("Text implements io.Writer")
 	textView.ScrollToEnd()
-	return "TextView 1", textViewInfo, Code(textView, 36, 13, textView1)
+	return "Text 1", textViewInfo, Code(textView, 36, 13, textView1)
 }
 
 const textView2 = `[green]package[white] main
@@ -153,12 +153,12 @@ func TextView2(nextSlide func()) (title string, info string, content cui.Widget)
 	})
 	fmt.Fprint(textView, textView2)
 	textView.SetBorder(true)
-	textView.SetTitle("TextView output")
+	textView.SetTitle("Text output")
 	textView.SetScrollBarVisibility(cui.ScrollBarAuto)
 
 	flex := cui.NewFlex()
 	flex.AddItem(textView, 0, 1, true)
 	flex.AddItem(codeView, 0, 1, false)
 
-	return "TextView 2", textViewInfo, flex
+	return "Text 2", textViewInfo, flex
 }

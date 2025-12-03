@@ -3,7 +3,7 @@ package main
 
 import (
 	_ "embed"
-	"github.com/gdamore/tcell/v2"
+
 	"github.com/malivvan/cui"
 	"github.com/malivvan/cui/editor"
 )
@@ -15,11 +15,9 @@ func main() {
 	app := cui.New()
 	defer app.HandlePanic()
 
-	buf := editor.NewBufferFromString(mainGo, "main.go")
-	view := editor.NewView(buf)
+	view := cui.NewEditor()
+	view.SetBuffer(editor.NewBufferFromString(mainGo, "main.go"))
 	view.SetTheme("darcula")
-	view.SetBorder(true)
-	view.SetBorderAttributes(tcell.AttrBold)
 
 	app.SetRoot(view, true)
 	if err := app.Run(); err != nil {

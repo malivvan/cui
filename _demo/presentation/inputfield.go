@@ -37,5 +37,5 @@ func InputField(nextSlide func()) (title string, info string, content cui.Widget
 	input.SetDoneFunc(func(key tcell.Key) {
 		nextSlide()
 	})
-	return "InputField", "", Code(input, 30, 1, inputField)
+	return "Input", "", Code(input, 30, 1, inputField)
 }

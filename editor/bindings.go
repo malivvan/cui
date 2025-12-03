@@ -1,9 +1,10 @@
 package editor
 
 import (
-	"github.com/gdamore/tcell/v2"
 	"strings"
 	"unicode"
+
+	"github.com/gdamore/tcell/v2"
 )
 
 // Actions

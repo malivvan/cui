@@ -1,4 +1,4 @@
-// Demo code for the ProgressBar primitive.
+// Demo code for the Progress primitive.
 package main
 
 import (

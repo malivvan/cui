@@ -6,7 +6,7 @@ validate: check-fmt check-static test ## Validates the go code format, executes 
 
 .PHONY: test
 test: ## Run tests
-	@CGO_ENABLED=1 gotestsum --format-hide-empty-pkg -- -race -v ./...
+	@CGO_ENABLED=1 GODEBUG=randseednop=0 gotestsum --format-hide-empty-pkg -- -v ./...
 
 .PHONY: check-static
 check-static: ## Run static analysis

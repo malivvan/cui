@@ -22,16 +22,16 @@ func main() {
 	app.EnableMouse(true)
 
 	input1 := cui.NewInputField()
-	input1.SetLabel("InputField 1")
+	input1.SetLabel("Input 1")
 
 	input2 := cui.NewInputField()
-	input2.SetLabel("InputField 2")
+	input2.SetLabel("Input 2")
 
 	input3 := cui.NewInputField()
-	input3.SetLabel("InputField 3")
+	input3.SetLabel("Input 3")
 
 	input4 := cui.NewInputField()
-	input4.SetLabel("InputField 4")
+	input4.SetLabel("Input 4")
 
 	grid := cui.NewGrid()
 	grid.SetBorder(true)

@@ -9,11 +9,11 @@ import (
 )
 
 const logo = `
- ======= ===  === === ======== ===  ===  ===
-===      ===  === === ===      ===  ===  ===
-===      ===  === === ======   ===  ===  ===
-===       ======  === ===       ===========
- =======    ==    === ========   ==== ====
+  oooooooo8 ooooo  oooo ooooo 
+o888     88  888    88   888  
+888          888    88   888  
+888o     oo  888    88   888  
+ 888oooo88    888oo88   o888o
 `
 
 const subtitle = "Terminal-based user interface toolkit"

@@ -2,7 +2,6 @@ package editor
 
 import (
 	"bufio"
-	"github.com/malivvan/cui/editor/highlight"
 	"io"
 	"unicode/utf8"
 )
@@ -33,8 +32,8 @@ func runeToByteIndex(n int, txt []byte) int {
 type Line struct {
 	data []byte
 
-	state       highlight.State
-	match       highlight.LineMatch
+	state       State
+	match       LineMatch
 	rehighlight bool
 }
 
@@ -246,21 +245,21 @@ func (la *LineArray) Substr(start, end Loc) string {
 }
 
 // State gets the highlight state for the given line number
-func (la *LineArray) State(lineN int) highlight.State {
+func (la *LineArray) State(lineN int) State {
 	return la.lines[lineN].state
 }
 
 // SetState sets the highlight state at the given line number
-func (la *LineArray) SetState(lineN int, s highlight.State) {
+func (la *LineArray) SetState(lineN int, s State) {
 	la.lines[lineN].state = s
 }
 
 // SetMatch sets the match at the given line number
-func (la *LineArray) SetMatch(lineN int, m highlight.LineMatch) {
+func (la *LineArray) SetMatch(lineN int, m LineMatch) {
 	la.lines[lineN].match = m
 }
 
 // Match retrieves the match for the given line number
-func (la *LineArray) Match(lineN int) highlight.LineMatch {
+func (la *LineArray) Match(lineN int) LineMatch {
 	return la.lines[lineN].match
 }

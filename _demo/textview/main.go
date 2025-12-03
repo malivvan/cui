@@ -1,4 +1,4 @@
-// Demo code for the TextView primitive.
+// Demo code for the Text primitive.
 package main
 
 import (

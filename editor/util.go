@@ -254,12 +254,6 @@ func WidthOfLargeRunes(str string, tabsize int) int {
 	return count
 }
 
-// RunePos returns the rune index of a given byte index
-// This could cause problems if the byte index is between code points
-func runePos(p int, str string) int {
-	return utf8.RuneCountInString(str[:p])
-}
-
 func lcs(a, b string) string {
 	arunes := []rune(a)
 	brunes := []rune(b)
