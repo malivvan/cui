@@ -27,7 +27,7 @@ func runeToByteIndex(n int, txt []byte) int {
 	return count
 }
 
-// A Line contains the Data in bytes as well as a highlight state, match
+// A Line contains the Tag in bytes as well as a highlight state, match
 // and a flag for whether the highlighting needs to be updated
 type Line struct {
 	data []byte
@@ -99,12 +99,12 @@ func NewLineArray(size int64, reader io.Reader) *LineArray {
 		if err != nil {
 			if err == io.EOF {
 				la.lines = Append(la.lines, Line{data[:], nil, nil, false})
-				// la.lines = Append(la.lines, Line{Data[:len(Data)]})
+				// la.lines = Append(la.lines, Line{Tag[:len(Tag)]})
 			}
 			// Last line was read
 			break
 		} else {
-			// la.lines = Append(la.lines, Line{Data[:len(Data)-1]})
+			// la.lines = Append(la.lines, Line{Tag[:len(Tag)-1]})
 			la.lines = Append(la.lines, Line{data[:len(data)-1], nil, nil, false})
 		}
 		n++

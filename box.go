@@ -279,7 +279,7 @@ func (b *Box) WrapInputHandler(inputHandler func(*tcell.EventKey, func(p Widget)
 ////////////////////////////////// <API> ////////////////////////////////////
 
 // GetInnerRect returns the position of the inner rectangle (x, y, width,
-// height), without the border and without any padding. Width and height values
+// height), without the border and without any padding. width and height values
 // will clamp to 0 and thus never be negative.
 func (b *Box) GetInnerRect() (innerX, innerY, innerW, innerH int) {
 	b.get(func(b *Box) { innerX, innerY, innerW, innerH = b.innerX, b.innerY, b.innerWidth, b.innerHeight })

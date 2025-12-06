@@ -674,7 +674,7 @@ func (img *Image) stamp(resized [][3]float64) {
 						for index, ch := range color {
 							switch {
 							case colors == 8:
-								// Colors vary wildly for each terminal. Expect
+								// colors vary wildly for each terminal. Expect
 								// suboptimal results.
 								if ch < 0.5 {
 									color[index] = 0

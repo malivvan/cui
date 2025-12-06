@@ -5,3 +5,5 @@ vendor/
 *.sh
 cui.test
 recording.log
+markup/qjs/quickjs
+markup/qjs/coverage

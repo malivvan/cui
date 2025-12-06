@@ -10,11 +10,11 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/views"
-	"github.com/malivvan/cui/terminal"
+	"github.com/malivvan/cui/terminal/vte"
 )
 
 type model struct {
-	term       *terminal.VT
+	term       *vte.VT
 	s          tcell.Screen
 	termView   views.View
 	title      *views.TextBar
@@ -62,7 +62,7 @@ func (m *model) Update(ev tcell.Event) {
 		m.term.Draw()
 		m.s.Sync()
 		return
-	case *terminal.EventRedraw:
+	case *vte.EventRedraw:
 		m.term.Draw()
 		m.title.Draw()
 
@@ -76,7 +76,7 @@ func (m *model) Update(ev tcell.Event) {
 		}
 		m.s.Show()
 		return
-	case *terminal.EventClosed:
+	case *vte.EventClosed:
 		m.s.Clear()
 		m.s.Fini()
 		return
@@ -93,9 +93,9 @@ func (m *model) Update(ev tcell.Event) {
 		e := tcell.NewEventMouse(x, y, ev.Buttons(), ev.Modifiers())
 		m.term.HandleEvent(e)
 		return
-	case *terminal.EventMouseMode:
+	case *vte.EventMouseMode:
 		m.s.EnableMouse(ev.Flags()...)
-	case *terminal.EventPanic:
+	case *vte.EventPanic:
 		m.s.Clear()
 		m.s.Fini()
 		fmt.Println(ev.Error)
@@ -136,7 +136,7 @@ func main() {
 	m.title.SetView(m.titleView)
 
 	m.termView = views.NewViewPort(m.s, 0, 0, -1, h-1)
-	m.term = terminal.New()
+	m.term = vte.New()
 	m.term.SetSurface(m.termView)
 	m.term.Attach(m.HandleEvent)
 	m.term.Logger = log.New(f, "", log.Flags())

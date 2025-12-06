@@ -26,6 +26,13 @@ install: ## Installs required tools
 	@go install honnef.co/go/tools/cmd/staticcheck@latest
 	@go install gotest.tools/gotestsum@latest
 
+.PHONY: build
+build:
+	@echo "Building QuickJS..."
+	@rm -f markup/qjs/qjs.wasm
+	@cd markup/qjs && make build test clean
+	@echo "qjs build complete: $$(stat -c%s markup/qjs/qjs.wasm) bytes"
+
 .PHONY: help
 help: ## Shows this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

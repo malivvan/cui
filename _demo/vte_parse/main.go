@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/malivvan/cui/terminal"
+	"github.com/malivvan/cui/terminal/vte"
 )
 
 func main() {
 	fmt.Println("----- tcell-term parser example -----")
 	fmt.Println("reading from stdin")
-	parser := terminal.NewParser(os.Stdin)
+	parser := vte.NewParser(os.Stdin)
 	for {
 		seq := parser.Next()
 		fmt.Printf("%s\n", seq)
 		switch seq.(type) {
-		case terminal.EOF:
+		case vte.EOF:
 			return
 		}
 

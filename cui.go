@@ -6,7 +6,29 @@ package cui
 import (
 	"github.com/gdamore/tcell/v2"
 )
- 
+
+const (
+	IconFolder  = '🖿'
+	IconBolt    = '🗲'
+	IconHDD     = '🖴'
+	IconChat    = '🗨'
+	IconRefresh = '🗘'
+	IconRun     = '⯈'
+	IconStop    = '⏹'
+	IconPause   = '⏸'
+	IconStep    = '⏭'
+	IconPin     = '🖈'
+	IconClose   = '🗙'
+	IconFont    = '🗛'
+	IconBook    = '🕮'
+	IconWindow  = '🗗'
+	IconMax     = '🗖'
+	IconMin     = '🗕'
+	IconFlag    = '🏲'
+	IconNote    = '🎜'
+	IconMenu    = '☰'
+)
+
 var (
 	_ widget[*Box]           = (*Box)(nil)
 	_ widget[*Button]        = (*Button)(nil)

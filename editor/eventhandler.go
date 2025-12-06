@@ -19,7 +19,7 @@ const (
 	undoThreshold = 500 // If two events are less than n milliseconds apart, undo both of them
 )
 
-// TextEvent holds Data for a manipulation on some text that can be undone
+// TextEvent holds Tag for a manipulation on some text that can be undone
 type TextEvent struct {
 	C Cursor
 

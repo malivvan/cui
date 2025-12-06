@@ -5,14 +5,14 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/views"
-	"github.com/malivvan/cui/terminal"
 	"github.com/malivvan/cui/terminal/pty"
+	"github.com/malivvan/cui/terminal/vte"
 )
 
 type Terminal struct {
 	box *Box
 
-	term    *terminal.VT
+	term    *vte.VT
 	running bool
 	opt     pty.Options
 	app     *App
@@ -25,7 +25,7 @@ type Terminal struct {
 func NewTerminal(app *App, opt pty.Options) *Terminal {
 	t := &Terminal{
 		box:  NewBox(),
-		term: terminal.New(),
+		term: vte.New(),
 		app:  app,
 		opt:  opt,
 	}
@@ -303,7 +303,7 @@ func (t *Terminal) Draw(s tcell.Screen) {
 
 func (t *Terminal) HandleEvent(ev tcell.Event) {
 	switch ev.(type) {
-	case *terminal.EventRedraw:
+	case *vte.EventRedraw:
 		go func() {
 			t.app.QueueUpdateDraw(func() {})
 		}()

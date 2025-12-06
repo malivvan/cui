@@ -13,7 +13,7 @@ func main() {
 
 	app := cui.New()
 
-	// >>> Data Function <<<
+	// >>> Tag Function <<<
 	// With these values, the curve will start with a value of 0 and reach a
 	// high point of 2 at x = 3.14 (Pi) and then return to 0 at x = 6.28 (2*Pi).
 

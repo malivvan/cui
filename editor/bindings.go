@@ -79,7 +79,7 @@ const (
 	ActionUnbindKey              = "UnbindKey"
 )
 
-// keyDesc holds the Data for a keypress (keycode + modifiers)
+// keyDesc holds the Tag for a keypress (keycode + modifiers)
 type keyDesc struct {
 	keyCode   tcell.Key
 	modifiers tcell.ModMask

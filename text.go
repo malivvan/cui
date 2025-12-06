@@ -70,7 +70,7 @@ type textViewRegion struct {
 //
 // Use SetInputCapture() to override or modify keyboard input.
 //
-// # Colors
+// # colors
 //
 // If dynamic colors are enabled via SetDynamicColors(), text color can be
 // changed dynamically by embedding color strings in square brackets. This works

@@ -8,12 +8,12 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/views"
-	tcellterm "github.com/malivvan/cui/terminal"
 	"github.com/malivvan/cui/terminal/pty"
+	"github.com/malivvan/cui/terminal/vte"
 )
 
 type model struct {
-	term      *tcellterm.VT
+	term      *vte.VT
 	s         tcell.Screen
 	termView  views.View
 	title     *views.TextBar
@@ -46,7 +46,7 @@ func (m *model) Update(ev tcell.Event) {
 		m.term.Draw()
 		m.s.Sync()
 		return
-	case *tcellterm.EventRedraw:
+	case *vte.EventRedraw:
 		m.term.Draw()
 		m.title.Draw()
 
@@ -60,7 +60,7 @@ func (m *model) Update(ev tcell.Event) {
 		}
 		m.s.Show()
 		return
-	case *tcellterm.EventClosed:
+	case *vte.EventClosed:
 		m.s.Clear()
 		m.s.Fini()
 		return
@@ -77,9 +77,9 @@ func (m *model) Update(ev tcell.Event) {
 		e := tcell.NewEventMouse(x, y-2, ev.Buttons(), ev.Modifiers())
 		m.term.HandleEvent(e)
 		return
-	case *tcellterm.EventMouseMode:
+	case *vte.EventMouseMode:
 		m.s.EnableMouse(ev.Flags()...)
-	case *tcellterm.EventPanic:
+	case *vte.EventPanic:
 		m.s.Clear()
 		m.s.Fini()
 		fmt.Println(ev.Error)
@@ -124,7 +124,7 @@ func main() {
 	m.termView = views.NewViewPort(m.s, 0, 2, -1, -1)
 	// m.term = tcellterm.New(tcellterm.WithWriter(recorder))
 	// m.term.Watch(m)
-	m.term = tcellterm.New()
+	m.term = vte.New()
 	m.term.SetSurface(m.termView)
 	m.term.Attach(m.HandleEvent)
 	m.term.Logger = log.New(f, "", log.Flags())

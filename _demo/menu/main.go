@@ -17,7 +17,7 @@ func newMenu() (*cui.Flex, func(tcell.Screen)) {
 	fileMenu := cui.NewMenuItem("File")
 
 	fileMenu.AddItem(cui.NewMenuItem("Open File").SetOnClick(clickedMessageFn("Open File")))
-	
+
 	fileMenu.AddItem(cui.NewMenuItem("New File").SetOnClick(clickedMessageFn("New File")))
 
 	saveSubForReal := cui.NewMenuItem("Save For Real").

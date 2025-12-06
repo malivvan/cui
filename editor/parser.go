@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/malivvan/cui/markup/yml"
+	"github.com/malivvan/cui/internal/yml"
 )
 
 type Header struct {

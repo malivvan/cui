@@ -29,5 +29,5 @@ func Colors(nextSlide func()) (title string, info string, content cui.Widget) {
 		nextSlide()
 	})
 
-	return "Colors", "", Center(44, 16, tv)
+	return "colors", "", Center(44, 16, tv)
 }

@@ -1,0 +1,49 @@
+default: [["#F8F8F2","#282A36"]]
+comment: [["#6272A4"]]
+
+identifier: [["#50FA7B"]]
+identifier.class: [["#8BE9FD"]]
+identifier.var: [["#F8F8F2"]]
+
+constant: [["#BD93F9"]]
+constant.number: [["#F8F8F2"]]
+constant.string: [["#F1FA8C"]]
+
+symbol: [["#FF79C6"]]
+symbol.brackets: [["#F8F8F2"]]
+symbol.tag: [["#AE81FF"]]
+
+type: [["italic #8BE9FD"]]
+type.keyword: [["#FF79C6"]]
+
+special: [["#FF79C6"]]
+statement: [["#FF79C6"]]
+preproc: [["#FF79C6"]]
+
+underlined: [["#FF79C6"]]
+error [["bold #FF5555"]]
+todo [["bold #FF79C6"]]
+
+hlsearch [["#282A36","#50FA7B"]]
+
+diff-added [["#50FA7B"]]
+diff-modified [["#FFB86C"]]
+diff-deleted [["#FF5555"]]
+
+gutter-error [["#FF5555"]]
+gutter-warning [["#E6DB74"]]
+
+statusline [["#282A36","#F8F8F2"]]
+tabbar [["#282A36","#F8F8F2"]]
+indent-char [["#6272A4"]]
+line-number [["#6272A4"]]
+current-line-number [["#F8F8F2"]]
+
+cursor-line [["#44475A","#F8F8F2"]]
+color-column [["#44475A"]]
+type.extended [["default"]]
+
+match-brace [["#282A36","#FF79C6"]]
+
+tab-error [["#D75F5F"]]
+trailingws [["#D75F5F"]]

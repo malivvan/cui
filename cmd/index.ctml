@@ -1,0 +1,35 @@
+<style>
+	button {color: black;}
+	#b11 {color: orange;}
+	#b12 {color: green;}
+	#b21 {color: orange;}
+	#b22 {color: green;}
+	#b33 {color: orange;}
+	#b31 {color: green;}
+	#b32 {color: orange;}
+	.xxx {color: blue;}
+	.blob {color: purple;}
+</style>
+<script>
+const clickHandler = () => {
+	console.log("This is a layout test with buttons and flex containers.");
+};
+
+export default { clickHandler };
+</script>
+<flex direction="row">
+	<button id="b11" size="1" style="color: red;" onclick="clickHandler">xxxx</button>
+	<button id="b12" class="xxx" size="3">xxxxzzzzzz</button>
+	<flex direction="column" grow="1">
+		<button id="b21"  class="xxx"  size="10">aaaaa</button>
+		<button id="b22" class="blob" grow="1" >MID</button>
+		<button id="b23"  class="xxx" size="10" style="color: blue;">bbbbbb</button>
+	</flex>
+</flex>
+<flex direction="row">
+	<button id="b31" grow="1" style="color: red;" >xxxx</button>
+	<button id="b32" grow="1" style="color: red;" >yyyyy</button>
+</flex>
+<script>
+    console.log("Layout test initialized.");
+</script>
